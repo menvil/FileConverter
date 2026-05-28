@@ -11,6 +11,8 @@
     --ca-success: #16a34a;
     --ca-warning: #f59e0b;
     --ca-danger: #dc2626;
+    --ca-on-primary: #ffffff;
+    --ca-on-danger: #ffffff;
     --ca-radius-sm: 0.5rem;
     --ca-radius-md: 0.75rem;
     --ca-radius-lg: 1rem;

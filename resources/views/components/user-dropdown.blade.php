@@ -63,7 +63,7 @@
                     href="{{ route('dashboard') }}"
                     role="menuitem"
                     class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-primary)]"
-                    style="background:color-mix(in srgb, var(--ca-primary) 10%, white);"
+                    style="background:color-mix(in srgb, var(--ca-primary) 10%, var(--ca-surface));"
                 >
                     <x-user-dropdown.icon name="home" />
                     <span>Dashboard</span>
