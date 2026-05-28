@@ -1,0 +1,23 @@
+# Cubic.dev — only review release/* → main PRs.
+# Cubic only supports ignore filters; we list every base/head pattern that
+# is NOT release/* → main, so the remaining traffic is exactly that.
+version: 1
+
+reviews:
+  ignore:
+    # Skip any PR that does not target main.
+    base_branches:
+      - "develop"
+      - "feature/*"
+      - "chore/*"
+      - "fix/*"
+      - "hotfix/*"
+      - "release/*"
+    # Belt-and-braces: skip any PR sourced from a non-release branch
+    # even if it somehow targets main.
+    head_branches:
+      - "feature/*"
+      - "chore/*"
+      - "fix/*"
+      - "hotfix/*"
+      - "develop"

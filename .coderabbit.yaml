@@ -1,0 +1,21 @@
+# CodeRabbit — only auto-review release/* → main PRs.
+# Strategy: auto-review is disabled globally and re-enabled by the "release" label.
+# The label is applied automatically by .github/workflows/label-release-prs.yml.
+# Manual trigger is still available via @coderabbitai review.
+
+language: en
+
+reviews:
+  profile: chill
+  auto_review:
+    enabled: false
+    labels:
+      - "release"
+    drafts: false
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+
+chat:
+  auto_reply: true
