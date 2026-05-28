@@ -27,3 +27,5 @@
     outline: 2px solid var(--ca-primary);
     outline-offset: 2px;
 }
+
+[x-cloak] { display: none !important; }

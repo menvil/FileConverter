@@ -10,11 +10,14 @@
     <header class="border-b border-slate-200 bg-white">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
             <a href="{{ url('/') }}" class="text-lg font-semibold tracking-tight">ConvertAI</a>
-            <nav class="hidden gap-6 text-sm text-slate-600 md:flex">
-                <a href="{{ url('/dashboard') }}" class="hover:text-slate-900">Dashboard</a>
-                <a href="#" class="hover:text-slate-900">Tools</a>
-                <a href="#" class="hover:text-slate-900">Pricing</a>
-            </nav>
+            <div class="flex items-center gap-6">
+                <nav class="hidden gap-6 text-sm text-slate-600 md:flex">
+                    <a href="{{ url('/dashboard') }}" class="hover:text-slate-900">Dashboard</a>
+                    <a href="#" class="hover:text-slate-900">Tools</a>
+                    <a href="#" class="hover:text-slate-900">Pricing</a>
+                </nav>
+                <x-user-dropdown />
+            </div>
         </div>
     </header>
 
