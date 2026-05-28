@@ -14,7 +14,7 @@
         <span class="flex items-center gap-2 text-base font-semibold text-[var(--ca-text)]">
             {{ $label }}
             @if ($ai)
-                <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide" style="background:color-mix(in srgb, var(--ca-primary) 12%, white);color:var(--ca-primary);">AI</span>
+                <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide" style="background:color-mix(in srgb, var(--ca-primary) 12%, var(--ca-surface));color:var(--ca-primary);">AI</span>
             @endif
         </span>
         @if ($description)
