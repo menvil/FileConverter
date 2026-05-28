@@ -23,6 +23,27 @@ it('creates options schema field dto', function () {
     expect($field->required)->toBeFalse();
 });
 
+it('omits default key when no default was provided', function () {
+    $field = new OptionsSchemaField(
+        key: 'tag',
+        type: 'select',
+        label: 'Tag',
+        options: [['value' => 'a', 'label' => 'A']],
+    );
+
+    $array = $field->toArray();
+
+    expect($array)->not->toHaveKey('default');
+    expect($array)->toBe([
+        'key' => 'tag',
+        'type' => 'select',
+        'label' => 'Tag',
+        'options' => [['value' => 'a', 'label' => 'A']],
+        'required' => false,
+        'help' => null,
+    ]);
+});
+
 it('exposes toArray representation', function () {
     $field = new OptionsSchemaField(
         key: 'remove_metadata',

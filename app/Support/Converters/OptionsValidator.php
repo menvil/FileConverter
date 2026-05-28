@@ -101,7 +101,7 @@ final class OptionsValidator
 
     private function ensureColor(string $key, mixed $value): string
     {
-        if (! is_string($value) || ! preg_match('/^#?[0-9a-fA-F]{3,8}$/', $value)) {
+        if (! is_string($value) || ! preg_match('/^#?(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/', $value)) {
             throw InvalidConverterOptionsException::becauseValueIsNotAllowed($key);
         }
 
