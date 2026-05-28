@@ -16,14 +16,20 @@ final readonly class OptionsSchemaField
 
     public function toArray(): array
     {
-        return [
+        $array = [
             'key' => $this->key,
             'type' => $this->type,
             'label' => $this->label,
-            'default' => $this->default,
-            'options' => $this->options,
-            'required' => $this->required,
-            'help' => $this->help,
         ];
+
+        if ($this->default !== null) {
+            $array['default'] = $this->default;
+        }
+
+        $array['options'] = $this->options;
+        $array['required'] = $this->required;
+        $array['help'] = $this->help;
+
+        return $array;
     }
 }
