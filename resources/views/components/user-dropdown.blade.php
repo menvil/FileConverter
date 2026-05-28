@@ -72,6 +72,20 @@
                     <span>Settings</span>
                 </a>
             </nav>
+
+            <div class="border-t px-2 py-2" style="border-color:var(--ca-border);">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button
+                        type="submit"
+                        role="menuitem"
+                        class="flex w-full items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-left text-sm font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring"
+                    >
+                        <x-user-dropdown.icon name="logout" />
+                        <span>Log out</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 @endif
