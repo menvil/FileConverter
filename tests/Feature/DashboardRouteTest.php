@@ -7,6 +7,15 @@ it('redirects guest from dashboard to login', function () {
         ->assertRedirect('/login');
 });
 
+it('allows authenticated user to access dashboard', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Convert any file');
+});
+
 it('renders dashboard inside the app layout', function () {
     $this->actingAs(User::factory()->create())
         ->get('/dashboard')
