@@ -17,3 +17,11 @@ it('renders user dropdown shell in dashboard header', function () {
         ->assertSee('Settings')
         ->assertSee('x-data', false);
 });
+
+it('renders footer help cards on dashboard', function () {
+    $this->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Help Center')
+        ->assertSee('Contact Support')
+        ->assertSee('Refer a Friend');
+});
