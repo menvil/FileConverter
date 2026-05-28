@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }}</title>
-</head>
-<body>
-    <h1>File Converter Dashboard</h1>
-</body>
-</html>
+<x-layouts.app title="Dashboard — ConvertAI">
+    <h1 class="text-3xl font-semibold tracking-tight">File Converter Dashboard</h1>
+</x-layouts.app>
