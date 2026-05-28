@@ -40,7 +40,8 @@ test('email is not verified with invalid hash', function () {
         ['id' => $user->id, 'hash' => sha1('wrong-email')]
     );
 
-    $this->actingAs($user)->get($verificationUrl);
+    $response = $this->actingAs($user)->get($verificationUrl);
 
+    $response->assertForbidden();
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });

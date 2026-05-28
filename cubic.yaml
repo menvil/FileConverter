@@ -14,10 +14,19 @@ reviews:
       - "hotfix/*"
       - "release/*"
     # Belt-and-braces: skip any PR sourced from a non-release branch
-    # even if it somehow targets main.
+    # even if it somehow targets main. base_branches above is already
+    # restrictive; this list catches additional head prefixes that might
+    # be opened against main if branch protection is misconfigured.
+    # Strict "release/* → main only" should be enforced by GitHub Branch
+    # Protection rules on main as the source of truth.
     head_branches:
       - "feature/*"
       - "chore/*"
       - "fix/*"
       - "hotfix/*"
+      - "spike/*"
+      - "experiment/*"
+      - "wip/*"
+      - "tmp/*"
+      - "draft/*"
       - "develop"
