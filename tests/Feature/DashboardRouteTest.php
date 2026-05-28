@@ -4,7 +4,6 @@ it('renders dashboard inside the app layout', function () {
     $this->get('/dashboard')
         ->assertOk()
         ->assertSee('ConvertAI')
-        ->assertSee('File Converter Dashboard')
         ->assertSee('Privacy Policy');
 });
 
@@ -24,4 +23,16 @@ it('renders footer help cards on dashboard', function () {
         ->assertSee('Help Center')
         ->assertSee('Contact Support')
         ->assertSee('Refer a Friend');
+});
+
+it('renders dashboard UI skeleton', function () {
+    $this->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Convert any file')
+        ->assertSee('File')
+        ->assertSee('Format')
+        ->assertSee('Settings')
+        ->assertSee('Convert')
+        ->assertSee('Recent Conversions')
+        ->assertSee('No conversions yet');
 });
