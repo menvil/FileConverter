@@ -37,4 +37,38 @@ class User extends Authenticatable
             'settings' => 'array',
         ];
     }
+
+    public function displayName(): string
+    {
+        $name = trim((string) $this->name);
+
+        return $name !== '' ? $name : (string) $this->email;
+    }
+
+    public function initials(): string
+    {
+        $name = trim((string) $this->name);
+
+        if ($name !== '') {
+            $words = preg_split('/\s+/u', $name) ?: [];
+
+            if (count($words) >= 2) {
+                $first = mb_substr($words[0], 0, 1);
+                $second = mb_substr($words[count($words) - 1], 0, 1);
+
+                return mb_strtoupper($first.$second);
+            }
+
+            return mb_strtoupper(mb_substr($words[0], 0, 2));
+        }
+
+        $email = trim((string) $this->email);
+        $localPart = $email !== '' ? strstr($email, '@', true) ?: $email : '';
+
+        if ($localPart !== '') {
+            return mb_strtoupper(mb_substr($localPart, 0, 2));
+        }
+
+        return 'U';
+    }
 }
