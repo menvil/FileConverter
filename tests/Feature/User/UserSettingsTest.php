@@ -16,5 +16,5 @@ it('casts user settings to array', function () {
 it('defaults user settings to an empty array', function () {
     $user = User::factory()->create();
 
-    expect($user->fresh()->settings)->toBeArray();
+    expect($user->fresh()->settings)->toEqual([]);
 });

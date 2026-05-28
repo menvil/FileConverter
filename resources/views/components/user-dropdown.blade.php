@@ -59,18 +59,37 @@
             </div>
 
             <nav class="border-t px-2 py-2" style="border-color:var(--ca-border);" role="none">
-                <a href="{{ route('dashboard') }}" role="menuitem" class="flex items-center gap-3 rounded-[var(--ca-radius-md)] bg-violet-50 px-3 py-2 text-sm font-medium text-[var(--ca-primary)]">
+                <a
+                    href="{{ route('dashboard') }}"
+                    role="menuitem"
+                    class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-primary)]"
+                    style="background:color-mix(in srgb, var(--ca-primary) 10%, white);"
+                >
                     <x-user-dropdown.icon name="home" />
                     <span>Dashboard</span>
                 </a>
-                <a href="#" role="menuitem" class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)]">
+                <button
+                    type="button"
+                    role="menuitem"
+                    disabled
+                    aria-disabled="true"
+                    title="Coming soon"
+                    class="flex w-full items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-left text-sm font-medium text-[var(--ca-muted)] opacity-60 cursor-not-allowed"
+                >
                     <x-user-dropdown.icon name="card" />
                     <span>Billing</span>
-                </a>
-                <a href="#" role="menuitem" class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)]">
+                </button>
+                <button
+                    type="button"
+                    role="menuitem"
+                    disabled
+                    aria-disabled="true"
+                    title="Coming soon"
+                    class="flex w-full items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-left text-sm font-medium text-[var(--ca-muted)] opacity-60 cursor-not-allowed"
+                >
                     <x-user-dropdown.icon name="cog" />
                     <span>Settings</span>
-                </a>
+                </button>
             </nav>
 
             <div class="border-t px-2 py-2" style="border-color:var(--ca-border);">
