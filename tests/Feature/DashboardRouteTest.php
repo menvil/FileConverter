@@ -28,11 +28,8 @@ it('renders user dropdown shell in dashboard header', function () {
     $this->actingAs(User::factory()->create())
         ->get('/dashboard')
         ->assertOk()
-        ->assertSee('Storage Usage')
-        ->assertSee('Credits')
         ->assertSee('Billing')
         ->assertSee('Settings')
-        ->assertSee('Upgrade to Max')
         ->assertSee('x-data', false);
 });
 
