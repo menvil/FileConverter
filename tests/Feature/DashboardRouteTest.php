@@ -10,10 +10,12 @@ it('renders dashboard inside the app layout', function () {
 it('renders user dropdown shell in dashboard header', function () {
     $this->get('/dashboard')
         ->assertOk()
-        ->assertSee('Account')
+        ->assertSee('Alex Johnson')
+        ->assertSee('Storage Usage')
         ->assertSee('Credits')
         ->assertSee('Billing')
         ->assertSee('Settings')
+        ->assertSee('Upgrade to Max')
         ->assertSee('x-data', false);
 });
 
@@ -34,5 +36,5 @@ it('renders dashboard UI skeleton', function () {
         ->assertSee('Settings')
         ->assertSee('Convert')
         ->assertSee('Recent Conversions')
-        ->assertSee('No conversions yet');
+        ->assertSee('Marketing Report.pdf');
 });

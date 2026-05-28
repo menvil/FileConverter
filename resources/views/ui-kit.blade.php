@@ -1,12 +1,8 @@
 <x-layouts.app title="UI Kit — ConvertAI">
-    @php
-        $section = fn ($title) => '<h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">'.$title.'</h2>';
-    @endphp
-
     <header class="flex flex-col gap-2">
         <span class="text-sm uppercase tracking-wider text-[var(--ca-muted)]">Internal</span>
         <h1 class="text-3xl font-semibold tracking-tight">UI Kit</h1>
-        <p class="max-w-2xl text-[var(--ca-muted)]">Reference page for all Phase 1 primitives — buttons, cards, badges, icons, stepper, form controls, and table shells. Source: <code>resources/views/components/</code>.</p>
+        <p class="max-w-2xl text-[var(--ca-muted)]">All UI primitives — design tokens, buttons, cards, badges, icons, stepper, form controls, conversion states, and table shells. Source: <code>resources/views/components/</code>.</p>
     </header>
 
     {{-- Design tokens --}}
@@ -106,10 +102,10 @@
     {{-- Stepper --}}
     <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Stepper</h2>
     <x-card variant="elevated">
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-8">
             <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" active="File" />
-            <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" active="Settings" />
-            <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" active="Convert" />
+            <x-stepper :steps="['File', 'Settings', 'Convert']" active="Settings" />
+            <x-stepper :steps="['File', 'Settings', 'Convert']" active="Convert" />
         </div>
     </x-card>
 
@@ -130,52 +126,138 @@
         </div>
     </x-card>
 
+    {{-- Conversion State Explorer (interactive) --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · State explorer</h2>
+    <x-card variant="elevated">
+        <x-conversion.explorer />
+    </x-card>
+
+    {{-- Conversion: empty upload --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · Empty upload (simple)</h2>
+    <x-card variant="elevated">
+        <x-conversion.dropzone variant="simple" />
+    </x-card>
+
+    <h2 class="mt-8 mb-4 text-2xl font-semibold tracking-tight">Conversion · Empty upload (illustrated)</h2>
+    <x-card variant="elevated">
+        <x-conversion.dropzone variant="illustrated" />
+    </x-card>
+
+    {{-- Conversion: file chip --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · Uploaded file chip</h2>
+    <x-card variant="elevated">
+        <x-conversion.file-chip name="Part5.mov" format="webp" size="99.3 MB" />
+    </x-card>
+
+    {{-- Conversion: Settings step (image) --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · Settings step (image)</h2>
+    <x-card variant="elevated">
+        <div class="flex flex-col gap-6">
+            <x-stepper :steps="['File', 'Settings', 'Convert']" active="Settings" />
+            <x-conversion.file-chip name="upload_form2.jpg" format="jpg" size="23 KB" />
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <x-conversion.format-select name="target" value="png" />
+                <x-conversion.segmented
+                    name="resize"
+                    label="Resize"
+                    :options="['original' => 'Original', '1920' => 'Up to 1920px', '1280' => 'Up to 1280px']"
+                    value="original"
+                />
+            </div>
+
+            <x-conversion.option-row
+                name="remove_bg"
+                label="Remove background"
+                description="AI cuts out the subject"
+                :ai="true"
+            />
+
+            <x-conversion.convert-button to="png" estSize="20 KB" :showBack="true" />
+        </div>
+    </x-card>
+
+    {{-- Conversion: Settings step (video) --}}
+    <h2 class="mt-8 mb-4 text-2xl font-semibold tracking-tight">Conversion · Settings step (video)</h2>
+    <x-card variant="elevated">
+        <div class="flex flex-col gap-5">
+            <x-conversion.file-chip name="Part5.mov" format="webp" size="99.3 MB" />
+            <x-conversion.format-select name="vtarget" value="pdf" :options="['mp3' => 'MP3', 'mp4' => 'MP4', 'webp' => 'WEBP', 'pdf' => 'PDF']" />
+            <x-conversion.segmented
+                name="resolution"
+                label="Resolution"
+                :options="['480' => '480p', '720' => '720p', '1080' => '1080p', '4k' => '4K']"
+                value="1080"
+            />
+            <x-conversion.option-row name="audio_only" label="Audio only" description="Extract the audio track" />
+            <x-conversion.option-row name="subtitles" label="Subtitles" description="Save as a separate SRT" :ai="true" />
+
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <span class="text-sm text-[var(--ca-muted)]">~ est. size: <span class="font-semibold text-[var(--ca-text)]">99.3 MB</span></span>
+                <button type="button" class="ca-gradient-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-semibold">
+                    <span aria-hidden="true">→</span> MP3 <span aria-hidden="true">→</span>
+                </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 pt-3 text-sm text-[var(--ca-muted)]">
+                <span>Try:</span>
+                <x-file-icon format="pdf" size="sm" />
+                <x-file-icon format="jpg" size="sm" />
+                <x-file-icon format="png" size="sm" />
+                <x-file-icon format="webp" size="sm" />
+            </div>
+        </div>
+    </x-card>
+
+    {{-- Conversion: progress --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · In progress</h2>
+    <x-conversion.progress name="upload_form.jpg" format="jpg" from="jpg" to="png" :percent="96" />
+
+    {{-- Conversion: done --}}
+    <h2 class="mt-8 mb-4 text-2xl font-semibold tracking-tight">Conversion · Done</h2>
+    <x-conversion.done name="Part5.mov" to="pdf" />
+
     {{-- User dropdown --}}
     <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">User Dropdown</h2>
     <x-card variant="elevated">
-        <p class="mb-4 text-sm text-[var(--ca-muted)]">Click the avatar in the header to expand. Alpine-powered.</p>
-        <div class="inline-block"><x-user-dropdown name="Alex Johnson" plan="Pro" :credits="240" initials="AJ" /></div>
+        <p class="mb-4 text-sm text-[var(--ca-muted)]">Click the user pill in the header to expand. Alpine-powered.</p>
+        <div class="inline-block">
+            <x-user-dropdown />
+        </div>
     </x-card>
 
-    {{-- Table shell --}}
-    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Table Shell</h2>
-    <div class="flex flex-col gap-6">
-        <x-table.shell title="Recent Conversions" description="Your conversion history" actionLabel="View all" actionUrl="#">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-[var(--ca-surface-muted)] text-xs uppercase text-[var(--ca-muted)]">
-                    <tr>
-                        <th class="px-6 py-3">File Name</th>
-                        <th class="px-6 py-3">From</th>
-                        <th class="px-6 py-3">Status</th>
-                        <th class="px-6 py-3">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-t" style="border-color:var(--ca-border);">
-                        <td class="px-6 py-3"><div class="flex items-center gap-3"><x-file-icon format="png" size="sm" /> hero.png</div></td>
-                        <td class="px-6 py-3">PNG → JPG</td>
-                        <td class="px-6 py-3"><x-badge variant="success">Completed</x-badge></td>
-                        <td class="px-6 py-3 text-[var(--ca-muted)]">2 min ago</td>
-                    </tr>
-                    <tr class="border-t" style="border-color:var(--ca-border);">
-                        <td class="px-6 py-3"><div class="flex items-center gap-3"><x-file-icon format="pdf" size="sm" /> report.pdf</div></td>
-                        <td class="px-6 py-3">PDF → JPG</td>
-                        <td class="px-6 py-3"><x-badge variant="warning">Processing</x-badge></td>
-                        <td class="px-6 py-3 text-[var(--ca-muted)]">just now</td>
-                    </tr>
-                </tbody>
-            </table>
-        </x-table.shell>
+    {{-- Table tabs --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Table Tabs</h2>
+    <x-card variant="elevated">
+        <x-table.tabs :tabs="[
+            ['label' => 'All', 'count' => 18],
+            ['label' => 'Completed', 'count' => 16],
+            ['label' => 'Processing', 'count' => 1],
+            ['label' => 'Starred', 'count' => 3],
+        ]" active="All" />
+    </x-card>
 
-        <x-table.shell title="History" description="Empty state example">
-            <x-table.empty-state
-                title="No conversions yet"
-                message="Upload a file to start converting."
-                actionLabel="Upload file"
-                actionUrl="#"
-            />
-        </x-table.shell>
-    </div>
+    {{-- Recent Conversions --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Recent Conversions Table</h2>
+    <x-table.recent-conversions
+        :rows="[
+            ['name' => 'Marketing Report.pdf', 'from' => 'pdf', 'to' => 'docx', 'size' => '24.8 MB', 'date' => 'May 12, 10:24 AM', 'status' => 'completed'],
+            ['name' => 'Project Proposal.docx', 'from' => 'jpg', 'to' => 'pdf', 'size' => '1.8 MB', 'date' => 'May 12, 09:58 AM', 'status' => 'completed', 'starred' => true],
+            ['name' => 'Sales Data.xlsx', 'from' => 'png', 'to' => 'webp', 'size' => '612 KB', 'date' => 'May 12, 09:15 AM', 'status' => 'completed'],
+            ['name' => 'Contract.doc', 'from' => 'pdf', 'to' => 'pdf', 'size' => '412 KB', 'date' => 'May 11, 11:07 AM', 'status' => 'processing'],
+        ]"
+    />
+
+    {{-- Empty state --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Table Shell · Empty state</h2>
+    <x-table.shell title="History" description="Empty state example">
+        <x-table.empty-state
+            title="No conversions yet"
+            message="Upload a file to start converting."
+            actionLabel="Upload file"
+            actionUrl="#"
+        />
+    </x-table.shell>
 
     {{-- Footer help cards --}}
     <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Footer Help Cards</h2>

@@ -1,9 +1,31 @@
 @props([
-    'name' => 'Account',
-    'plan' => 'Free',
+    'name' => 'Alex Johnson',
+    'email' => 'alex@example.com',
+    'plan' => 'PRO',
+    'memberSince' => 'May 2023',
+    'storageUsed' => 24.6,
+    'storageTotal' => 100,
+    'storageUnit' => 'GB',
     'credits' => 50,
-    'initials' => 'AC',
+    'initials' => 'AJ',
+    'activeItem' => 'Dashboard',
 ])
+
+@php
+    $items = [
+        ['label' => 'My profile', 'icon' => 'user'],
+        ['label' => 'Dashboard', 'icon' => 'home'],
+        ['label' => 'My Files', 'icon' => 'folder'],
+        ['label' => 'API Keys', 'icon' => 'code'],
+        ['label' => 'Billing', 'icon' => 'card'],
+        ['label' => 'Devices', 'icon' => 'devices'],
+        ['label' => 'Settings', 'icon' => 'cog'],
+    ];
+
+    $storagePercent = $storageTotal > 0
+        ? min(100, max(0, ($storageUsed / $storageTotal) * 100))
+        : 0;
+@endphp
 
 <div
     x-data="{ open: false }"
@@ -16,15 +38,19 @@
         @click="open = !open"
         :aria-expanded="open ? 'true' : 'false'"
         aria-haspopup="menu"
-        class="inline-flex items-center gap-2 rounded-full border bg-white px-2 py-1 text-sm ca-focus-ring"
+        :class="open ? 'border-[var(--ca-primary)] ring-2 ring-[var(--ca-primary)]/20' : ''"
+        class="inline-flex items-center gap-2 rounded-full border bg-white py-1 pl-1 pr-3 text-sm ca-focus-ring"
         style="border-color:var(--ca-border);"
     >
         <span
             aria-hidden="true"
-            class="ca-gradient-primary inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold"
+            class="ca-gradient-primary inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
         >{{ $initials }}</span>
-        <span class="hidden font-medium text-[var(--ca-text)] md:inline">{{ $name }}</span>
-        <svg aria-hidden="true" class="h-4 w-4 text-[var(--ca-muted)]" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06z"/></svg>
+        <span class="hidden flex-col items-start sm:flex">
+            <span class="font-semibold leading-tight text-[var(--ca-text)]">{{ $name }}</span>
+            <span class="text-xs text-[var(--ca-muted)]">{{ $email }}</span>
+        </span>
+        <svg aria-hidden="true" class="ml-1 h-4 w-4 text-[var(--ca-muted)]" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06z"/></svg>
     </button>
 
     <div
@@ -32,26 +58,82 @@
         x-cloak
         x-transition.opacity
         role="menu"
-        class="absolute right-0 mt-2 w-64 rounded-[var(--ca-radius-lg)] border bg-white p-3 shadow-[var(--ca-shadow-card)]"
+        class="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-[var(--ca-radius-lg)] border bg-white shadow-[var(--ca-shadow-card)]"
         style="border-color:var(--ca-border);"
     >
-        <div class="flex items-center gap-3 border-b pb-3" style="border-color:var(--ca-border);">
+        {{-- Header --}}
+        <div class="flex items-start gap-3 p-4">
             <span
                 aria-hidden="true"
-                class="ca-gradient-primary inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold"
+                class="ca-gradient-primary inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-semibold"
             >{{ $initials }}</span>
-            <div class="flex flex-col">
-                <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $name }}</span>
-                <span class="text-xs text-[var(--ca-muted)]">{{ $plan }} plan · Credits: {{ $credits }}</span>
+            <div class="flex min-w-0 flex-1 flex-col">
+                <div class="flex items-center gap-2">
+                    <span class="truncate text-base font-semibold text-[var(--ca-text)]">{{ $name }}</span>
+                    <span class="ca-gradient-primary shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">{{ $plan }}</span>
+                </div>
+                <span class="truncate text-sm text-[var(--ca-muted)]">{{ $email }}</span>
+                <span class="text-xs text-[var(--ca-muted)]">Member since {{ $memberSince }} · Credits: {{ $credits }}</span>
             </div>
         </div>
-        <nav class="mt-2 flex flex-col text-sm" role="none">
-            <a href="#" role="menuitem" class="rounded px-2 py-1.5 hover:bg-[var(--ca-surface-muted)]">Dashboard</a>
-            <a href="#" role="menuitem" class="rounded px-2 py-1.5 hover:bg-[var(--ca-surface-muted)]">History</a>
-            <a href="#" role="menuitem" class="rounded px-2 py-1.5 hover:bg-[var(--ca-surface-muted)]">Billing</a>
-            <a href="#" role="menuitem" class="rounded px-2 py-1.5 hover:bg-[var(--ca-surface-muted)]">Settings</a>
-            <div class="my-1 border-t" style="border-color:var(--ca-border);"></div>
-            <a href="#" role="menuitem" class="rounded px-2 py-1.5 text-[var(--ca-muted)] hover:bg-[var(--ca-surface-muted)]">Log out</a>
+
+        {{-- Storage --}}
+        <div class="border-t px-4 py-3" style="border-color:var(--ca-border);">
+            <div class="flex items-center justify-between text-sm">
+                <span class="font-medium text-[var(--ca-text)]">Storage Usage</span>
+                <span class="text-[var(--ca-muted)]">{{ $storageUsed }} / {{ $storageTotal }} {{ $storageUnit }}</span>
+            </div>
+            <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full" style="background:var(--ca-surface-muted);">
+                <div class="ca-gradient-primary h-full rounded-full" style="width:{{ $storagePercent }}%;" aria-hidden="true"></div>
+            </div>
+        </div>
+
+        {{-- Menu items --}}
+        <nav class="border-t px-2 py-2" style="border-color:var(--ca-border);" role="none">
+            @foreach ($items as $item)
+                @php
+                    $isActive = $item['label'] === $activeItem;
+                @endphp
+                <a
+                    href="#"
+                    role="menuitem"
+                    @class([
+                        'flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium',
+                        'bg-violet-50 text-[var(--ca-primary)]' => $isActive,
+                        'text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)]' => ! $isActive,
+                    ])
+                >
+                    <x-user-dropdown.icon :name="$item['icon']" />
+                    <span>{{ $item['label'] }}</span>
+                </a>
+            @endforeach
         </nav>
+
+        {{-- Log out --}}
+        <div class="border-t px-2 py-2" style="border-color:var(--ca-border);">
+            <a
+                href="#"
+                role="menuitem"
+                class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)]"
+            >
+                <x-user-dropdown.icon name="logout" />
+                <span>Log out</span>
+            </a>
+        </div>
+
+        {{-- Upgrade CTA --}}
+        <a
+            href="#"
+            role="menuitem"
+            class="ca-gradient-primary m-4 flex items-center gap-3 rounded-[var(--ca-radius-lg)] px-4 py-3 shadow-sm"
+        >
+            <span aria-hidden="true" class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--ca-radius-md)] bg-white/20">
+                <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 8 6h3v6h2V6h3l-4-4Zm6 14H6a2 2 0 0 0-2 2v2h16v-2a2 2 0 0 0-2-2Z"/></svg>
+            </span>
+            <span class="flex flex-col leading-tight">
+                <span class="font-semibold">Upgrade to Max</span>
+                <span class="text-xs opacity-90">Upgrade Now →</span>
+            </span>
+        </a>
     </div>
 </div>
