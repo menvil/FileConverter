@@ -126,6 +126,12 @@
         </div>
     </x-card>
 
+    {{-- Conversion State Explorer (interactive) --}}
+    <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · State explorer</h2>
+    <x-card variant="elevated">
+        <x-conversion.explorer />
+    </x-card>
+
     {{-- Conversion: empty upload --}}
     <h2 class="mt-12 mb-4 text-2xl font-semibold tracking-tight">Conversion · Empty upload (simple)</h2>
     <x-card variant="elevated">
