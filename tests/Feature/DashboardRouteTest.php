@@ -1,7 +1,9 @@
 <?php
 
-it('renders dashboard placeholder page', function () {
+it('renders dashboard inside the app layout', function () {
     $this->get('/dashboard')
         ->assertOk()
-        ->assertSee('File Converter Dashboard');
+        ->assertSee('ConvertAI')
+        ->assertSee('File Converter Dashboard')
+        ->assertSee('Privacy Policy');
 });
