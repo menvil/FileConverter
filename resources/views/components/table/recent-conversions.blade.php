@@ -40,7 +40,7 @@
 
     <div class="overflow-x-auto">
         <table class="w-full min-w-[900px] text-left text-sm">
-            <thead class="border-y text-xs uppercase tracking-wide text-[var(--ca-muted)]" style="border-color:var(--ca-border);background:color-mix(in srgb, var(--ca-surface-muted) 60%, white);">
+            <thead class="border-y text-xs uppercase tracking-wide text-[var(--ca-muted)]" style="border-color:var(--ca-border);background:color-mix(in srgb, var(--ca-surface-muted) 60%, var(--ca-surface));">
                 <tr>
                     <th class="px-6 py-3 font-semibold">File Name</th>
                     <th class="px-6 py-3 font-semibold">From</th>
@@ -80,7 +80,7 @@
                         <td class="px-6 py-4 text-[var(--ca-muted)]">{{ $row['date'] }}</td>
                         <td class="px-6 py-4">
                             @if ($status === 'processing')
-                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium" style="background:color-mix(in srgb, var(--ca-warning) 14%, white);color:#92400e;">
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium" style="background:color-mix(in srgb, var(--ca-warning) 14%, var(--ca-surface));color:#92400e;">
                                     <span aria-hidden="true" class="inline-block h-1.5 w-1.5 rounded-full" style="background:var(--ca-warning);"></span>
                                     Processing
                                 </span>

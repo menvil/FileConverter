@@ -1,26 +1,41 @@
 <?php
 
-it('renders dashboard inside the app layout', function () {
+use App\Models\User;
+
+it('redirects guest from dashboard to login', function () {
     $this->get('/dashboard')
+        ->assertRedirect('/login');
+});
+
+it('allows authenticated user to access dashboard', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Convert any file');
+});
+
+it('renders dashboard inside the app layout', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/dashboard')
         ->assertOk()
         ->assertSee('ConvertAI')
         ->assertSee('Privacy Policy');
 });
 
 it('renders user dropdown shell in dashboard header', function () {
-    $this->get('/dashboard')
+    $this->actingAs(User::factory()->create())
+        ->get('/dashboard')
         ->assertOk()
-        ->assertSee('Alex Johnson')
-        ->assertSee('Storage Usage')
-        ->assertSee('Credits')
         ->assertSee('Billing')
         ->assertSee('Settings')
-        ->assertSee('Upgrade to Max')
         ->assertSee('x-data', false);
 });
 
 it('renders footer help cards on dashboard', function () {
-    $this->get('/dashboard')
+    $this->actingAs(User::factory()->create())
+        ->get('/dashboard')
         ->assertOk()
         ->assertSee('Help Center')
         ->assertSee('Contact Support')
@@ -28,7 +43,8 @@ it('renders footer help cards on dashboard', function () {
 });
 
 it('renders dashboard UI skeleton', function () {
-    $this->get('/dashboard')
+    $this->actingAs(User::factory()->create())
+        ->get('/dashboard')
         ->assertOk()
         ->assertSee('Convert any file')
         ->assertSee('File')

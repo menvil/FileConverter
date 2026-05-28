@@ -8,7 +8,7 @@
 
 <div
     class="flex items-center gap-3 rounded-[var(--ca-radius-lg)] border px-4 py-3"
-    style="border-color:var(--ca-border);background:color-mix(in srgb, var(--ca-primary) 6%, white);"
+    style="border-color:var(--ca-border);background:color-mix(in srgb, var(--ca-primary) 6%, var(--ca-surface));"
 >
     <x-file-icon :format="$format" size="md" />
     <div class="flex min-w-0 flex-1 flex-col">
