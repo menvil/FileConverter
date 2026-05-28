@@ -5,43 +5,29 @@
     </section>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-3">
-        <div class="lg:col-span-2 flex flex-col gap-6">
+        <div class="flex flex-col gap-6 lg:col-span-2">
             <x-card variant="elevated">
                 <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" active="File" />
 
-                <div
-                    class="mt-6 flex flex-col items-center gap-3 rounded-[var(--ca-radius-lg)] border-2 border-dashed px-6 py-12 text-center"
-                    style="border-color:var(--ca-border);background:var(--ca-surface-muted);"
-                >
-                    <div aria-hidden="true" class="ca-gradient-primary inline-flex h-12 w-12 items-center justify-center rounded-full text-xl font-semibold">+</div>
-                    <h2 class="text-base font-semibold text-[var(--ca-text)]">Drop your files here</h2>
-                    <p class="text-sm text-[var(--ca-muted)]">or click to browse · PNG, JPG, WEBP, PDF</p>
-                    <x-button variant="gradient" size="md">Select file</x-button>
+                <div class="mt-6">
+                    <x-conversion.dropzone variant="simple" />
                 </div>
 
                 <div class="mt-6 flex flex-wrap items-center gap-2 text-sm text-[var(--ca-muted)]">
-                    <span>Supported formats:</span>
-                    <x-file-icon format="png" size="sm" />
-                    <x-file-icon format="jpg" size="sm" />
-                    <x-file-icon format="webp" size="sm" />
+                    <span>Try:</span>
                     <x-file-icon format="pdf" size="sm" />
+                    <x-file-icon format="jpg" size="sm" />
+                    <x-file-icon format="png" size="sm" />
+                    <x-file-icon format="webp" size="sm" />
                 </div>
-            </x-card>
-
-            <x-card variant="default">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-base font-semibold text-[var(--ca-text)]">Settings preview</h2>
-                    <x-badge variant="purple" size="sm">Coming soon</x-badge>
-                </div>
-                <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion options will appear here once a file is selected.</p>
             </x-card>
         </div>
 
         <aside class="flex flex-col gap-6">
             <x-card variant="gradient">
                 <h2 class="text-base font-semibold">Your plan</h2>
-                <p class="mt-1 text-sm opacity-90">Free · 50 credits remaining</p>
-                <p class="mt-3 text-xs opacity-80">Upgrade for batch conversions and larger files.</p>
+                <p class="mt-1 text-sm opacity-90">PRO · 50 credits remaining</p>
+                <p class="mt-3 text-xs opacity-80">Upgrade to Max for batch conversions and larger files.</p>
             </x-card>
 
             <x-card variant="elevated">
@@ -65,12 +51,18 @@
     </div>
 
     <div class="mt-10">
-        <x-table.shell title="Recent Conversions" description="Your conversions will appear here" actionLabel="View all" actionUrl="#">
-            <x-table.empty-state
-                title="No conversions yet"
-                message="Upload a file above and your conversion history will appear here."
-            />
-        </x-table.shell>
+        <x-table.recent-conversions
+            :rows="[
+                ['name' => 'Marketing Report.pdf', 'from' => 'pdf', 'to' => 'docx', 'size' => '24.8 MB', 'date' => 'May 12, 10:24 AM', 'status' => 'completed'],
+                ['name' => 'Project Proposal.docx', 'from' => 'jpg', 'to' => 'pdf', 'size' => '1.8 MB', 'date' => 'May 12, 09:58 AM', 'status' => 'completed', 'starred' => true],
+                ['name' => 'Sales Data.xlsx', 'from' => 'png', 'to' => 'webp', 'size' => '612 KB', 'date' => 'May 12, 09:15 AM', 'status' => 'completed'],
+                ['name' => 'Product Demo.mp4', 'from' => 'png', 'to' => 'jpg', 'size' => '84 MB', 'date' => 'May 11, 04:42 PM', 'status' => 'completed'],
+                ['name' => 'Screenshot 2024.jpg', 'from' => 'jpg', 'to' => 'png', 'size' => '3.2 MB', 'date' => 'May 11, 03:33 PM', 'status' => 'completed'],
+                ['name' => 'Contract.doc', 'from' => 'pdf', 'to' => 'pdf', 'size' => '412 KB', 'date' => 'May 11, 11:07 AM', 'status' => 'processing'],
+                ['name' => 'Client_Presentation.pptx', 'from' => 'pdf', 'to' => 'pdf', 'size' => '5.1 MB', 'date' => 'May 10, 06:20 PM', 'status' => 'completed', 'starred' => true],
+                ['name' => 'Annual_Budget.xlsx', 'from' => 'pdf', 'to' => 'pdf', 'size' => '2.4 MB', 'date' => 'May 10, 02:05 PM', 'status' => 'completed'],
+            ]"
+        />
     </div>
 
     <div class="mt-10">
