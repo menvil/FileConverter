@@ -40,4 +40,9 @@ final class FakePngToPdfConverter implements Converter
     {
         return $options;
     }
+
+    public function isRecommended(): bool
+    {
+        return false;
+    }
 }

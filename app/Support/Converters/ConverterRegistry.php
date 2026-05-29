@@ -53,7 +53,7 @@ final class ConverterRegistry
                 label: $converter->label(),
                 description: $converter->description(),
                 converterKey: $converter->key(),
-                recommended: false,
+                recommended: $converter->isRecommended(),
             ),
             $this->forSource($source),
         );

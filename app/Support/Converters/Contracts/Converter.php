@@ -17,4 +17,6 @@ interface Converter
     public function optionsSchema(): array;
 
     public function validateOptions(array $options): array;
+
+    public function isRecommended(): bool;
 }
