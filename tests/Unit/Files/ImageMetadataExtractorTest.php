@@ -10,7 +10,8 @@ it('extracts png dimensions', function () {
 
     expect($metadata['width'])->toBe(1200);
     expect($metadata['height'])->toBe(800);
-    expect($metadata)->toHaveKey('has_transparency');
+    expect($metadata)->toHaveKey('supports_transparency');
+    expect($metadata['supports_transparency'])->toBeTrue();
 });
 
 it('extracts jpg dimensions and reports no transparency', function () {
@@ -20,7 +21,7 @@ it('extracts jpg dimensions and reports no transparency', function () {
 
     expect($metadata['width'])->toBe(640);
     expect($metadata['height'])->toBe(480);
-    expect($metadata['has_transparency'])->toBeFalse();
+    expect($metadata['supports_transparency'])->toBeFalse();
 });
 
 it('returns empty metadata for pdf', function () {

@@ -36,20 +36,34 @@ final class StoreUploadedFileAction
         }
 
         try {
+            $size = $disk->size($path);
+            $absolutePath = $disk->path($path);
+            $checksum = is_string($absolutePath) && $absolutePath !== ''
+                ? hash_file('sha256', $absolutePath)
+                : false;
+
+            if ($size === false || $checksum === false) {
+                throw FileStorageException::cannotStore($file->getClientOriginalName());
+            }
+
             return $this->recordCreator->create([
                 'user_id' => $user->id,
                 'original_name' => $file->getClientOriginalName(),
                 'stored_path' => $path,
                 'mime_type' => $file->getMimeType(),
                 'extension' => $format,
-                'size_bytes' => $disk->size($path),
-                'checksum' => hash_file('sha256', $disk->path($path)),
+                'size_bytes' => $size,
+                'checksum' => $checksum,
                 'metadata_json' => $metadata,
                 'status' => FileStatus::Analyzed,
                 'expires_at' => $this->expirationPolicy->forUploadedFile($user),
             ]);
         } catch (Throwable $e) {
             $disk->delete($path);
+
+            if ($e instanceof FileStorageException) {
+                throw $e;
+            }
 
             throw FileStorageException::cannotCreateRecord($file->getClientOriginalName(), previous: $e);
         }
