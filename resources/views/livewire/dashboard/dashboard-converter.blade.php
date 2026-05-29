@@ -32,6 +32,10 @@
                 @error('upload')
                     <p class="text-sm text-[var(--ca-danger)]">{{ $message }}</p>
                 @enderror
+
+                @if ($uploadError)
+                    <p class="text-sm text-[var(--ca-danger)]">{{ $uploadError }}</p>
+                @endif
             </div>
         @endif
 

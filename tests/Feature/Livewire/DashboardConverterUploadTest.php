@@ -55,6 +55,19 @@ it('removes uploaded file from current flow', function () {
         ->assertDontSee('remove-me.png');
 });
 
+it('shows an error for unsupported upload format', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('upload', UploadedFile::fake()->create('notes.txt', 10, 'text/plain'))
+        ->call('storeUpload')
+        ->assertSet('step', 'upload')
+        ->assertSee('not supported');
+});
+
 it('shows uploaded file summary after upload', function () {
     Storage::fake('local');
 
