@@ -5,6 +5,7 @@ namespace App\Support\Converters;
 use App\Enums\FileFormat;
 use App\Support\Converters\Contracts\Converter;
 use App\Support\Converters\DTO\ConverterTarget;
+use App\Support\Converters\Exceptions\UnsupportedFormatException;
 
 final class ConverterRegistry
 {
@@ -22,7 +23,11 @@ final class ConverterRegistry
     /** @return list<Converter> */
     public function forSource(string $source): array
     {
-        $source = FileFormat::normalize($source);
+        try {
+            $source = FileFormat::normalize($source);
+        } catch (UnsupportedFormatException) {
+            return [];
+        }
 
         return array_values(array_filter(
             $this->converters,
@@ -32,8 +37,12 @@ final class ConverterRegistry
 
     public function find(string $source, string $target): ?Converter
     {
-        $source = FileFormat::normalize($source);
-        $target = FileFormat::normalize($target);
+        try {
+            $source = FileFormat::normalize($source);
+            $target = FileFormat::normalize($target);
+        } catch (UnsupportedFormatException) {
+            return null;
+        }
 
         foreach ($this->converters as $converter) {
             if ($converter->sourceFormat() === $source && $converter->targetFormat() === $target) {
@@ -53,7 +62,7 @@ final class ConverterRegistry
                 label: $converter->label(),
                 description: $converter->description(),
                 converterKey: $converter->key(),
-                recommended: false,
+                recommended: $converter->isRecommended(),
             ),
             $this->forSource($source),
         );
