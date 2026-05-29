@@ -30,12 +30,12 @@ final class ImageMetadataExtractor
         return [
             'width' => $size[0],
             'height' => $size[1],
-            'has_transparency' => $this->hasTransparency($format),
+            'supports_transparency' => $this->formatSupportsTransparency($format),
             'orientation' => null,
         ];
     }
 
-    private function hasTransparency(string $format): bool
+    private function formatSupportsTransparency(string $format): bool
     {
         return $format !== 'jpg';
     }

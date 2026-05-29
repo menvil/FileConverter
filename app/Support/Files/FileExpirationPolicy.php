@@ -10,10 +10,15 @@ final class FileExpirationPolicy
 {
     public function forUploadedFile(User $user): CarbonInterface
     {
-        return Date::now()->addDay();
+        return $this->calculateExpiration($user);
     }
 
     public function forResultFile(User $user): CarbonInterface
+    {
+        return $this->calculateExpiration($user);
+    }
+
+    private function calculateExpiration(User $user): CarbonInterface
     {
         return Date::now()->addDay();
     }

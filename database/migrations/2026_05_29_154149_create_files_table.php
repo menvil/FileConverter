@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('original_name');
-            $table->string('stored_path');
+            $table->string('stored_path')->unique();
             $table->string('mime_type')->nullable();
             $table->string('extension', 20);
             $table->unsignedBigInteger('size_bytes');
