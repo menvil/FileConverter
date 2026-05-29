@@ -23,6 +23,22 @@ it('uploads a valid image file and moves to format step', function () {
     expect(FileRecord::query()->where('original_name', 'sample.png')->exists())->toBeTrue();
 });
 
+it('resets current file when replacing uploaded file', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('upload', UploadedFile::fake()->image('first.png'))
+        ->call('storeUpload')
+        ->assertSet('step', 'format')
+        ->call('replaceFile')
+        ->assertSet('step', 'upload')
+        ->assertSet('currentFileId', null)
+        ->assertSee('Drop your file here');
+});
+
 it('shows uploaded file summary after upload', function () {
     Storage::fake('local');
 
