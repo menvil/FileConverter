@@ -6,6 +6,7 @@ use App\Enums\FileStatus;
 use App\Exceptions\Files\FileStorageException;
 use App\Models\FileRecord;
 use App\Models\User;
+use App\Support\Files\FileExpirationPolicy;
 use App\Support\Files\FileFormatDetector;
 use App\Support\Files\ImageMetadataExtractor;
 use Illuminate\Http\UploadedFile;
@@ -17,6 +18,7 @@ final class StoreUploadedFileAction
     public function __construct(
         private readonly FileFormatDetector $formatDetector,
         private readonly ImageMetadataExtractor $metadataExtractor,
+        private readonly FileExpirationPolicy $expirationPolicy,
     ) {}
 
     public function handle(User $user, UploadedFile $file): FileRecord
@@ -42,7 +44,7 @@ final class StoreUploadedFileAction
                 'checksum' => hash_file('sha256', $disk->path($path)),
                 'metadata_json' => $metadata,
                 'status' => FileStatus::Analyzed,
-                'expires_at' => now()->addDay(),
+                'expires_at' => $this->expirationPolicy->forUploadedFile($user),
             ]);
         } catch (Throwable $e) {
             $disk->delete($path);
