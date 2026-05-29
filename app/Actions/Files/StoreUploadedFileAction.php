@@ -8,6 +8,7 @@ use App\Models\FileRecord;
 use App\Models\User;
 use App\Support\Files\FileExpirationPolicy;
 use App\Support\Files\FileFormatDetector;
+use App\Support\Files\FileRecordCreator;
 use App\Support\Files\ImageMetadataExtractor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +20,7 @@ final class StoreUploadedFileAction
         private readonly FileFormatDetector $formatDetector,
         private readonly ImageMetadataExtractor $metadataExtractor,
         private readonly FileExpirationPolicy $expirationPolicy,
+        private readonly FileRecordCreator $recordCreator,
     ) {}
 
     public function handle(User $user, UploadedFile $file): FileRecord
@@ -34,7 +36,7 @@ final class StoreUploadedFileAction
         }
 
         try {
-            return FileRecord::query()->create([
+            return $this->recordCreator->create([
                 'user_id' => $user->id,
                 'original_name' => $file->getClientOriginalName(),
                 'stored_path' => $path,
