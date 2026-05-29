@@ -39,6 +39,22 @@ it('resets current file when replacing uploaded file', function () {
         ->assertSee('Drop your file here');
 });
 
+it('removes uploaded file from current flow', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('upload', UploadedFile::fake()->image('remove-me.png'))
+        ->call('storeUpload')
+        ->assertSet('step', 'format')
+        ->call('removeFile')
+        ->assertSet('step', 'upload')
+        ->assertSet('currentFileId', null)
+        ->assertDontSee('remove-me.png');
+});
+
 it('shows uploaded file summary after upload', function () {
     Storage::fake('local');
 
