@@ -93,6 +93,21 @@ it('shows uploaded file summary after upload', function () {
         ->call('storeUpload')
         ->assertSee('avatar.jpg')
         ->assertSee('JPG')
+        ->assertSee('KB')
         ->assertSee('Replace')
         ->assertSee('Remove');
+});
+
+it('does not create a file record when no file is provided', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->call('storeUpload')
+        ->assertSet('step', 'upload')
+        ->assertHasErrors(['upload' => 'required']);
+
+    expect(FileRecord::query()->count())->toBe(0);
 });
