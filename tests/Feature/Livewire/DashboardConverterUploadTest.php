@@ -22,3 +22,18 @@ it('uploads a valid image file and moves to format step', function () {
 
     expect(FileRecord::query()->where('original_name', 'sample.png')->exists())->toBeTrue();
 });
+
+it('shows uploaded file summary after upload', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('upload', UploadedFile::fake()->image('avatar.jpg', 800, 600))
+        ->call('storeUpload')
+        ->assertSee('avatar.jpg')
+        ->assertSee('JPG')
+        ->assertSee('Replace')
+        ->assertSee('Remove');
+});
