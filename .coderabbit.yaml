@@ -13,7 +13,6 @@ reviews:
       - "release"
     base_branches:
       - "main"
-      - "develop"
     drafts: false
   request_changes_workflow: false
   high_level_summary: true
