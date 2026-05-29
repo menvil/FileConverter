@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FileStatus;
 use Database\Factories\FileRecordFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +32,7 @@ class FileRecord extends Model
     {
         return [
             'metadata_json' => 'array',
+            'status' => FileStatus::class,
             'expires_at' => 'datetime',
             'size_bytes' => 'integer',
         ];

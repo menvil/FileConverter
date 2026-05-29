@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\FileStatus;
 use App\Models\FileRecord;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -32,7 +33,7 @@ class FileRecordFactory extends Factory
             'size_bytes' => fake()->numberBetween(1000, 5_000_000),
             'checksum' => hash('sha256', fake()->uuid()),
             'metadata_json' => [],
-            'status' => 'uploaded',
+            'status' => FileStatus::Uploaded,
             'expires_at' => now()->addDay(),
         ];
     }
