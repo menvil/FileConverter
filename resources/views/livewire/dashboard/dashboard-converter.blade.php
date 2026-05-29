@@ -21,6 +21,23 @@
                 </label>
 
                 <p class="text-xs text-[var(--ca-muted)]">Your files stay private. We delete them after conversion.</p>
+
+                @error('upload')
+                    <p class="text-sm text-[var(--ca-danger)]">{{ $message }}</p>
+                @enderror
+            </div>
+        @endif
+
+        @if ($step === 'format' && $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between gap-4">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">{{ $this->currentFile->original_name }}</p>
+                </div>
+
+                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">Choose output format</p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Target format selection will be added in Phase 7.</p>
+                </div>
             </div>
         @endif
     </x-card>
