@@ -38,6 +38,18 @@ class DashboardConverter extends Component
         $this->step = 'format';
     }
 
+    public function replaceFile(): void
+    {
+        $this->resetCurrentUpload();
+    }
+
+    private function resetCurrentUpload(): void
+    {
+        $this->reset('upload', 'currentFileId', 'uploadError');
+        $this->resetErrorBag();
+        $this->step = 'upload';
+    }
+
     public function getCurrentFileProperty(): ?FileRecord
     {
         return $this->currentFileId
