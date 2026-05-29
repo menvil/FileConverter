@@ -75,4 +75,9 @@ final class JpgToWebpConverter implements Converter
     {
         return $this->optionsValidator->validate($this->optionsSchema(), $options);
     }
+
+    public function isRecommended(): bool
+    {
+        return true;
+    }
 }

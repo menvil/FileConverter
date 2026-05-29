@@ -81,4 +81,9 @@ final class PngToWebpConverter implements Converter
     {
         return $this->optionsValidator->validate($this->optionsSchema(), $options);
     }
+
+    public function isRecommended(): bool
+    {
+        return false;
+    }
 }
