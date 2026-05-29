@@ -3,6 +3,8 @@
 namespace App\Livewire\Dashboard;
 
 use App\Actions\Files\StoreUploadedFileAction;
+use App\Exceptions\Files\FileStorageException;
+use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Models\FileRecord;
 use App\Support\Files\UploadedFileRules;
 use Livewire\Component;
@@ -26,13 +28,31 @@ class DashboardConverter extends Component
         $this->uploadError = null;
 
         $this->validate([
-            'upload' => UploadedFileRules::rules(),
+            'upload' => [
+                'required',
+                'file',
+                'max:'.UploadedFileRules::MAX_FILE_KILOBYTES,
+            ],
+        ], [
+            'upload.max' => 'This file is too large. Max upload size is '.(UploadedFileRules::MAX_FILE_KILOBYTES / 1024).' MB.',
         ]);
 
-        $fileRecord = $storeUploadedFile->handle(
-            user: auth()->user(),
-            file: $this->upload,
-        );
+        try {
+            $fileRecord = $storeUploadedFile->handle(
+                user: auth()->user(),
+                file: $this->upload,
+            );
+        } catch (UnsupportedFileFormatException) {
+            $this->uploadError = 'This file type is not supported in beta. Upload PNG, JPG, WEBP or PDF.';
+            $this->step = 'upload';
+
+            return;
+        } catch (FileStorageException) {
+            $this->uploadError = 'We could not store your file. Please try again.';
+            $this->step = 'upload';
+
+            return;
+        }
 
         $this->currentFileId = $fileRecord->id;
         $this->step = 'format';
