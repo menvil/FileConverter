@@ -1,5 +1,6 @@
 <div>
     <x-card variant="elevated">
+        <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="$step === 'upload' ? 'File' : 'Format'" class="mb-6" />
         @if ($step === 'upload')
             <div
                 x-data="{ isDragging: false }"

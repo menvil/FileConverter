@@ -68,6 +68,20 @@ it('shows an error for unsupported upload format', function () {
         ->assertSee('not supported');
 });
 
+it('shows format step placeholder after successful upload', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('upload', UploadedFile::fake()->image('photo.png'))
+        ->call('storeUpload')
+        ->assertSet('step', 'format')
+        ->assertSee('Choose output format')
+        ->assertSee('Target format selection will be added in Phase 7');
+});
+
 it('shows uploaded file summary after upload', function () {
     Storage::fake('local');
 
