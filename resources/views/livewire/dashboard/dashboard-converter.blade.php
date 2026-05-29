@@ -29,9 +29,28 @@
         @endif
 
         @if ($step === 'format' && $this->currentFile)
+            @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
-                <div class="flex items-center justify-between gap-4">
-                    <p class="text-base font-semibold text-[var(--ca-text)]">{{ $this->currentFile->original_name }}</p>
+                <div class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4">
+                    <div class="flex items-center gap-3">
+                        <x-file-icon :format="$file->extension" />
+                        <div class="flex flex-col">
+                            <p class="text-sm font-semibold text-[var(--ca-text)]">{{ $file->original_name }}</p>
+                            <p class="text-xs text-[var(--ca-muted)]">
+                                {{ strtoupper($file->extension) }} ·
+                                {{ number_format($file->size_bytes / 1024, 1) }} KB
+                                @php($meta = $file->metadata_json ?? [])
+                                @if (isset($meta['width'], $meta['height']))
+                                    · {{ $meta['width'] }}×{{ $meta['height'] }}
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <x-button variant="secondary" size="sm" wire:click="replaceFile">Replace</x-button>
+                        <x-button variant="ghost" size="sm" wire:click="removeFile">Remove</x-button>
+                    </div>
                 </div>
 
                 <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
