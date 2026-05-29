@@ -43,6 +43,11 @@ class DashboardConverter extends Component
         $this->resetCurrentUpload();
     }
 
+    public function removeFile(): void
+    {
+        $this->resetCurrentUpload();
+    }
+
     private function resetCurrentUpload(): void
     {
         $this->reset('upload', 'currentFileId', 'uploadError');
