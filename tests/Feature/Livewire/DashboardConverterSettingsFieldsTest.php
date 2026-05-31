@@ -90,3 +90,23 @@ it('renders a select option field with all choices', function () {
         ->assertSee('Letter')
         ->assertSeeHtml('wire:model.live="options.page_size"');
 });
+
+it('renders a toggle option field with label and help', function () {
+    settingsComponent(
+        schema: [
+            [
+                'key' => 'remove_metadata',
+                'type' => 'toggle',
+                'label' => 'Remove metadata',
+                'default' => true,
+                'help' => 'Strip EXIF and private metadata.',
+            ],
+        ],
+        options: ['remove_metadata' => true],
+    )
+        ->assertSee('Remove metadata')
+        ->assertSee('Strip EXIF')
+        ->assertSeeHtml('wire:model.live="options.remove_metadata"')
+        ->set('options.remove_metadata', false)
+        ->assertSet('options.remove_metadata', false);
+});
