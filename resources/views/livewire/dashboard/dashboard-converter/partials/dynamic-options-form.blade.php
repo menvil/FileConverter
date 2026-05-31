@@ -13,6 +13,9 @@
         <div data-testid="option-field-{{ $fieldKey }}">
             @if ($fieldKey !== null && view()->exists($fieldView))
                 @include($fieldView, ['key' => $fieldKey, 'field' => $field])
+                @error('options.'.$fieldKey)
+                    <p class="mt-1 text-sm text-[var(--ca-danger)]">{{ $message }}</p>
+                @enderror
             @else
                 <p class="text-sm text-[var(--ca-danger)]">
                     Unsupported field type: {{ $field['type'] ?? 'unknown' }}
