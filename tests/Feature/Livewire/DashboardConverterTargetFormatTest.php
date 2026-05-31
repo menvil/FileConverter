@@ -17,7 +17,7 @@ it('selects a supported target format and moves to the settings step', function 
         ->assertSet('selectedTargetFormat', 'jpg')
         ->assertSet('step', 'settings')
         ->assertSee('Settings for PNG to JPG');
-})->skip('Implemented in CONV-091');
+});
 
 it('rejects an unsupported target format selection', function () {
     $user = User::factory()->create();
@@ -31,4 +31,4 @@ it('rejects an unsupported target format selection', function () {
         ->assertSet('selectedTargetFormat', null)
         ->assertSet('step', 'format')
         ->assertSee('This conversion is not supported');
-})->skip('Implemented in CONV-091');
+});

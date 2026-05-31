@@ -66,6 +66,10 @@
                     </div>
                 </div>
 
+                @if ($targetFormatError)
+                    <p class="text-sm text-[var(--ca-danger)]">{{ $targetFormatError }}</p>
+                @endif
+
                 @if (empty($this->targetFormatCards))
                     <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
                         <p class="text-base font-semibold text-[var(--ca-text)]">No conversion targets available</p>
@@ -98,6 +102,18 @@
                     </div>
                 </div>
                 @endif
+            </div>
+        @endif
+
+        @if ($step === 'settings' && $this->currentFile)
+            @php($file = $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">
+                        Settings for {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
+                    </p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion settings will be added in Phase 8.</p>
+                </div>
             </div>
         @endif
     </x-card>
