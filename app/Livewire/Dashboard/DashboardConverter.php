@@ -39,6 +39,15 @@ class DashboardConverter extends Component
     /** @var array<string, mixed> */
     public array $options = [];
 
+    /**
+     * Per-target cache of entered option values so navigating settings → format
+     * → settings restores the user's input for the same target. Component-local
+     * only — never persisted to the database in Phase 8.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public array $optionsByTarget = [];
+
     public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
     {
         $this->resetErrorBag();
@@ -84,6 +93,7 @@ class DashboardConverter extends Component
             return;
         }
 
+        $this->rememberCurrentOptions();
         $this->step = 'format';
     }
 
@@ -148,8 +158,23 @@ class DashboardConverter extends Component
         $this->selectedTargetFormat = $converter->targetFormat();
         $this->selectedConverterKey = $converter->key();
         $this->optionsSchema = $converter->optionsSchema();
-        $this->initializeOptionsFromSchema();
+
+        if (array_key_exists($this->selectedTargetFormat, $this->optionsByTarget)) {
+            $this->options = $this->optionsByTarget[$this->selectedTargetFormat];
+        } else {
+            $this->initializeOptionsFromSchema();
+        }
+
         $this->step = 'settings';
+    }
+
+    private function rememberCurrentOptions(): void
+    {
+        if ($this->selectedTargetFormat === null) {
+            return;
+        }
+
+        $this->optionsByTarget[$this->selectedTargetFormat] = $this->options;
     }
 
     public function continueFromSettings(): void
@@ -223,6 +248,7 @@ class DashboardConverter extends Component
             return;
         }
 
+        $this->rememberCurrentOptions();
         $this->step = 'format';
     }
 
@@ -251,6 +277,7 @@ class DashboardConverter extends Component
         $this->targetFormatError = null;
         $this->optionsSchema = [];
         $this->options = [];
+        $this->optionsByTarget = [];
     }
 
     public function getCurrentFileProperty(): ?FileRecord
