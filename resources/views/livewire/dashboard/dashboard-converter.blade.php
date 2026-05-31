@@ -96,8 +96,18 @@
                 </div>
 
                 @if ($targetFormatError)
-                    <p class="text-sm text-[var(--ca-danger)]">{{ $targetFormatError }}</p>
+                    <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-danger)]/30 bg-[var(--ca-danger)]/5 px-4 py-3 text-sm text-[var(--ca-danger)]">
+                        {{ $targetFormatError }}
+                    </div>
                 @endif
+
+                <div wire:loading wire:target="selectTargetFormat" class="flex items-center gap-2 text-sm text-[var(--ca-muted)]">
+                    <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
+                    </svg>
+                    Loading converter settings…
+                </div>
 
                 @if (empty($this->targetFormatCards))
                     <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
@@ -115,7 +125,9 @@
                             <button
                                 type="button"
                                 wire:click="selectTargetFormat('{{ $card->targetFormat }}')"
-                                class="flex items-start gap-3 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4 text-left transition hover:border-[var(--ca-primary)] hover:bg-[var(--ca-primary)]/5 ca-focus-ring">
+                                wire:loading.attr="disabled"
+                                wire:target="selectTargetFormat"
+                                class="flex items-start gap-3 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4 text-left transition hover:border-[var(--ca-primary)] hover:bg-[var(--ca-primary)]/5 ca-focus-ring disabled:opacity-50 disabled:cursor-not-allowed">
                                 <x-file-icon :format="$card->targetFormat" />
                                 <span class="flex flex-col gap-0.5">
                                     <span class="flex items-center gap-2">
