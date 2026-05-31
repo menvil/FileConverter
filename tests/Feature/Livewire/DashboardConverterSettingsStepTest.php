@@ -85,6 +85,26 @@ it('loads the converter options schema when a target format is selected', functi
         ->assertSee('Background color');
 });
 
+it('renders the png to jpg settings form', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create([
+        'extension' => 'png',
+        'mime_type' => 'image/png',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('step', 'settings')
+        ->assertSee('Settings for PNG to JPG')
+        ->assertSee('Quality')
+        ->assertSee('Resize')
+        ->assertSee('Background color')
+        ->assertSee('Remove metadata')
+        ->assertDontSee('Conversion settings will be added in Phase 8');
+});
+
 it('initializes default options from the converter schema', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);

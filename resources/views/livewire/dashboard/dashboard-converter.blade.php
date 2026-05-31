@@ -153,14 +153,14 @@
                     <x-button variant="ghost" size="sm" wire:click="backToFormatStep">← Back</x-button>
                 </div>
 
-                @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
-
-                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                <div class="flex flex-col gap-1">
                     <p class="text-base font-semibold text-[var(--ca-text)]">
                         Settings for {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
                     </p>
-                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion settings will be added in Phase 8.</p>
+                    <p class="text-sm text-[var(--ca-muted)]">Adjust the conversion options below.</p>
                 </div>
+
+                @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
             </div>
         @endif
     </x-card>
