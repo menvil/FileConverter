@@ -3,6 +3,7 @@
 use App\Livewire\Dashboard\DashboardConverter;
 use App\Models\FileRecord;
 use App\Models\User;
+use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Livewire;
 
 it('renders empty upload state', function () {
@@ -80,4 +81,34 @@ it('returns an empty target list when there is no current file', function () {
     $component = Livewire::test(DashboardConverter::class);
 
     expect($component->instance()->availableTargets)->toBe([]);
+});
+
+it('renders clickable target format cards with labels and descriptions for png', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSee('Convert PNG to')
+        ->assertSee('JPG')
+        ->assertSee('Best for photos and sharing')
+        ->assertSee('WEBP')
+        ->assertSee('PDF')
+        ->assertSeeHtml('wire:click="selectTargetFormat(\'jpg\')"');
+});
+
+it('exposes target format cards as view models', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    $cards = Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->instance()
+        ->targetFormatCards;
+
+    expect($cards)->each->toBeInstanceOf(TargetFormatCardViewModel::class);
+    expect(collect($cards)->pluck('targetFormat')->all())->toContain('jpg', 'webp', 'pdf');
 });
