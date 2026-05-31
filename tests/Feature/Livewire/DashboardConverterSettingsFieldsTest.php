@@ -66,3 +66,27 @@ it('updates the bound option when a segmented choice is clicked', function () {
         ->set('options.quality', 'medium')
         ->assertSet('options.quality', 'medium');
 });
+
+it('renders a select option field with all choices', function () {
+    settingsComponent(
+        schema: [
+            [
+                'key' => 'page_size',
+                'type' => 'select',
+                'label' => 'Page size',
+                'default' => 'auto',
+                'options' => [
+                    ['value' => 'auto', 'label' => 'Auto'],
+                    ['value' => 'a4', 'label' => 'A4'],
+                    ['value' => 'letter', 'label' => 'Letter'],
+                ],
+            ],
+        ],
+        options: ['page_size' => 'auto'],
+    )
+        ->assertSee('Page size')
+        ->assertSee('Auto')
+        ->assertSee('A4')
+        ->assertSee('Letter')
+        ->assertSeeHtml('wire:model.live="options.page_size"');
+});
