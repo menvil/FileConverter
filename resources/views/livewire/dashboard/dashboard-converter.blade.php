@@ -76,7 +76,12 @@
                                 class="flex items-start gap-3 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4 text-left transition hover:border-[var(--ca-primary)] hover:bg-[var(--ca-primary)]/5 ca-focus-ring">
                                 <x-file-icon :format="$card->targetFormat" />
                                 <span class="flex flex-col gap-0.5">
-                                    <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $card->label }}</span>
+                                    <span class="flex items-center gap-2">
+                                        <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $card->label }}</span>
+                                        @if ($card->recommended)
+                                            <x-badge variant="purple" size="sm">Recommended</x-badge>
+                                        @endif
+                                    </span>
                                     <span class="text-xs text-[var(--ca-muted)]">{{ $card->description }}</span>
                                 </span>
                             </button>

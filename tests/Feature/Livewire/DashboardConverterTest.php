@@ -112,3 +112,14 @@ it('exposes target format cards as view models', function () {
     expect($cards)->each->toBeInstanceOf(TargetFormatCardViewModel::class);
     expect(collect($cards)->pluck('targetFormat')->all())->toContain('jpg', 'webp', 'pdf');
 });
+
+it('renders a recommended badge on the recommended target card', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSee('Recommended');
+});
