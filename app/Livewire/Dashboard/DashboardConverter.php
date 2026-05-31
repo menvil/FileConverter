@@ -29,6 +29,12 @@ class DashboardConverter extends Component
 
     public ?string $targetFormatError = null;
 
+    /** @var array<int, array<string, mixed>> */
+    public array $optionsSchema = [];
+
+    /** @var array<string, mixed> */
+    public array $options = [];
+
     public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
     {
         $this->resetErrorBag();

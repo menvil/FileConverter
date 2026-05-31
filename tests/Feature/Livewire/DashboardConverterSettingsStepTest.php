@@ -50,3 +50,34 @@ it('moves to the settings step when a file and target format are present', funct
         ->call('goToSettingsStep')
         ->assertSet('step', 'settings');
 });
+
+it('renders the dynamic options form container on the settings step', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->set('selectedTargetFormat', 'jpg')
+        ->set('step', 'settings')
+        ->set('optionsSchema', [
+            ['key' => 'mystery', 'type' => 'definitely_unknown', 'label' => 'Mystery'],
+        ])
+        ->assertSeeHtml('data-testid="dynamic-options-form"')
+        ->assertSeeHtml('data-testid="option-field-mystery"');
+});
+
+it('shows a controlled fallback for an unsupported field type', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->set('selectedTargetFormat', 'jpg')
+        ->set('step', 'settings')
+        ->set('optionsSchema', [
+            ['key' => 'mystery', 'type' => 'definitely_unknown', 'label' => 'Mystery'],
+        ])
+        ->assertSee('Unsupported field type: definitely_unknown');
+});
