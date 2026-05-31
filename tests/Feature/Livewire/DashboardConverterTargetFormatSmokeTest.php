@@ -42,7 +42,7 @@ it('does not persist any extra records during target selection', function () {
         ->call('selectTargetFormat', 'jpg')
         ->assertSet('step', 'settings');
 
-    expect(FileRecord::query()->count())->toBe(1);
+    expect(FileRecord::query()->where('user_id', $user->id)->count())->toBe(1);
 });
 
 it('handles the full back-and-forth navigation flow without losing the file', function () {
@@ -64,5 +64,5 @@ it('handles the full back-and-forth navigation flow without losing the file', fu
         ->assertSet('step', 'upload')
         ->assertSee('roundtrip.png');
 
-    expect(FileRecord::query()->where('original_name', 'roundtrip.png')->exists())->toBeTrue();
+    expect(FileRecord::query()->where('user_id', $user->id)->where('original_name', 'roundtrip.png')->exists())->toBeTrue();
 });

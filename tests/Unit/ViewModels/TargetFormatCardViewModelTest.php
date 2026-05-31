@@ -7,6 +7,8 @@ use App\ViewModels\TargetFormatCardViewModel;
 it('creates target format card data from converter metadata', function () {
     $converter = app(ConverterRegistry::class)->find('png', 'jpg');
 
+    expect($converter)->not->toBeNull();
+
     $card = TargetFormatCardViewModel::fromConverter($converter);
 
     expect($card->targetFormat)->toBe('jpg');
