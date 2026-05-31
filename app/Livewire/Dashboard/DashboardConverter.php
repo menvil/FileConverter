@@ -8,6 +8,8 @@ use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Models\FileRecord;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
+use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
+use App\Support\Converters\OptionsValidator;
 use App\Support\Files\UploadedFileRules;
 use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
@@ -148,6 +150,23 @@ class DashboardConverter extends Component
         $this->optionsSchema = $converter->optionsSchema();
         $this->initializeOptionsFromSchema();
         $this->step = 'settings';
+    }
+
+    public function validateSettings(): bool
+    {
+        $this->resetErrorBag();
+
+        try {
+            app(OptionsValidator::class)->validate($this->optionsSchema, $this->options);
+        } catch (InvalidConverterOptionsException $exception) {
+            foreach ($exception->fieldErrors() as $field => $message) {
+                $this->addError("options.{$field}", $message);
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     private function initializeOptionsFromSchema(): void
