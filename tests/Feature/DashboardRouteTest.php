@@ -16,6 +16,15 @@ it('allows authenticated user to access dashboard', function () {
         ->assertSee('Convert any file');
 });
 
+it('renders dashboard converter on dashboard page', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertSee('Drop your file here');
+});
+
 it('renders dashboard inside the app layout', function () {
     $this->actingAs(User::factory()->create())
         ->get('/dashboard')
@@ -40,17 +49,4 @@ it('renders footer help cards on dashboard', function () {
         ->assertSee('Help Center')
         ->assertSee('Contact Support')
         ->assertSee('Refer a Friend');
-});
-
-it('renders dashboard UI skeleton', function () {
-    $this->actingAs(User::factory()->create())
-        ->get('/dashboard')
-        ->assertOk()
-        ->assertSee('Convert any file')
-        ->assertSee('File')
-        ->assertSee('Format')
-        ->assertSee('Settings')
-        ->assertSee('Convert')
-        ->assertSee('Recent Conversions')
-        ->assertSee('Marketing Report.pdf');
 });

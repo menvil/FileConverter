@@ -6,21 +6,7 @@
 
     <div class="mt-8 grid gap-6 lg:grid-cols-3">
         <div class="flex flex-col gap-6 lg:col-span-2">
-            <x-card variant="elevated">
-                <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" active="File" />
-
-                <div class="mt-6">
-                    <x-conversion.dropzone variant="simple" />
-                </div>
-
-                <div class="mt-6 flex flex-wrap items-center gap-2 text-sm text-[var(--ca-muted)]">
-                    <span>Try:</span>
-                    <x-file-icon format="pdf" size="sm" />
-                    <x-file-icon format="jpg" size="sm" />
-                    <x-file-icon format="png" size="sm" />
-                    <x-file-icon format="webp" size="sm" />
-                </div>
-            </x-card>
+            <livewire:dashboard.dashboard-converter />
         </div>
 
         <aside class="flex flex-col gap-6">
@@ -48,21 +34,6 @@
                 </ul>
             </x-card>
         </aside>
-    </div>
-
-    <div class="mt-10">
-        <x-table.recent-conversions
-            :rows="[
-                ['name' => 'Marketing Report.pdf', 'from' => 'pdf', 'to' => 'docx', 'size' => '24.8 MB', 'date' => 'May 12, 10:24 AM', 'status' => 'completed'],
-                ['name' => 'Project Proposal.docx', 'from' => 'jpg', 'to' => 'pdf', 'size' => '1.8 MB', 'date' => 'May 12, 09:58 AM', 'status' => 'completed', 'starred' => true],
-                ['name' => 'Sales Data.xlsx', 'from' => 'png', 'to' => 'webp', 'size' => '612 KB', 'date' => 'May 12, 09:15 AM', 'status' => 'completed'],
-                ['name' => 'Product Demo.mp4', 'from' => 'png', 'to' => 'jpg', 'size' => '84 MB', 'date' => 'May 11, 04:42 PM', 'status' => 'completed'],
-                ['name' => 'Screenshot 2024.jpg', 'from' => 'jpg', 'to' => 'png', 'size' => '3.2 MB', 'date' => 'May 11, 03:33 PM', 'status' => 'completed'],
-                ['name' => 'Contract.doc', 'from' => 'pdf', 'to' => 'pdf', 'size' => '412 KB', 'date' => 'May 11, 11:07 AM', 'status' => 'processing'],
-                ['name' => 'Client_Presentation.pptx', 'from' => 'pdf', 'to' => 'pdf', 'size' => '5.1 MB', 'date' => 'May 10, 06:20 PM', 'status' => 'completed', 'starred' => true],
-                ['name' => 'Annual_Budget.xlsx', 'from' => 'pdf', 'to' => 'pdf', 'size' => '2.4 MB', 'date' => 'May 10, 02:05 PM', 'status' => 'completed'],
-            ]"
-        />
     </div>
 
     <div class="mt-10">
