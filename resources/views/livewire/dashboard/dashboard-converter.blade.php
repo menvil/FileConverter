@@ -1,7 +1,32 @@
 <div>
     <x-card variant="elevated">
         <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="$step === 'upload' ? 'File' : 'Format'" class="mb-6" />
-        @if ($step === 'upload')
+        @if ($step === 'upload' && $this->currentFile)
+            @php($file = $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4">
+                    <div class="flex items-center gap-3">
+                        <x-file-icon :format="$file->extension" />
+                        <div class="flex flex-col">
+                            <p class="text-sm font-semibold text-[var(--ca-text)]">{{ $file->original_name }}</p>
+                            <p class="text-xs text-[var(--ca-muted)]">
+                                {{ strtoupper($file->extension) }} ·
+                                {{ number_format($file->size_bytes / 1024, 1) }} KB
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <x-button variant="secondary" size="sm" wire:click="replaceFile">Replace</x-button>
+                        <x-button variant="ghost" size="sm" wire:click="removeFile">Remove</x-button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <x-button variant="primary" size="sm" wire:click="goToFormatStep">Choose format</x-button>
+                </div>
+            </div>
+        @elseif ($step === 'upload')
             <div
                 x-data="{ isDragging: false }"
                 x-on:dragover.prevent="isDragging = true"
@@ -44,6 +69,10 @@
         @if ($step === 'format' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
+                <div>
+                    <x-button variant="ghost" size="sm" wire:click="backToUploadSummary">← Back</x-button>
+                </div>
+
                 <div class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4">
                     <div class="flex items-center gap-3">
                         <x-file-icon :format="$file->extension" />
@@ -108,6 +137,10 @@
         @if ($step === 'settings' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
+                <div>
+                    <x-button variant="ghost" size="sm" wire:click="backToFormatStep">← Back</x-button>
+                </div>
+
                 <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
                     <p class="text-base font-semibold text-[var(--ca-text)]">
                         Settings for {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
