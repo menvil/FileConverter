@@ -25,6 +25,10 @@ class DashboardConverter extends Component
 
     public ?string $uploadError = null;
 
+    public ?string $selectedTargetFormat = null;
+
+    public ?string $targetFormatError = null;
+
     public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
     {
         $this->resetErrorBag();
@@ -79,6 +83,35 @@ class DashboardConverter extends Component
             $this->currentFileId = null;
             $this->step = 'upload';
         }
+    }
+
+    public function selectTargetFormat(string $targetFormat): void
+    {
+        $this->targetFormatError = null;
+
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->selectedTargetFormat = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $converter = app(ConverterRegistry::class)->find(
+            $this->currentFile->extension,
+            $targetFormat,
+        );
+
+        if ($converter === null) {
+            $this->selectedTargetFormat = null;
+            $this->targetFormatError = 'This conversion is not supported yet.';
+            $this->step = 'format';
+
+            return;
+        }
+
+        $this->selectedTargetFormat = $converter->targetFormat();
+        $this->step = 'settings';
     }
 
     public function replaceFile(): void
