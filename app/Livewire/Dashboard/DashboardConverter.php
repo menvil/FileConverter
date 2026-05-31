@@ -146,7 +146,21 @@ class DashboardConverter extends Component
         $this->selectedTargetFormat = $converter->targetFormat();
         $this->selectedConverterKey = $converter->key();
         $this->optionsSchema = $converter->optionsSchema();
+        $this->initializeOptionsFromSchema();
         $this->step = 'settings';
+    }
+
+    private function initializeOptionsFromSchema(): void
+    {
+        $this->options = [];
+
+        foreach ($this->optionsSchema as $field) {
+            if (! isset($field['key']) || ! array_key_exists('default', $field)) {
+                continue;
+            }
+
+            $this->options[$field['key']] = $field['default'];
+        }
     }
 
     public function backToUploadSummary(): void
