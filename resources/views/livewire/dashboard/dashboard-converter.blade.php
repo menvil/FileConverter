@@ -66,9 +66,16 @@
                     </div>
                 </div>
 
-                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
-                    <p class="text-base font-semibold text-[var(--ca-text)]">Choose output format</p>
-                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Target format selection will be added in Phase 7.</p>
+                <div class="flex flex-col gap-3">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">Convert {{ strtoupper($file->extension) }} to</p>
+                    <div class="flex flex-col gap-2">
+                        @foreach ($this->availableTargets as $target)
+                            <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-4 py-3">
+                                <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $target->label }}</span>
+                                <p class="text-xs text-[var(--ca-muted)]">{{ $target->description }}</p>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         @endif

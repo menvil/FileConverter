@@ -6,6 +6,8 @@ use App\Actions\Files\StoreUploadedFileAction;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Models\FileRecord;
+use App\Support\Converters\ConverterRegistry;
+use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Files\UploadedFileRules;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -100,6 +102,16 @@ class DashboardConverter extends Component
         return $this->currentFileId
             ? FileRecord::query()->where('user_id', auth()->id())->find($this->currentFileId)
             : null;
+    }
+
+    /** @return list<ConverterTarget> */
+    public function getAvailableTargetsProperty(): array
+    {
+        if (! $this->currentFile) {
+            return [];
+        }
+
+        return app(ConverterRegistry::class)->targetsFor($this->currentFile->extension);
     }
 
     public function render()
