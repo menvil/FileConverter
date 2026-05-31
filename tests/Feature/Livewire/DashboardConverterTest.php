@@ -123,3 +123,17 @@ it('renders a recommended badge on the recommended target card', function () {
         ->call('goToFormatStep')
         ->assertSee('Recommended');
 });
+
+it('shows an empty state when the source format has no available targets', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'pdf']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSet('step', 'format')
+        ->assertSee('No conversion targets available')
+        ->assertSee('Upload another file')
+        ->assertDontSee('Convert PDF to');
+});

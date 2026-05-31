@@ -66,6 +66,15 @@
                     </div>
                 </div>
 
+                @if (empty($this->targetFormatCards))
+                    <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                        <p class="text-base font-semibold text-[var(--ca-text)]">No conversion targets available</p>
+                        <p class="mt-1 text-sm text-[var(--ca-muted)]">We cannot convert this file type yet. Upload another file or check supported formats later.</p>
+                        <div class="mt-4 flex justify-center">
+                            <x-button variant="secondary" size="sm" wire:click="replaceFile">Upload another file</x-button>
+                        </div>
+                    </div>
+                @else
                 <div class="flex flex-col gap-3">
                     <p class="text-base font-semibold text-[var(--ca-text)]">Convert {{ strtoupper($file->extension) }} to</p>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -88,6 +97,7 @@
                         @endforeach
                     </div>
                 </div>
+                @endif
             </div>
         @endif
     </x-card>
