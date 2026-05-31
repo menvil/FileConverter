@@ -1,7 +1,32 @@
-<div>
+<div wire:init="ensureValidStep">
     <x-card variant="elevated">
         <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="$step === 'upload' ? 'File' : 'Format'" class="mb-6" />
-        @if ($step === 'upload')
+        @if ($step === 'upload' && $this->currentFile)
+            @php($file = $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4">
+                    <div class="flex items-center gap-3">
+                        <x-file-icon :format="$file->extension" />
+                        <div class="flex flex-col">
+                            <p class="text-sm font-semibold text-[var(--ca-text)]">{{ $file->original_name }}</p>
+                            <p class="text-xs text-[var(--ca-muted)]">
+                                {{ strtoupper($file->extension) }} ·
+                                {{ number_format($file->size_bytes / 1024, 1) }} KB
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <x-button variant="secondary" size="sm" wire:click="replaceFile">Replace</x-button>
+                        <x-button variant="ghost" size="sm" wire:click="removeFile">Remove</x-button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <x-button variant="primary" size="sm" wire:click="goToFormatStep">Choose format</x-button>
+                </div>
+            </div>
+        @elseif ($step === 'upload')
             <div
                 x-data="{ isDragging: false }"
                 x-on:dragover.prevent="isDragging = true"
@@ -44,6 +69,10 @@
         @if ($step === 'format' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
+                <div>
+                    <x-button variant="ghost" size="sm" wire:click="backToUploadSummary">← Back</x-button>
+                </div>
+
                 <div class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4">
                     <div class="flex items-center gap-3">
                         <x-file-icon :format="$file->extension" />
@@ -66,9 +95,69 @@
                     </div>
                 </div>
 
+                @if ($targetFormatError)
+                    <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-danger)]/30 bg-[var(--ca-danger)]/5 px-4 py-3 text-sm text-[var(--ca-danger)]">
+                        {{ $targetFormatError }}
+                    </div>
+                @endif
+
+                <div wire:loading wire:target="selectTargetFormat" class="flex items-center gap-2 text-sm text-[var(--ca-muted)]">
+                    <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
+                    </svg>
+                    Loading converter settings…
+                </div>
+
+                @if (empty($this->targetFormatCards))
+                    <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                        <p class="text-base font-semibold text-[var(--ca-text)]">No conversion targets available</p>
+                        <p class="mt-1 text-sm text-[var(--ca-muted)]">We cannot convert this file type yet. Upload another file or check supported formats later.</p>
+                        <div class="mt-4 flex justify-center">
+                            <x-button variant="secondary" size="sm" wire:click="replaceFile">Upload another file</x-button>
+                        </div>
+                    </div>
+                @else
+                <div class="flex flex-col gap-3">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">Convert {{ strtoupper($file->extension) }} to</p>
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($this->targetFormatCards as $card)
+                            <button
+                                type="button"
+                                wire:click="selectTargetFormat('{{ $card->targetFormat }}')"
+                                wire:loading.attr="disabled"
+                                wire:target="selectTargetFormat"
+                                class="flex items-start gap-3 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4 text-left transition hover:border-[var(--ca-primary)] hover:bg-[var(--ca-primary)]/5 ca-focus-ring disabled:opacity-50 disabled:cursor-not-allowed">
+                                <x-file-icon :format="$card->targetFormat" />
+                                <span class="flex flex-col gap-0.5">
+                                    <span class="flex items-center gap-2">
+                                        <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $card->label }}</span>
+                                        @if ($card->recommended)
+                                            <x-badge variant="purple" size="sm">Recommended</x-badge>
+                                        @endif
+                                    </span>
+                                    <span class="text-xs text-[var(--ca-muted)]">{{ $card->description }}</span>
+                                </span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+        @endif
+
+        @if ($step === 'settings' && $this->currentFile)
+            @php($file = $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div>
+                    <x-button variant="ghost" size="sm" wire:click="backToFormatStep">← Back</x-button>
+                </div>
+
                 <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
-                    <p class="text-base font-semibold text-[var(--ca-text)]">Choose output format</p>
-                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Target format selection will be added in Phase 7.</p>
+                    <p class="text-base font-semibold text-[var(--ca-text)]">
+                        Settings for {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
+                    </p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion settings will be added in Phase 8.</p>
                 </div>
             </div>
         @endif

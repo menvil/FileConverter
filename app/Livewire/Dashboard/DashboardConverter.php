@@ -6,7 +6,10 @@ use App\Actions\Files\StoreUploadedFileAction;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Models\FileRecord;
+use App\Support\Converters\ConverterRegistry;
+use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Files\UploadedFileRules;
+use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -21,6 +24,10 @@ class DashboardConverter extends Component
     public ?int $currentFileId = null;
 
     public ?string $uploadError = null;
+
+    public ?string $selectedTargetFormat = null;
+
+    public ?string $targetFormatError = null;
 
     public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
     {
@@ -58,6 +65,80 @@ class DashboardConverter extends Component
         $this->step = 'format';
     }
 
+    public function goToFormatStep(): void
+    {
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->step = 'format';
+    }
+
+    public function ensureValidStep(): void
+    {
+        if ($this->step === 'format' && $this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+        }
+    }
+
+    public function selectTargetFormat(string $targetFormat): void
+    {
+        $this->targetFormatError = null;
+
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->selectedTargetFormat = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $converter = app(ConverterRegistry::class)->find(
+            $this->currentFile->extension,
+            $targetFormat,
+        );
+
+        if ($converter === null) {
+            $this->selectedTargetFormat = null;
+            $this->targetFormatError = 'This conversion is not supported yet.';
+            $this->step = 'format';
+
+            return;
+        }
+
+        $this->selectedTargetFormat = $converter->targetFormat();
+        $this->step = 'settings';
+    }
+
+    public function backToUploadSummary(): void
+    {
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->resetTargetSelection();
+        $this->step = 'upload';
+    }
+
+    public function backToFormatStep(): void
+    {
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->step = 'format';
+    }
+
     public function replaceFile(): void
     {
         $this->resetCurrentUpload();
@@ -71,8 +152,15 @@ class DashboardConverter extends Component
     private function resetCurrentUpload(): void
     {
         $this->reset('upload', 'currentFileId', 'uploadError');
+        $this->resetTargetSelection();
         $this->resetErrorBag();
         $this->step = 'upload';
+    }
+
+    private function resetTargetSelection(): void
+    {
+        $this->selectedTargetFormat = null;
+        $this->targetFormatError = null;
     }
 
     public function getCurrentFileProperty(): ?FileRecord
@@ -80,6 +168,25 @@ class DashboardConverter extends Component
         return $this->currentFileId
             ? FileRecord::query()->where('user_id', auth()->id())->find($this->currentFileId)
             : null;
+    }
+
+    /** @return list<ConverterTarget> */
+    public function getAvailableTargetsProperty(): array
+    {
+        if (! $this->currentFile) {
+            return [];
+        }
+
+        return app(ConverterRegistry::class)->targetsFor($this->currentFile->extension);
+    }
+
+    /** @return list<TargetFormatCardViewModel> */
+    public function getTargetFormatCardsProperty(): array
+    {
+        return array_map(
+            fn (ConverterTarget $target): TargetFormatCardViewModel => TargetFormatCardViewModel::fromTarget($target),
+            $this->availableTargets,
+        );
     }
 
     public function render()
