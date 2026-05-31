@@ -110,3 +110,21 @@ it('renders a toggle option field with label and help', function () {
         ->set('options.remove_metadata', false)
         ->assertSet('options.remove_metadata', false);
 });
+
+it('renders a color option field with native and hex inputs', function () {
+    settingsComponent(
+        schema: [
+            [
+                'key' => 'background_color',
+                'type' => 'color',
+                'label' => 'Background color',
+                'default' => '#ffffff',
+            ],
+        ],
+        options: ['background_color' => '#ffffff'],
+    )
+        ->assertSee('Background color')
+        ->assertSeeHtml('type="color"')
+        ->assertSeeHtml('wire:model.live="options.background_color"')
+        ->assertSeeHtml('wire:model.live.debounce.300ms="options.background_color"');
+});
