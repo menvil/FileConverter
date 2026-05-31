@@ -1,6 +1,11 @@
 <div wire:init="ensureValidStep">
     <x-card variant="elevated">
-        <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="$step === 'upload' ? 'File' : 'Format'" class="mb-6" />
+        <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="match ($step) {
+            'format' => 'Format',
+            'settings' => 'Settings',
+            'convert' => 'Convert',
+            default => 'File',
+        }" class="mb-6" />
         @if ($step === 'upload' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
@@ -161,6 +166,26 @@
                 </div>
 
                 @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
+
+                <div class="flex justify-end">
+                    <x-button variant="primary" size="sm" wire:click="continueFromSettings">Continue</x-button>
+                </div>
+            </div>
+        @endif
+
+        @if ($step === 'convert' && $this->currentFile)
+            @php($file = $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div>
+                    <x-button variant="ghost" size="sm" wire:click="goToSettingsStep">← Back</x-button>
+                </div>
+
+                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">
+                        Ready to convert {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
+                    </p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion will be available in Phase 9.</p>
+                </div>
             </div>
         @endif
     </x-card>
