@@ -14,7 +14,7 @@
             id="option-{{ $key }}"
             wire:model.live="options.{{ $key }}"
             class="peer sr-only">
-        <span class="h-6 w-11 rounded-full bg-[var(--ca-border)] transition peer-checked:bg-[var(--ca-primary)] ca-focus-ring"></span>
+        <span class="ca-focus-ring-peer h-6 w-11 rounded-full bg-[var(--ca-border)] transition peer-checked:bg-[var(--ca-primary)]"></span>
         <span class="absolute left-0.5 h-5 w-5 rounded-full bg-white shadow transition peer-checked:translate-x-5"></span>
     </label>
 </div>

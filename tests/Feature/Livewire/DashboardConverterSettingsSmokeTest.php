@@ -44,6 +44,7 @@ it('renders different settings for png to pdf than png to jpg', function () {
         ->assertSee('Background color')
         ->call('goToFormatStep')
         ->call('selectTargetFormat', 'pdf')
+        ->assertHasNoErrors()
         ->assertSee('Page size')
         ->assertDontSee('Background color');
 });
