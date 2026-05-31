@@ -68,12 +68,18 @@
 
                 <div class="flex flex-col gap-3">
                     <p class="text-base font-semibold text-[var(--ca-text)]">Convert {{ strtoupper($file->extension) }} to</p>
-                    <div class="flex flex-col gap-2">
-                        @foreach ($this->availableTargets as $target)
-                            <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-4 py-3">
-                                <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $target->label }}</span>
-                                <p class="text-xs text-[var(--ca-muted)]">{{ $target->description }}</p>
-                            </div>
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($this->targetFormatCards as $card)
+                            <button
+                                type="button"
+                                wire:click="selectTargetFormat('{{ $card->targetFormat }}')"
+                                class="flex items-start gap-3 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white p-4 text-left transition hover:border-[var(--ca-primary)] hover:bg-[var(--ca-primary)]/5 ca-focus-ring">
+                                <x-file-icon :format="$card->targetFormat" />
+                                <span class="flex flex-col gap-0.5">
+                                    <span class="text-sm font-semibold text-[var(--ca-text)]">{{ $card->label }}</span>
+                                    <span class="text-xs text-[var(--ca-muted)]">{{ $card->description }}</span>
+                                </span>
+                            </button>
                         @endforeach
                     </div>
                 </div>

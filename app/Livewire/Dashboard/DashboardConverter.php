@@ -9,6 +9,7 @@ use App\Models\FileRecord;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Files\UploadedFileRules;
+use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -112,6 +113,15 @@ class DashboardConverter extends Component
         }
 
         return app(ConverterRegistry::class)->targetsFor($this->currentFile->extension);
+    }
+
+    /** @return list<TargetFormatCardViewModel> */
+    public function getTargetFormatCardsProperty(): array
+    {
+        return array_map(
+            fn (ConverterTarget $target): TargetFormatCardViewModel => TargetFormatCardViewModel::fromTarget($target),
+            $this->availableTargets,
+        );
     }
 
     public function render()
