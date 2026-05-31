@@ -58,6 +58,26 @@ class DashboardConverter extends Component
         $this->step = 'format';
     }
 
+    public function goToFormatStep(): void
+    {
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->step = 'format';
+    }
+
+    public function ensureValidStep(): void
+    {
+        if ($this->step === 'format' && $this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+        }
+    }
+
     public function replaceFile(): void
     {
         $this->resetCurrentUpload();
