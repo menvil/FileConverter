@@ -114,6 +114,31 @@ class DashboardConverter extends Component
         $this->step = 'settings';
     }
 
+    public function backToUploadSummary(): void
+    {
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->resetTargetSelection();
+        $this->step = 'upload';
+    }
+
+    public function backToFormatStep(): void
+    {
+        if ($this->currentFile === null) {
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->step = 'format';
+    }
+
     public function replaceFile(): void
     {
         $this->resetCurrentUpload();
