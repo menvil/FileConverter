@@ -85,6 +85,34 @@ it('loads the converter options schema when a target format is selected', functi
         ->assertSee('Background color');
 });
 
+it('initializes default options from the converter schema', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('options.quality', 'high')
+        ->assertSet('options.resize', 'original')
+        ->assertSet('options.background_color', '#ffffff')
+        ->assertSet('options.remove_metadata', true);
+});
+
+it('resets options to defaults when switching to a different target format', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->set('options.quality', 'best')
+        ->call('selectTargetFormat', 'pdf')
+        ->assertSet('options.page_size', 'auto')
+        ->assertSet('options.quality', null);
+});
+
 it('clears the loaded schema when an unsupported target is selected', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
