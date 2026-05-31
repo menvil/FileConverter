@@ -21,7 +21,10 @@ class ConversionJobFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'source_file_id' => FileRecord::factory(),
+            // Keep the source file owned by the same user as the job.
+            'source_file_id' => fn (array $attributes) => FileRecord::factory()->state([
+                'user_id' => $attributes['user_id'],
+            ]),
             'result_file_id' => null,
             'source_format' => 'png',
             'target_format' => 'jpg',

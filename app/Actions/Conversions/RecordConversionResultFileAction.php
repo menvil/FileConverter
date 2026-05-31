@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Support\Conversions\DTO\ConversionResult;
 use App\Support\Files\FileExpirationPolicy;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 final class RecordConversionResultFileAction
 {
@@ -19,7 +20,11 @@ final class RecordConversionResultFileAction
 
     public function handle(User $user, ConversionResult $result): FileRecord
     {
-        $contents = (string) Storage::disk('local')->get($result->path);
+        $contents = Storage::disk('local')->get($result->path);
+
+        if ($contents === null) {
+            throw new RuntimeException("Conversion result file is missing at [{$result->path}].");
+        }
 
         return FileRecord::create([
             'user_id' => $user->id,

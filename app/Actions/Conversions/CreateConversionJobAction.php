@@ -53,7 +53,10 @@ final class CreateConversionJobAction
             'source_file_id' => $sourceFile->id,
             'source_format' => $sourceFormat,
             'target_format' => $normalizedTarget,
-            'converter_key' => $converter->key(),
+            // Driver-registry key (e.g. "png_to_jpg") — distinct from the catalog
+            // Converter::key() ("png:jpg"). ConverterDriverRegistry::findOrFail()
+            // resolves drivers on this value, so it must match driver keys.
+            'converter_key' => "{$sourceFormat}_to_{$normalizedTarget}",
             'options_json' => $normalizedOptions,
             'status' => ConversionStatus::Queued,
             'progress' => 0,

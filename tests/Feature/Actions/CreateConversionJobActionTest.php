@@ -31,7 +31,7 @@ it('creates queued conversion job for valid source target and options', function
     expect($job->status)->toBe(ConversionStatus::Queued);
     expect($job->source_format)->toBe('png');
     expect($job->target_format)->toBe('jpg');
-    expect($job->converter_key)->toBe('png:jpg');
+    expect($job->converter_key)->toBe('png_to_jpg');
     expect($job->progress)->toBe(0);
     expect($job->options_json['quality'])->toBe('high');
     expect($job->source_file_id)->toBe($file->id);
@@ -48,7 +48,7 @@ it('normalizes the source format from the file extension', function () {
     $job = app(CreateConversionJobAction::class)->handle($user, $file, 'png');
 
     expect($job->source_format)->toBe('jpg');
-    expect($job->converter_key)->toBe('jpg:png');
+    expect($job->converter_key)->toBe('jpg_to_png');
 });
 
 it('rejects unsupported conversion pair', function () {
