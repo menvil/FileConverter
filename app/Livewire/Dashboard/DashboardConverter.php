@@ -27,6 +27,8 @@ class DashboardConverter extends Component
 
     public ?string $selectedTargetFormat = null;
 
+    public ?string $selectedConverterKey = null;
+
     public ?string $targetFormatError = null;
 
     /** @var array<int, array<string, mixed>> */
@@ -134,7 +136,7 @@ class DashboardConverter extends Component
         );
 
         if ($converter === null) {
-            $this->selectedTargetFormat = null;
+            $this->resetTargetSelection();
             $this->targetFormatError = 'This conversion is not supported yet.';
             $this->step = 'format';
 
@@ -142,6 +144,8 @@ class DashboardConverter extends Component
         }
 
         $this->selectedTargetFormat = $converter->targetFormat();
+        $this->selectedConverterKey = $converter->key();
+        $this->optionsSchema = $converter->optionsSchema();
         $this->step = 'settings';
     }
 
@@ -191,7 +195,10 @@ class DashboardConverter extends Component
     private function resetTargetSelection(): void
     {
         $this->selectedTargetFormat = null;
+        $this->selectedConverterKey = null;
         $this->targetFormatError = null;
+        $this->optionsSchema = [];
+        $this->options = [];
     }
 
     public function getCurrentFileProperty(): ?FileRecord
