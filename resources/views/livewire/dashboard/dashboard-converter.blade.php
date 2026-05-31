@@ -1,6 +1,11 @@
 <div wire:init="ensureValidStep">
     <x-card variant="elevated">
-        <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="$step === 'upload' ? 'File' : 'Format'" class="mb-6" />
+        <x-stepper :steps="['File', 'Format', 'Settings', 'Convert']" :active="match ($step) {
+            'format' => 'Format',
+            'settings' => 'Settings',
+            'convert' => 'Convert',
+            default => 'File',
+        }" class="mb-6" />
         @if ($step === 'upload' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
@@ -153,11 +158,40 @@
                     <x-button variant="ghost" size="sm" wire:click="backToFormatStep">← Back</x-button>
                 </div>
 
-                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                <div class="flex flex-col gap-1">
                     <p class="text-base font-semibold text-[var(--ca-text)]">
                         Settings for {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
                     </p>
-                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion settings will be added in Phase 8.</p>
+                    <p class="text-sm text-[var(--ca-muted)]">Adjust the conversion options below.</p>
+                </div>
+
+                @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
+
+                <div
+                    data-testid="estimated-cost-placeholder"
+                    class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-4 py-3">
+                    <span class="text-sm font-semibold text-[var(--ca-text)]">Estimated cost</span>
+                    <p class="text-sm text-[var(--ca-muted)]">Credit cost will be calculated before conversion.</p>
+                </div>
+
+                <div class="flex justify-end">
+                    <x-button variant="primary" size="sm" wire:click="continueFromSettings">Continue</x-button>
+                </div>
+            </div>
+        @endif
+
+        @if ($step === 'convert' && $this->currentFile)
+            @php($file = $this->currentFile)
+            <div class="flex flex-col gap-4">
+                <div>
+                    <x-button variant="ghost" size="sm" wire:click="goToSettingsStep">← Back</x-button>
+                </div>
+
+                <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">
+                        Ready to convert {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
+                    </p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion will be available in Phase 9.</p>
                 </div>
             </div>
         @endif

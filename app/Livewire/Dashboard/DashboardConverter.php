@@ -8,6 +8,8 @@ use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Models\FileRecord;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
+use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
+use App\Support\Converters\OptionsValidator;
 use App\Support\Files\UploadedFileRules;
 use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
@@ -27,7 +29,24 @@ class DashboardConverter extends Component
 
     public ?string $selectedTargetFormat = null;
 
+    public ?string $selectedConverterKey = null;
+
     public ?string $targetFormatError = null;
+
+    /** @var array<int, array<string, mixed>> */
+    public array $optionsSchema = [];
+
+    /** @var array<string, mixed> */
+    public array $options = [];
+
+    /**
+     * Per-target cache of entered option values so navigating settings → format
+     * → settings restores the user's input for the same target. Component-local
+     * only — never persisted to the database in Phase 8.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public array $optionsByTarget = [];
 
     public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
     {
@@ -74,15 +93,41 @@ class DashboardConverter extends Component
             return;
         }
 
+        $this->rememberCurrentOptions();
         $this->step = 'format';
     }
 
     public function ensureValidStep(): void
     {
-        if ($this->step === 'format' && $this->currentFile === null) {
+        if (in_array($this->step, ['format', 'settings'], true) && $this->currentFile === null) {
             $this->currentFileId = null;
             $this->step = 'upload';
+
+            return;
         }
+
+        if ($this->step === 'settings' && $this->selectedTargetFormat === null) {
+            $this->step = 'format';
+        }
+    }
+
+    public function goToSettingsStep(): void
+    {
+        if ($this->currentFile === null) {
+            $this->resetTargetSelection();
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        if ($this->selectedTargetFormat === null) {
+            $this->step = 'format';
+
+            return;
+        }
+
+        $this->step = 'settings';
     }
 
     public function selectTargetFormat(string $targetFormat): void
@@ -103,7 +148,7 @@ class DashboardConverter extends Component
         );
 
         if ($converter === null) {
-            $this->selectedTargetFormat = null;
+            $this->resetTargetSelection();
             $this->targetFormatError = 'This conversion is not supported yet.';
             $this->step = 'format';
 
@@ -111,7 +156,74 @@ class DashboardConverter extends Component
         }
 
         $this->selectedTargetFormat = $converter->targetFormat();
+        $this->selectedConverterKey = $converter->key();
+        $this->optionsSchema = $converter->optionsSchema();
+
+        if (array_key_exists($this->selectedTargetFormat, $this->optionsByTarget)) {
+            $this->options = $this->optionsByTarget[$this->selectedTargetFormat];
+        } else {
+            $this->initializeOptionsFromSchema();
+        }
+
         $this->step = 'settings';
+    }
+
+    private function rememberCurrentOptions(): void
+    {
+        if ($this->selectedTargetFormat === null) {
+            return;
+        }
+
+        $this->optionsByTarget[$this->selectedTargetFormat] = $this->options;
+    }
+
+    public function continueFromSettings(): void
+    {
+        if ($this->currentFile === null || $this->selectedTargetFormat === null) {
+            $this->goToSettingsStep();
+
+            return;
+        }
+
+        if (! $this->validateSettings()) {
+            $this->step = 'settings';
+
+            return;
+        }
+
+        // Phase 8 stops at a convert placeholder. CreateConversionJobAction and
+        // the real conversion flow arrive in Phase 9.
+        $this->step = 'convert';
+    }
+
+    public function validateSettings(): bool
+    {
+        $this->resetErrorBag();
+
+        try {
+            app(OptionsValidator::class)->validate($this->optionsSchema, $this->options);
+        } catch (InvalidConverterOptionsException $exception) {
+            foreach ($exception->fieldErrors() as $field => $message) {
+                $this->addError("options.{$field}", $message);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function initializeOptionsFromSchema(): void
+    {
+        $this->options = [];
+
+        foreach ($this->optionsSchema as $field) {
+            if (! isset($field['key']) || ! array_key_exists('default', $field)) {
+                continue;
+            }
+
+            $this->options[$field['key']] = $field['default'];
+        }
     }
 
     public function backToUploadSummary(): void
@@ -136,6 +248,7 @@ class DashboardConverter extends Component
             return;
         }
 
+        $this->rememberCurrentOptions();
         $this->step = 'format';
     }
 
@@ -160,7 +273,11 @@ class DashboardConverter extends Component
     private function resetTargetSelection(): void
     {
         $this->selectedTargetFormat = null;
+        $this->selectedConverterKey = null;
         $this->targetFormatError = null;
+        $this->optionsSchema = [];
+        $this->options = [];
+        $this->optionsByTarget = [];
     }
 
     public function getCurrentFileProperty(): ?FileRecord

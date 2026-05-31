@@ -30,4 +30,12 @@
     outline-offset: 2px;
 }
 
+/* Mirrors .ca-focus-ring for a visible control whose focusable peer input is
+   visually hidden (e.g. the toggle switch track following a `peer sr-only`
+   checkbox). */
+.peer:focus-visible ~ .ca-focus-ring-peer {
+    outline: 2px solid var(--ca-primary);
+    outline-offset: 2px;
+}
+
 [x-cloak] { display: none !important; }
