@@ -65,6 +65,30 @@ it('resets the selected target format when replacing the current file', function
         ->assertSet('step', 'upload');
 });
 
+it('shows the unsupported conversion error message on invalid target selection', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->call('selectTargetFormat', 'mp3')
+        ->assertSee('This conversion is not supported yet.');
+});
+
+it('renders a loading indicator targeting target selection', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSeeHtml('wire:loading')
+        ->assertSeeHtml('wire:target="selectTargetFormat"');
+});
+
 it('clears a previous target error when a valid target is chosen', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
