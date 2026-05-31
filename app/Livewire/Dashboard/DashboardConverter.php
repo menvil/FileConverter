@@ -127,8 +127,15 @@ class DashboardConverter extends Component
     private function resetCurrentUpload(): void
     {
         $this->reset('upload', 'currentFileId', 'uploadError');
+        $this->resetTargetSelection();
         $this->resetErrorBag();
         $this->step = 'upload';
+    }
+
+    private function resetTargetSelection(): void
+    {
+        $this->selectedTargetFormat = null;
+        $this->targetFormatError = null;
     }
 
     public function getCurrentFileProperty(): ?FileRecord

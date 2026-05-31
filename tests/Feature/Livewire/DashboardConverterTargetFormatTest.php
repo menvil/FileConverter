@@ -32,3 +32,50 @@ it('rejects an unsupported target format selection', function () {
         ->assertSet('step', 'format')
         ->assertSee('This conversion is not supported');
 });
+
+it('resets the selected target format when the current file is removed', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('selectedTargetFormat', 'jpg')
+        ->call('removeFile')
+        ->assertSet('selectedTargetFormat', null)
+        ->assertSet('currentFileId', null)
+        ->assertSet('step', 'upload');
+});
+
+it('resets the selected target format when replacing the current file', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('selectedTargetFormat', 'jpg')
+        ->call('replaceFile')
+        ->assertSet('selectedTargetFormat', null)
+        ->assertSet('targetFormatError', null)
+        ->assertSet('step', 'upload');
+});
+
+it('clears a previous target error when a valid target is chosen', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->call('selectTargetFormat', 'mp3')
+        ->assertSet('targetFormatError', 'This conversion is not supported yet.')
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('targetFormatError', null)
+        ->assertSet('selectedTargetFormat', 'jpg');
+});
