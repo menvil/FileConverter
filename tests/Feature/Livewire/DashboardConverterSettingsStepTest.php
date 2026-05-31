@@ -105,6 +105,27 @@ it('renders the png to jpg settings form', function () {
         ->assertDontSee('Conversion settings will be added in Phase 8');
 });
 
+it('renders the png to pdf settings form distinct from png to jpg', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create([
+        'extension' => 'png',
+        'mime_type' => 'image/png',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'pdf')
+        ->assertSet('step', 'settings')
+        ->assertSee('Settings for PNG to PDF')
+        ->assertSee('Page size')
+        ->assertSee('Orientation')
+        ->assertSee('Margin')
+        ->assertSee('Fit mode')
+        ->assertSee('Compression')
+        ->assertDontSee('Background color');
+});
+
 it('initializes default options from the converter schema', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
