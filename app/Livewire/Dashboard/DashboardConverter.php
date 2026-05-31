@@ -152,6 +152,25 @@ class DashboardConverter extends Component
         $this->step = 'settings';
     }
 
+    public function continueFromSettings(): void
+    {
+        if ($this->currentFile === null || $this->selectedTargetFormat === null) {
+            $this->goToSettingsStep();
+
+            return;
+        }
+
+        if (! $this->validateSettings()) {
+            $this->step = 'settings';
+
+            return;
+        }
+
+        // Phase 8 stops at a convert placeholder. CreateConversionJobAction and
+        // the real conversion flow arrive in Phase 9.
+        $this->step = 'convert';
+    }
+
     public function validateSettings(): bool
     {
         $this->resetErrorBag();
