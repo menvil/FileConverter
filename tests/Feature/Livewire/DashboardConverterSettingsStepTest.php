@@ -67,6 +67,39 @@ it('renders the dynamic options form container on the settings step', function (
         ->assertSeeHtml('data-testid="option-field-mystery"');
 });
 
+it('loads the converter options schema when a target format is selected', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create([
+        'extension' => 'png',
+        'mime_type' => 'image/png',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('selectedTargetFormat', 'jpg')
+        ->assertSet('selectedConverterKey', 'png:jpg')
+        ->assertSet('step', 'settings')
+        ->assertSee('Quality')
+        ->assertSee('Background color');
+});
+
+it('clears the loaded schema when an unsupported target is selected', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSet('selectedConverterKey', 'png:jpg')
+        ->call('selectTargetFormat', 'mp3')
+        ->assertSet('selectedConverterKey', null)
+        ->assertSet('optionsSchema', [])
+        ->assertSet('step', 'format');
+});
+
 it('shows a controlled fallback for an unsupported field type', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
