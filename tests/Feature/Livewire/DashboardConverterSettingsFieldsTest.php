@@ -128,3 +128,44 @@ it('renders a color option field with native and hex inputs', function () {
         ->assertSeeHtml('wire:model.live="options.background_color"')
         ->assertSeeHtml('wire:model.live.debounce.300ms="options.background_color"');
 });
+
+it('renders number and range option fields with bounds', function () {
+    settingsComponent(
+        schema: [
+            [
+                'key' => 'width',
+                'type' => 'number',
+                'label' => 'Width',
+                'default' => 1200,
+                'min' => 1,
+                'max' => 10000,
+            ],
+            [
+                'key' => 'compression',
+                'type' => 'range',
+                'label' => 'Compression',
+                'default' => 80,
+                'min' => 0,
+                'max' => 100,
+                'step' => 1,
+            ],
+        ],
+        options: ['width' => 1200, 'compression' => 80],
+    )
+        ->assertSee('Width')
+        ->assertSee('Compression')
+        ->assertSeeHtml('type="number"')
+        ->assertSeeHtml('type="range"')
+        ->assertSeeHtml('wire:model.live.debounce.300ms="options.width"')
+        ->assertSeeHtml('wire:model.live="options.compression"')
+        ->assertSeeHtml('data-testid="range-value-compression"');
+});
+
+it('handles an unsupported field type with a visible fallback', function () {
+    settingsComponent(
+        schema: [
+            ['key' => 'mystery', 'type' => 'slider2', 'label' => 'Mystery'],
+        ],
+    )
+        ->assertSee('Unsupported field type: slider2');
+});
