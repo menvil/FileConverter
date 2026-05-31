@@ -85,6 +85,18 @@ it('loads the converter options schema when a target format is selected', functi
         ->assertSee('Background color');
 });
 
+it('shows the estimated cost placeholder on the settings step', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->assertSee('Estimated cost')
+        ->assertSee('calculated before conversion');
+});
+
 it('renders the png to jpg settings form', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create([

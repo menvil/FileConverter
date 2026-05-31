@@ -167,6 +167,13 @@
 
                 @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
 
+                <div
+                    data-testid="estimated-cost-placeholder"
+                    class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-4 py-3">
+                    <span class="text-sm font-semibold text-[var(--ca-text)]">Estimated cost</span>
+                    <p class="text-sm text-[var(--ca-muted)]">Credit cost will be calculated before conversion.</p>
+                </div>
+
                 <div class="flex justify-end">
                     <x-button variant="primary" size="sm" wire:click="continueFromSettings">Continue</x-button>
                 </div>
