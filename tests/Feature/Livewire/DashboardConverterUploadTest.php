@@ -18,7 +18,7 @@ it('uploads a valid image file and moves to format step', function () {
         ->call('storeUpload')
         ->assertSet('step', 'format')
         ->assertSee('sample.png')
-        ->assertSee('Choose output format');
+        ->assertSee('Convert PNG to');
 
     expect(FileRecord::query()->where('original_name', 'sample.png')->exists())->toBeTrue();
 });
@@ -68,7 +68,7 @@ it('shows an error for unsupported upload format', function () {
         ->assertSee('not supported');
 });
 
-it('shows format step placeholder after successful upload', function () {
+it('shows target formats after successful upload', function () {
     Storage::fake('local');
 
     $user = User::factory()->create();
@@ -78,8 +78,8 @@ it('shows format step placeholder after successful upload', function () {
         ->set('upload', UploadedFile::fake()->image('photo.png'))
         ->call('storeUpload')
         ->assertSet('step', 'format')
-        ->assertSee('Choose output format')
-        ->assertSee('Target format selection will be added in Phase 7');
+        ->assertSee('Convert PNG to')
+        ->assertSee('JPG');
 });
 
 it('shows uploaded file summary after upload', function () {

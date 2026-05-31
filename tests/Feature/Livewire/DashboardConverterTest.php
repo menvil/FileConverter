@@ -47,3 +47,37 @@ it('opens the format step when a current file exists', function () {
         ->call('goToFormatStep')
         ->assertSet('step', 'format');
 });
+
+it('loads available target formats for an uploaded png file', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSet('step', 'format')
+        ->assertSee('JPG')
+        ->assertSee('WEBP')
+        ->assertSee('PDF');
+});
+
+it('loads available target formats for an uploaded jpg file', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'jpg']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSet('step', 'format')
+        ->assertSee('PNG')
+        ->assertSee('WEBP')
+        ->assertSee('PDF');
+});
+
+it('returns an empty target list when there is no current file', function () {
+    $component = Livewire::test(DashboardConverter::class);
+
+    expect($component->instance()->availableTargets)->toBe([]);
+});
