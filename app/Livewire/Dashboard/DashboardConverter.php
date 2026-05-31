@@ -79,10 +79,35 @@ class DashboardConverter extends Component
 
     public function ensureValidStep(): void
     {
-        if ($this->step === 'format' && $this->currentFile === null) {
+        if (in_array($this->step, ['format', 'settings'], true) && $this->currentFile === null) {
             $this->currentFileId = null;
             $this->step = 'upload';
+
+            return;
         }
+
+        if ($this->step === 'settings' && $this->selectedTargetFormat === null) {
+            $this->step = 'format';
+        }
+    }
+
+    public function goToSettingsStep(): void
+    {
+        if ($this->currentFile === null) {
+            $this->resetTargetSelection();
+            $this->currentFileId = null;
+            $this->step = 'upload';
+
+            return;
+        }
+
+        if ($this->selectedTargetFormat === null) {
+            $this->step = 'format';
+
+            return;
+        }
+
+        $this->step = 'settings';
     }
 
     public function selectTargetFormat(string $targetFormat): void
