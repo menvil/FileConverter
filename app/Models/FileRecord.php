@@ -40,6 +40,11 @@ class FileRecord extends Model
         ];
     }
 
+    public function isExpired(): bool
+    {
+        return $this->expires_at !== null && $this->expires_at->isPast();
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -118,6 +118,23 @@ it('does nothing on refreshConversionStatus when no job exists', function () {
         ->assertSet('step', 'converting');
 });
 
+it('shows expired result message when completed result file is expired', function () {
+    $user = User::factory()->create();
+    $resultFile = FileRecord::factory()->for($user)->expired()->create([
+        'original_name' => 'old-result.jpg',
+    ]);
+    $job = ConversionJob::factory()->for($user)->completed()->create([
+        'result_file_id' => $resultFile->id,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'completed')
+        ->set('currentConversionJobId', $job->id)
+        ->assertSee('This result has expired')
+        ->assertDontSee('Download');
+});
+
 it('returns to settings while keeping file target and options', function () {
     $user = User::factory()->create();
     $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
