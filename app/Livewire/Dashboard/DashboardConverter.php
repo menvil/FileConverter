@@ -4,8 +4,10 @@ namespace App\Livewire\Dashboard;
 
 use App\Actions\Conversions\CreateConversionJobAction;
 use App\Actions\Files\StoreUploadedFileAction;
+use App\Enums\ConversionStatus;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
+use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
@@ -307,6 +309,43 @@ class DashboardConverter extends Component
         $this->optionsSchema = [];
         $this->options = [];
         $this->optionsByTarget = [];
+    }
+
+    public function getCurrentJobProperty(): ?ConversionJob
+    {
+        if ($this->currentConversionJobId === null) {
+            return null;
+        }
+
+        return ConversionJob::query()
+            ->with(['sourceFile', 'resultFile'])
+            ->where('user_id', auth()->id())
+            ->find($this->currentConversionJobId);
+    }
+
+    public function refreshConversionStatus(): void
+    {
+        if ($this->currentConversionJobId === null) {
+            return;
+        }
+
+        $job = ConversionJob::query()
+            ->where('user_id', auth()->id())
+            ->find($this->currentConversionJobId);
+
+        if (! $job) {
+            return;
+        }
+
+        if ($job->status === ConversionStatus::Completed) {
+            $this->step = 'completed';
+
+            return;
+        }
+
+        if ($job->status === ConversionStatus::Failed) {
+            $this->step = 'failed';
+        }
     }
 
     public function getCurrentFileProperty(): ?FileRecord

@@ -180,6 +180,25 @@
             </div>
         @endif
 
+        @if ($step === 'converting')
+            <div wire:poll.2s="refreshConversionStatus">
+                <div class="flex flex-col items-center gap-4 py-8 text-center">
+                    <div class="h-12 w-12 animate-spin rounded-full border-4 border-[var(--ca-border)] border-t-[var(--ca-primary)]"></div>
+
+                    <div>
+                        <p class="text-base font-semibold text-[var(--ca-text)]">Converting your file</p>
+                        @if ($this->currentJob)
+                            <p class="mt-1 text-sm text-[var(--ca-muted)]">
+                                {{ strtoupper($this->currentJob->source_format) }} → {{ strtoupper($this->currentJob->target_format) }}
+                            </p>
+                        @endif
+                    </div>
+
+                    <p class="text-xs text-[var(--ca-muted)]">Please keep this page open while we prepare your file.</p>
+                </div>
+            </div>
+        @endif
+
         @if ($step === 'convert' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
