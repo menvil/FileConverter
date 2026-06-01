@@ -8,15 +8,26 @@ use App\Support\Conversions\DTO\ConversionContext;
 use App\Support\Conversions\DTO\ConversionResult;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use RuntimeException;
 
 trait RendersSingleImagePdf
 {
     private function renderPdf(ConversionContext $context, string $imageMimeType): ConversionResult
     {
-        $sourceContent = Storage::disk('local')->get($context->sourceFile->stored_path);
+        $storedPath = $context->sourceFile->stored_path;
+
+        if (! Storage::disk('local')->exists($storedPath)) {
+            throw new RuntimeException(
+                "RendersSingleImagePdf: source file not found at [{$storedPath}]."
+            );
+        }
+
+        $sourceContent = Storage::disk('local')->get($storedPath);
         $imageDataUri = "data:{$imageMimeType};base64,".base64_encode($sourceContent);
 
-        $pageSize = $context->options['page_size'] ?? 'a4';
+        $pageSize = $this->resolvePageSize($context->options['page_size'] ?? 'a4');
         $orientation = $this->resolveOrientation($context->options['orientation'] ?? 'auto', $sourceContent);
         $margin = $this->resolveMargin($context->options['margin'] ?? 'small');
         $fitMode = $context->options['fit_mode'] ?? 'contain';
@@ -37,22 +48,33 @@ trait RendersSingleImagePdf
         );
     }
 
+    private function resolvePageSize(string $pageSize): string
+    {
+        if ($pageSize === 'auto' || $pageSize === '') {
+            return 'a4';
+        }
+
+        return $pageSize;
+    }
+
     private function resolveOrientation(string $orientation, string $imageContent): string
     {
         if ($orientation !== 'auto') {
             return $orientation;
         }
 
-        $image = imagecreatefromstring($imageContent);
-        if ($image === false) {
-            return 'portrait';
+        $manager = new ImageManager(new Driver);
+
+        try {
+            $image = $manager->decodeBinary($imageContent);
+        } catch (\Throwable $e) {
+            throw new RuntimeException(
+                "RendersSingleImagePdf: could not decode image binary to determine orientation. {$e->getMessage()}",
+                previous: $e,
+            );
         }
 
-        $width = imagesx($image);
-        $height = imagesy($image);
-        imagedestroy($image);
-
-        return $width > $height ? 'landscape' : 'portrait';
+        return $image->width() > $image->height() ? 'landscape' : 'portrait';
     }
 
     private function resolveMargin(string $margin): string

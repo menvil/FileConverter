@@ -10,6 +10,7 @@ use App\Support\Conversions\DTO\ConversionResult;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use RuntimeException;
 
 final class JpgToPngDriver implements ConverterDriver
 {
@@ -20,10 +21,16 @@ final class JpgToPngDriver implements ConverterDriver
 
     public function convert(ConversionContext $context): ConversionResult
     {
-        $manager = new ImageManager(new Driver);
+        $storedPath = $context->sourceFile->stored_path;
 
-        $sourcePath = Storage::disk('local')->path($context->sourceFile->stored_path);
-        $image = $manager->decodePath($sourcePath);
+        if (! Storage::disk('local')->exists($storedPath)) {
+            throw new RuntimeException(
+                "JpgToPngDriver: source file not found at [{$storedPath}]."
+            );
+        }
+
+        $manager = new ImageManager(new Driver);
+        $image = $manager->decodePath(Storage::disk('local')->path($storedPath));
 
         $encoded = $image->encodeUsingFileExtension('png');
 

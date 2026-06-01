@@ -13,7 +13,6 @@ it('converts png to webp', function () {
     $sourcePath = ImageFixture::png('source.png', width: 600, height: 400);
     $context = ConversionContextFactory::forSourcePath(
         sourcePath: $sourcePath,
-        outputExtension: 'webp',
         options: [
             'quality' => 'high',
             'resize' => 'original',

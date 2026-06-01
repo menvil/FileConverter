@@ -13,7 +13,6 @@ it('converts jpg to png', function () {
     $sourcePath = ImageFixture::jpg('source.jpg', width: 600, height: 400);
     $context = ConversionContextFactory::forSourcePath(
         sourcePath: $sourcePath,
-        outputExtension: 'png',
         options: [
             'resize' => 'original',
             'remove_metadata' => true,
