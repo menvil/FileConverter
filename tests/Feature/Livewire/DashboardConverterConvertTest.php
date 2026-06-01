@@ -31,6 +31,22 @@ it('creates conversion job when user clicks convert', function () {
     expect(ConversionJob::query()->count())->toBe(1);
 });
 
+it('renders converting state while conversion is processing', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->processing()->create([
+        'source_format' => 'png',
+        'target_format' => 'jpg',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'converting')
+        ->set('currentConversionJobId', $job->id)
+        ->assertSee('Converting')
+        ->assertSee('PNG')
+        ->assertSee('JPG');
+});
+
 it('does not create duplicate conversion jobs on repeated convert calls', function () {
     Queue::fake();
     Storage::fake('local');
