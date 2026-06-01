@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Actions\Conversions\CreateConversionJobAction;
 use App\Actions\Files\StoreUploadedFileAction;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
@@ -47,6 +48,8 @@ class DashboardConverter extends Component
      * @var array<string, array<string, mixed>>
      */
     public array $optionsByTarget = [];
+
+    public ?int $currentConversionJobId = null;
 
     public function updatedUpload(): void
     {
@@ -196,9 +199,30 @@ class DashboardConverter extends Component
             return;
         }
 
-        // Phase 8 stops at a convert placeholder. CreateConversionJobAction and
-        // the real conversion flow arrive in Phase 9.
         $this->step = 'convert';
+    }
+
+    public function convert(): void
+    {
+        if ($this->step === 'converting' || $this->currentConversionJobId !== null) {
+            return;
+        }
+
+        $file = $this->currentFile;
+
+        if ($file === null || $this->selectedTargetFormat === null) {
+            return;
+        }
+
+        $job = app(CreateConversionJobAction::class)->handle(
+            user: auth()->user(),
+            sourceFile: $file,
+            targetFormat: $this->selectedTargetFormat,
+            options: $this->options,
+        );
+
+        $this->currentConversionJobId = $job->id;
+        $this->step = 'converting';
     }
 
     public function validateSettings(): bool

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Livewire\Dashboard\DashboardConverter;
 use App\Models\ConversionJob;
-use App\Models\FileRecord;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
