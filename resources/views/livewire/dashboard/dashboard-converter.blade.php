@@ -180,6 +180,25 @@
             </div>
         @endif
 
+        @if ($step === 'failed')
+            <div class="flex flex-col gap-4">
+                <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-red-700">Conversion failed</p>
+                    <p class="mt-1 text-sm text-red-600">We could not convert this file. Try another file or change settings.</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <x-button wire:click="convertWithDifferentSettings" class="w-full">
+                        Change settings
+                    </x-button>
+
+                    <x-button variant="secondary" wire:click="convertAnother" class="w-full">
+                        Try another file
+                    </x-button>
+                </div>
+            </div>
+        @endif
+
         @if ($step === 'completed' && $this->currentJob)
             @php($job = $this->currentJob)
             <div class="flex flex-col gap-4">
