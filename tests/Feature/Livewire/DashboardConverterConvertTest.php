@@ -118,6 +118,26 @@ it('does nothing on refreshConversionStatus when no job exists', function () {
         ->assertSet('step', 'converting');
 });
 
+it('returns to settings while keeping file target and options', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+    $job = ConversionJob::factory()->for($user)->completed()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'completed')
+        ->set('currentFileId', $file->id)
+        ->set('selectedTargetFormat', 'jpg')
+        ->set('options', ['quality' => 'high'])
+        ->set('currentConversionJobId', $job->id)
+        ->call('convertWithDifferentSettings')
+        ->assertSet('step', 'settings')
+        ->assertSet('currentFileId', $file->id)
+        ->assertSet('selectedTargetFormat', 'jpg')
+        ->assertSet('options', ['quality' => 'high'])
+        ->assertSet('currentConversionJobId', null);
+});
+
 it('resets dashboard state when user chooses convert another file', function () {
     $user = User::factory()->create();
     $job = ConversionJob::factory()->for($user)->completed()->create();
