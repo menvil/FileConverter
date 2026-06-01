@@ -32,6 +32,22 @@ it('creates conversion job when user clicks convert', function () {
     expect(ConversionJob::query()->count())->toBe(1);
 });
 
+it('renders failed state with readable message and no raw error', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->failed()->create([
+        'error_code' => 'driver_failed',
+        'error_message' => 'Imagick internal raw error',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'failed')
+        ->set('currentConversionJobId', $job->id)
+        ->assertSee('Conversion failed')
+        ->assertSee('Try another file')
+        ->assertDontSee('Imagick internal raw error');
+});
+
 it('renders converting state while conversion is processing', function () {
     $user = User::factory()->create();
     $job = ConversionJob::factory()->for($user)->processing()->create([
