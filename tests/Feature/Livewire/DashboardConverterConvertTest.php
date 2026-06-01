@@ -118,6 +118,23 @@ it('does nothing on refreshConversionStatus when no job exists', function () {
         ->assertSet('step', 'converting');
 });
 
+it('resets dashboard state when user chooses convert another file', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->completed()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'completed')
+        ->set('currentConversionJobId', $job->id)
+        ->set('selectedTargetFormat', 'jpg')
+        ->set('options', ['quality' => 'high'])
+        ->call('convertAnother')
+        ->assertSet('step', 'upload')
+        ->assertSet('currentConversionJobId', null)
+        ->assertSet('selectedTargetFormat', null)
+        ->assertSet('options', []);
+});
+
 it('does not create duplicate conversion jobs on repeated convert calls', function () {
     Queue::fake();
     Storage::fake('local');
