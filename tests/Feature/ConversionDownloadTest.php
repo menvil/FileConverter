@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\ConversionStatus;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
