@@ -15,7 +15,6 @@ it('uploads a valid image file and moves to format step', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('sample.png', 600, 400))
-        ->call('storeUpload')
         ->assertSet('step', 'format')
         ->assertSee('sample.png')
         ->assertSee('Convert PNG to');
@@ -31,7 +30,6 @@ it('resets current file when replacing uploaded file', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('first.png'))
-        ->call('storeUpload')
         ->assertSet('step', 'format')
         ->call('replaceFile')
         ->assertSet('step', 'upload')
@@ -47,7 +45,6 @@ it('removes uploaded file from current flow', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('remove-me.png'))
-        ->call('storeUpload')
         ->assertSet('step', 'format')
         ->call('removeFile')
         ->assertSet('step', 'upload')
@@ -63,7 +60,6 @@ it('shows an error for unsupported upload format', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->create('notes.txt', 10, 'text/plain'))
-        ->call('storeUpload')
         ->assertSet('step', 'upload')
         ->assertSee('not supported');
 });
@@ -76,7 +72,6 @@ it('shows target formats after successful upload', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('photo.png'))
-        ->call('storeUpload')
         ->assertSet('step', 'format')
         ->assertSee('Convert PNG to')
         ->assertSee('JPG');
@@ -90,7 +85,6 @@ it('shows uploaded file summary after upload', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('avatar.jpg', 800, 600))
-        ->call('storeUpload')
         ->assertSee('avatar.jpg')
         ->assertSee('JPG')
         ->assertSee('KB')

@@ -48,6 +48,11 @@ class DashboardConverter extends Component
      */
     public array $optionsByTarget = [];
 
+    public function updatedUpload(): void
+    {
+        $this->storeUpload(app(StoreUploadedFileAction::class));
+    }
+
     public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
     {
         $this->resetErrorBag();
