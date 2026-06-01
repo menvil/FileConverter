@@ -180,6 +180,34 @@
             </div>
         @endif
 
+        @if ($step === 'completed' && $this->currentJob)
+            @php($job = $this->currentJob)
+            <div class="flex flex-col gap-4">
+                <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-[var(--ca-text)]">Done! Your file is ready.</p>
+                    @if ($job->resultFile)
+                        <p class="mt-1 text-sm text-[var(--ca-muted)]">{{ $job->resultFile->original_name }}</p>
+                    @endif
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <a
+                        href="{{ route('conversions.download', $job) }}"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110"
+                        style="background:var(--ca-primary);"
+                    >Download</a>
+
+                    <x-button variant="secondary" wire:click="convertWithDifferentSettings" class="w-full">
+                        Change settings
+                    </x-button>
+
+                    <x-button variant="ghost" wire:click="convertAnother" class="w-full">
+                        Convert another file
+                    </x-button>
+                </div>
+            </div>
+        @endif
+
         @if ($step === 'converting')
             <div wire:poll.2s="refreshConversionStatus">
                 <div class="flex flex-col items-center gap-4 py-8 text-center">
