@@ -323,6 +323,26 @@ class DashboardConverter extends Component
             ->find($this->currentConversionJobId);
     }
 
+    public function convertAnother(): void
+    {
+        $this->reset(['upload', 'currentFileId', 'uploadError', 'selectedTargetFormat',
+            'selectedConverterKey', 'targetFormatError', 'optionsSchema', 'options',
+            'optionsByTarget', 'currentConversionJobId']);
+        $this->step = 'upload';
+    }
+
+    public function convertWithDifferentSettings(): void
+    {
+        if ($this->currentFile === null || $this->selectedTargetFormat === null) {
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->currentConversionJobId = null;
+        $this->step = 'settings';
+    }
+
     public function refreshConversionStatus(): void
     {
         if ($this->currentConversionJobId === null) {
