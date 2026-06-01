@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Conversion\Drivers\Image\JpgToPdfDriver;
+use App\Conversion\Drivers\Image\JpgToPngDriver;
+use App\Conversion\Drivers\Image\JpgToWebpDriver;
+use App\Conversion\Drivers\Image\PngToJpgDriver;
+use App\Conversion\Drivers\Image\PngToPdfDriver;
+use App\Conversion\Drivers\Image\PngToWebpDriver;
 use App\Support\Conversions\ConverterDriverRegistry;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\Image\JpgToPdfConverter;
@@ -27,10 +33,15 @@ class ConverterServiceProvider extends ServiceProvider
             ]);
         });
 
-        // Runtime conversion drivers are registered here. Real image/PDF
-        // drivers are introduced in Phase 10; for now the registry is empty.
-        $this->app->singleton(ConverterDriverRegistry::class, function () {
-            return new ConverterDriverRegistry([]);
+        $this->app->singleton(ConverterDriverRegistry::class, function ($app) {
+            return new ConverterDriverRegistry([
+                $app->make(PngToJpgDriver::class),
+                $app->make(JpgToPngDriver::class),
+                $app->make(PngToWebpDriver::class),
+                $app->make(JpgToWebpDriver::class),
+                $app->make(PngToPdfDriver::class),
+                $app->make(JpgToPdfDriver::class),
+            ]);
         });
     }
 }
