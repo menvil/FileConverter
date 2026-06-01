@@ -191,8 +191,18 @@
                     <p class="text-base font-semibold text-[var(--ca-text)]">
                         Ready to convert {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
                     </p>
-                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion will be available in Phase 9.</p>
                 </div>
+
+                <x-button
+                    wire:click="convert"
+                    wire:loading.attr="disabled"
+                    wire:target="convert"
+                    :disabled="$step === 'converting'"
+                    class="w-full"
+                >
+                    <span wire:loading.remove wire:target="convert">Convert Now</span>
+                    <span wire:loading wire:target="convert">Starting…</span>
+                </x-button>
             </div>
         @endif
     </x-card>

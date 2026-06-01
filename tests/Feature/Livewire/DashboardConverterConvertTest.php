@@ -30,3 +30,22 @@ it('creates conversion job when user clicks convert', function () {
 
     expect(ConversionJob::query()->count())->toBe(1);
 });
+
+it('does not create duplicate conversion jobs on repeated convert calls', function () {
+    Queue::fake();
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('upload', UploadedFile::fake()->image('avatar.png', 800, 600))
+        ->call('selectTargetFormat', 'jpg')
+        ->set('options.quality', 'high')
+        ->call('continueFromSettings');
+
+    $component->call('convert');
+    $component->call('convert');
+
+    expect(ConversionJob::query()->count())->toBe(1);
+});
