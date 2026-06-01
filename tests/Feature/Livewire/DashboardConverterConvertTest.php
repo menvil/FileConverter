@@ -47,6 +47,40 @@ it('renders converting state while conversion is processing', function () {
         ->assertSee('JPG');
 });
 
+it('moves to completed step when current job is completed', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->completed()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'converting')
+        ->set('currentConversionJobId', $job->id)
+        ->call('refreshConversionStatus')
+        ->assertSet('step', 'completed');
+});
+
+it('moves to failed step when current job is failed', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->failed()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'converting')
+        ->set('currentConversionJobId', $job->id)
+        ->call('refreshConversionStatus')
+        ->assertSet('step', 'failed');
+});
+
+it('does nothing on refreshConversionStatus when no job exists', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'converting')
+        ->call('refreshConversionStatus')
+        ->assertSet('step', 'converting');
+});
+
 it('does not create duplicate conversion jobs on repeated convert calls', function () {
     Queue::fake();
     Storage::fake('local');
