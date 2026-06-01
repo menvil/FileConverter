@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Dashboard\DashboardConverter;
 use App\Models\ConversionJob;
+use App\Models\FileRecord;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
@@ -45,6 +46,26 @@ it('renders converting state while conversion is processing', function () {
         ->assertSee('Converting')
         ->assertSee('PNG')
         ->assertSee('JPG');
+});
+
+it('renders completed state with download action', function () {
+    $user = User::factory()->create();
+    $resultFile = FileRecord::factory()->for($user)->create([
+        'original_name' => 'avatar.jpg',
+        'extension' => 'jpg',
+    ]);
+    $job = ConversionJob::factory()->for($user)->completed()->create([
+        'target_format' => 'jpg',
+        'result_file_id' => $resultFile->id,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'completed')
+        ->set('currentConversionJobId', $job->id)
+        ->assertSee('Done')
+        ->assertSee('avatar.jpg')
+        ->assertSee('Download');
 });
 
 it('moves to completed step when current job is completed', function () {
