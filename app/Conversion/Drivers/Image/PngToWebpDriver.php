@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Conversion\Drivers\Image;
 
+use App\Conversion\Drivers\Image\Concerns\ResolvesImageQuality;
 use App\Support\Conversions\Contracts\ConverterDriver;
 use App\Support\Conversions\DTO\ConversionContext;
 use App\Support\Conversions\DTO\ConversionResult;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use RuntimeException;
 
 final class PngToWebpDriver implements ConverterDriver
 {
+    use ResolvesImageQuality;
+
     public function key(): string
     {
         return 'png_to_webp';
@@ -20,10 +24,16 @@ final class PngToWebpDriver implements ConverterDriver
 
     public function convert(ConversionContext $context): ConversionResult
     {
-        $manager = new ImageManager(new Driver);
+        $storedPath = $context->sourceFile->stored_path;
 
-        $sourcePath = Storage::disk('local')->path($context->sourceFile->stored_path);
-        $image = $manager->decodePath($sourcePath);
+        if (! Storage::disk('local')->exists($storedPath)) {
+            throw new RuntimeException(
+                "PngToWebpDriver: source file not found at [{$storedPath}]."
+            );
+        }
+
+        $manager = new ImageManager(new Driver);
+        $image = $manager->decodePath(Storage::disk('local')->path($storedPath));
 
         $quality = $this->resolveQuality($context->options['quality'] ?? 'high');
 
@@ -39,16 +49,5 @@ final class PngToWebpDriver implements ConverterDriver
             extension: 'webp',
             sizeBytes: Storage::disk('local')->size($outputPath),
         );
-    }
-
-    private function resolveQuality(mixed $quality): int
-    {
-        return match ($quality) {
-            'low' => 60,
-            'medium' => 75,
-            'high' => 90,
-            'max' => 100,
-            default => 85,
-        };
     }
 }

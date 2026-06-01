@@ -13,7 +13,6 @@ it('converts jpg to pdf', function () {
     $sourcePath = ImageFixture::jpg('source.jpg', width: 600, height: 400);
     $context = ConversionContextFactory::forSourcePath(
         sourcePath: $sourcePath,
-        outputExtension: 'pdf',
         options: [
             'page_size' => 'a4',
             'orientation' => 'auto',

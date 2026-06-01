@@ -16,7 +16,6 @@ final class ConversionContextFactory
      */
     public static function forSourcePath(
         string $sourcePath,
-        string $outputExtension,
         array $options = [],
     ): ConversionContext {
         $sourceFile = new FileRecord;
