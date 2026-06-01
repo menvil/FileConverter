@@ -15,7 +15,6 @@ it('completes the upload to target format selection flow for a png file', functi
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('avatar.png', 600, 400))
-        ->call('storeUpload')
         ->assertSet('step', 'format')
         ->assertSee('Convert PNG to')
         ->assertSee('JPG')
@@ -38,7 +37,6 @@ it('does not persist any extra records during target selection', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('photo.png'))
-        ->call('storeUpload')
         ->call('selectTargetFormat', 'jpg')
         ->assertSet('step', 'settings');
 
@@ -53,7 +51,6 @@ it('handles the full back-and-forth navigation flow without losing the file', fu
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', UploadedFile::fake()->image('roundtrip.png'))
-        ->call('storeUpload')
         ->assertSet('step', 'format')
         ->call('selectTargetFormat', 'webp')
         ->assertSet('step', 'settings')
