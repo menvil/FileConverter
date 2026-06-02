@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\CreditTransactionType;
 use App\Models\CreditTransaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,7 +22,7 @@ class CreditTransactionFactory extends Factory
             'user_id' => User::factory(),
             'amount' => 10,
             'balance_after' => 10,
-            'type' => 'grant',
+            'type' => CreditTransactionType::Grant,
             'reason' => 'test',
             'metadata_json' => null,
         ];
