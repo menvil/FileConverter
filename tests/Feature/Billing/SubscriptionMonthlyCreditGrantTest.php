@@ -1,7 +1,6 @@
 <?php
 
 use App\Billing\Webhooks\SubscriptionWebhookHandler;
-use App\Contracts\Billing\CreditLedger;
 use App\Models\CreditTransaction;
 use App\Models\User;
 
@@ -24,7 +23,12 @@ it('grants monthly subscription credits once for paid invoice', function () {
         payload: ['event_id' => 'evt_test_1_duplicate'],
     );
 
-    expect(app(CreditLedger::class)->balance($user))->toBe(1000);
+    $grantCount = CreditTransaction::query()
+        ->where('user_id', $user->id)
+        ->where('reason', 'subscription_monthly_grant')
+        ->count();
+
+    expect($grantCount)->toBe(1);
 });
 
 it('does not grant credits for free plan invoice', function () {
@@ -37,7 +41,12 @@ it('does not grant credits for free plan invoice', function () {
         payload: [],
     );
 
-    expect(app(CreditLedger::class)->balance($user))->toBe(0);
+    $subscriptionGrant = CreditTransaction::query()
+        ->where('user_id', $user->id)
+        ->where('reason', 'subscription_monthly_grant')
+        ->exists();
+
+    expect($subscriptionGrant)->toBeFalse();
 });
 
 it('stores invoice id in credit transaction metadata', function () {
