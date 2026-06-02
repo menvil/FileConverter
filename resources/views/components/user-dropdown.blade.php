@@ -59,6 +59,11 @@
                 </div>
             </div>
 
+            <div class="border-t px-4 py-3" style="border-color:var(--ca-border);">
+                <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--ca-muted)]">Credits</p>
+                <p class="text-sm font-semibold text-[var(--ca-text)]">{{ $creditsBalance }} <span class="text-xs font-normal text-[var(--ca-muted)]">available</span></p>
+            </div>
+
             @if ($planLimits)
             <div class="border-t px-4 py-3" style="border-color:var(--ca-border);">
                 <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--ca-muted)]">Plan limits</p>
