@@ -10,7 +10,7 @@ final readonly class CreditPackDto
         public string $key,
         public string $label,
         public int $credits,
-        public string $stripePriceId,
+        public ?string $stripePriceId,
         public string $description,
     ) {}
 
