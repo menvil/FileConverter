@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Actions\Conversions\RecordConversionResultFileAction;
+use App\Contracts\Billing\CreditLedger;
 use App\Enums\ConversionStatus;
 use App\Jobs\ProcessConversionJob;
 use App\Models\ConversionJob;
@@ -43,6 +44,7 @@ it('processes conversion job successfully with fake driver', function () {
     (new ProcessConversionJob($conversionJob->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     $fresh = $conversionJob->fresh();
@@ -85,6 +87,7 @@ it('marks conversion job as failed when driver throws exception', function () {
     (new ProcessConversionJob($conversionJob->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     $fresh = $conversionJob->fresh();
@@ -118,6 +121,7 @@ it('ignores conversion jobs that are not queued', function () {
     (new ProcessConversionJob($conversionJob->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     expect($conversionJob->fresh()->status)->toBe(ConversionStatus::Completed);
