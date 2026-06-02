@@ -66,9 +66,9 @@
                     <dt class="text-[var(--ca-muted)]">Max file</dt>
                     <dd class="font-medium">{{ $planLimits->maxFileSizeMb }} MB</dd>
                     <dt class="text-[var(--ca-muted)]">Storage</dt>
-                    <dd class="font-medium">{{ $planLimits->storageMb >= 1000 ? round($planLimits->storageMb / 1000, 0).' GB' : $planLimits->storageMb.' MB' }}</dd>
+                    <dd class="font-medium">{{ $formattedStorage }}</dd>
                     <dt class="text-[var(--ca-muted)]">Retention</dt>
-                    <dd class="font-medium">{{ $planLimits->retentionDays === 1 ? '1 day' : $planLimits->retentionDays.' days' }}</dd>
+                    <dd class="font-medium">{{ $retentionDaysLabel }}</dd>
                     <dt class="text-[var(--ca-muted)]">API access</dt>
                     <dd class="font-medium">{{ $hasApiAccess ? 'Included' : 'Not included' }}</dd>
                 </dl>

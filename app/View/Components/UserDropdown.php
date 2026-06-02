@@ -16,6 +16,10 @@ final class UserDropdown extends Component
 
     public bool $hasApiAccess = false;
 
+    public string $formattedStorage = '';
+
+    public string $retentionDaysLabel = '';
+
     public function __construct(
         private readonly FeatureAccessService $featureAccess,
     ) {
@@ -24,7 +28,18 @@ final class UserDropdown extends Component
         if ($user !== null) {
             $this->planLimits = $this->featureAccess->limits($user);
             $this->hasApiAccess = $this->featureAccess->allows($user, 'api_access');
+            $this->formattedStorage = $this->formatStorage($this->planLimits->storageMb);
+            $this->retentionDaysLabel = $this->planLimits->retentionDays === 1
+                ? '1 day'
+                : "{$this->planLimits->retentionDays} days";
         }
+    }
+
+    private function formatStorage(int $storageMb): string
+    {
+        return $storageMb >= 1000
+            ? round($storageMb / 1000).' GB'
+            : "{$storageMb} MB";
     }
 
     public function render(): View|Closure|string
