@@ -65,14 +65,14 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2">
-                                        @if ($job->isCompleted() && $job->result_file_id)
+                                        @if ($this->canDownload($job))
                                             <a
                                                 href="{{ route('conversions.download', $job) }}"
                                                 class="text-sm font-medium text-[var(--ca-primary)] hover:underline"
                                             >Download</a>
                                         @endif
 
-                                        @if ($job->isCompleted() || $job->status === \App\Enums\ConversionStatus::Failed)
+                                        @if ($this->canConvertAgain($job))
                                             <button
                                                 type="button"
                                                 wire:click="convertAgain({{ $job->id }})"

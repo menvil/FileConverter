@@ -75,11 +75,21 @@ class RecentConversionsTable extends Component
             ->where('user_id', auth()->id())
             ->find($conversionJobId);
 
-        if (! $job) {
+        if (! $job || ! $this->canConvertAgain($job)) {
             return;
         }
 
         $this->dispatch('conversion-repeat-requested', conversionJobId: $job->id);
+    }
+
+    public function canDownload(ConversionJob $job): bool
+    {
+        return $job->isCompleted() && $job->result_file_id !== null;
+    }
+
+    public function canConvertAgain(ConversionJob $job): bool
+    {
+        return $job->isCompleted() || $job->status === ConversionStatus::Failed;
     }
 
     public function statusBadgeClasses(ConversionStatus $status): string
