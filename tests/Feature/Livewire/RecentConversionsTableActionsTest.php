@@ -38,3 +38,34 @@ it('does not dispatch convert again event for another users conversion', functio
         ->call('convertAgain', $job->id)
         ->assertNotDispatched('conversion-repeat-requested');
 });
+
+it('can toggle starred state for own conversion', function () {
+    $user = User::factory()->create();
+
+    $job = ConversionJob::factory()->for($user)->create([
+        'is_starred' => false,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->call('toggleStar', $job->id);
+
+    expect($job->fresh()->is_starred)->toBeTrue();
+});
+
+it('cannot toggle starred state for another users conversion', function () {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+
+    $job = ConversionJob::factory()->for($other)->create([
+        'is_starred' => false,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->call('toggleStar', $job->id);
+
+    expect($job->fresh()->is_starred)->toBeFalse();
+});
