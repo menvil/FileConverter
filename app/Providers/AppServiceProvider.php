@@ -13,6 +13,7 @@ use App\Observers\UserObserver;
 use App\Services\Billing\ConfigDrivenConversionCostEstimator;
 use App\Services\Billing\DatabaseCreditLedger;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        Cashier::ignoreRoutes();
+
         $this->app->bind(CreditLedger::class, DatabaseCreditLedger::class);
         $this->app->bind(ConversionCostEstimator::class, ConfigDrivenConversionCostEstimator::class);
         $this->app->bind(SubscriptionCheckoutGateway::class, CashierSubscriptionCheckoutGateway::class);
