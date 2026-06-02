@@ -78,4 +78,9 @@ class ConversionJob extends Model
     {
         return $this->belongsTo(FileRecord::class, 'result_file_id');
     }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === ConversionStatus::Completed;
+    }
 }

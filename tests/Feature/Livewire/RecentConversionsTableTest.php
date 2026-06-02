@@ -37,6 +37,48 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('shows download action for completed conversion with result file', function () {
+    $user = User::factory()->create();
+
+    $result = FileRecord::factory()->for($user)->create();
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Completed,
+        'result_file_id' => $result->id,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('Download');
+});
+
+it('does not show download action for failed conversion', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Failed,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertDontSee('Download');
+});
+
+it('does not show download action for processing conversion', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Processing,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertDontSee('Download');
+});
+
 it('renders conversion status badge', function () {
     $user = User::factory()->create();
 
