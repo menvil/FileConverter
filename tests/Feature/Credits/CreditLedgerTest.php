@@ -6,6 +6,23 @@ use App\Contracts\Billing\CreditLedger;
 use App\Enums\CreditTransactionType;
 use App\Models\User;
 
+it('spends credits and records transaction', function () {
+    $user = User::factory()->create();
+    $ledger = app(CreditLedger::class);
+
+    $ledger->grant($user, 100, 'test_grant');
+
+    $transaction = $ledger->spend($user, 30, 'test_spend', [
+        'operation' => 'png_to_jpg',
+    ]);
+
+    expect($ledger->balance($user))->toBe(70);
+    expect($transaction->amount)->toBe(-30);
+    expect($transaction->balance_after)->toBe(70);
+    expect($transaction->type)->toBe(CreditTransactionType::Spend);
+    expect($transaction->reason)->toBe('test_spend');
+});
+
 it('grants credits and records transaction', function () {
     $user = User::factory()->create();
 
