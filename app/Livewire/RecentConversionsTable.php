@@ -54,6 +54,21 @@ class RecentConversionsTable extends Component
         ]);
     }
 
+    public function toggleStar(int $conversionJobId): void
+    {
+        $job = ConversionJob::query()
+            ->where('user_id', auth()->id())
+            ->find($conversionJobId);
+
+        if (! $job) {
+            return;
+        }
+
+        $job->forceFill([
+            'is_starred' => ! $job->is_starred,
+        ])->save();
+    }
+
     public function convertAgain(int $conversionJobId): void
     {
         $job = ConversionJob::query()
