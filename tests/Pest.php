@@ -50,3 +50,5 @@ function something()
 {
     // ..
 }
+
+require __DIR__.'/Support/FakeStripeEvents.php';
