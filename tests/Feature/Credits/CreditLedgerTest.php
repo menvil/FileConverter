@@ -25,6 +25,22 @@ it('spends credits and records transaction', function () {
     expect($transaction->reason)->toBe('test_spend');
 });
 
+it('refunds credits and records transaction', function () {
+    $user = User::factory()->create();
+    $ledger = app(CreditLedger::class);
+
+    $ledger->grant($user, 100, 'test_grant');
+    $ledger->spend($user, 30, 'test_spend');
+
+    $transaction = $ledger->refund($user, 30, 'conversion_failed_refund');
+
+    expect($ledger->balance($user))->toBe(100);
+    expect($transaction->amount)->toBe(30);
+    expect($transaction->balance_after)->toBe(100);
+    expect($transaction->type)->toBe(CreditTransactionType::Refund);
+    expect($transaction->reason)->toBe('conversion_failed_refund');
+});
+
 it('does not allow spending more credits than available', function () {
     $user = User::factory()->create();
     $ledger = app(CreditLedger::class);
