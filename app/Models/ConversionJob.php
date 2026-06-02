@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $converter_key
  * @property array<string, mixed> $options_json
  * @property ConversionStatus $status
+ * @property bool $is_starred
  * @property int $progress
  * @property string|null $error_code
  * @property string|null $error_message
@@ -40,6 +41,7 @@ use Illuminate\Support\Carbon;
     'converter_key',
     'options_json',
     'status',
+    'is_starred',
     'progress',
     'error_code',
     'error_message',
@@ -56,6 +58,7 @@ class ConversionJob extends Model
     {
         return [
             'status' => ConversionStatus::class,
+            'is_starred' => 'boolean',
             'options_json' => 'array',
             'progress' => 'integer',
             'started_at' => 'datetime',
@@ -77,5 +80,10 @@ class ConversionJob extends Model
     public function resultFile(): BelongsTo
     {
         return $this->belongsTo(FileRecord::class, 'result_file_id');
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === ConversionStatus::Completed;
     }
 }
