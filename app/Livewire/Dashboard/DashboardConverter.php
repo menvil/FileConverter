@@ -9,6 +9,7 @@ use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
+use App\Support\Conversions\Exceptions\UnsupportedConversionException;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
@@ -17,6 +18,7 @@ use App\Support\Files\UploadedFileRules;
 use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Throwable;
 
 class DashboardConverter extends Component
 {
@@ -52,6 +54,10 @@ class DashboardConverter extends Component
     public array $optionsByTarget = [];
 
     public ?int $currentConversionJobId = null;
+
+    public int $pollCount = 0;
+
+    public ?string $convertError = null;
 
     public function updatedUpload(): void
     {
@@ -216,14 +222,28 @@ class DashboardConverter extends Component
             return;
         }
 
-        $job = app(CreateConversionJobAction::class)->handle(
-            user: auth()->user(),
-            sourceFile: $file,
-            targetFormat: $this->selectedTargetFormat,
-            options: $this->options,
-        );
+        $this->convertError = null;
+
+        try {
+            $job = app(CreateConversionJobAction::class)->handle(
+                user: auth()->user(),
+                sourceFile: $file,
+                targetFormat: $this->selectedTargetFormat,
+                options: $this->options,
+            );
+        } catch (UnsupportedConversionException $e) {
+            $this->convertError = 'This conversion is not supported. Please choose a different format.';
+            $this->step = 'format';
+
+            return;
+        } catch (Throwable) {
+            $this->convertError = 'Something went wrong. Please try again.';
+
+            return;
+        }
 
         $this->currentConversionJobId = $job->id;
+        $this->pollCount = 0;
         $this->step = 'converting';
     }
 
@@ -333,19 +353,30 @@ class DashboardConverter extends Component
 
     public function convertWithDifferentSettings(): void
     {
+        $this->currentConversionJobId = null;
+        $this->pollCount = 0;
+
         if ($this->currentFile === null || $this->selectedTargetFormat === null) {
             $this->step = 'upload';
 
             return;
         }
 
-        $this->currentConversionJobId = null;
         $this->step = 'settings';
     }
 
     public function refreshConversionStatus(): void
     {
         if ($this->currentConversionJobId === null) {
+            return;
+        }
+
+        $this->pollCount++;
+
+        if ($this->pollCount > 60) {
+            $this->step = 'failed';
+            $this->convertError = 'Conversion is taking too long. Please try again.';
+
             return;
         }
 

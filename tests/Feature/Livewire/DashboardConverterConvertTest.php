@@ -118,6 +118,32 @@ it('does nothing on refreshConversionStatus when no job exists', function () {
         ->assertSet('step', 'converting');
 });
 
+it('transitions to failed when polling exceeds max attempts', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->processing()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'converting')
+        ->set('currentConversionJobId', $job->id)
+        ->set('pollCount', 60)
+        ->call('refreshConversionStatus')
+        ->assertSet('step', 'failed');
+});
+
+it('clears stale job id when going back to different settings without a file', function () {
+    $user = User::factory()->create();
+    $job = ConversionJob::factory()->for($user)->completed()->create();
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('step', 'completed')
+        ->set('currentConversionJobId', $job->id)
+        ->call('convertWithDifferentSettings')
+        ->assertSet('step', 'upload')
+        ->assertSet('currentConversionJobId', null);
+});
+
 it('shows expired result message when completed result file is expired', function () {
     $user = User::factory()->create();
     $resultFile = FileRecord::factory()->for($user)->expired()->create([
