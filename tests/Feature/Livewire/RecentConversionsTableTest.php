@@ -36,6 +36,19 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('renders conversion creation date', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create([
+        'created_at' => now()->setDate(2026, 1, 15)->setTime(10, 30),
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('Jan 15, 2026');
+});
+
 it('renders result file size when result file exists', function () {
     $user = User::factory()->create();
 
