@@ -23,7 +23,7 @@ class SubscriptionWebhookHandler
 
     public function handleSubscriptionCancelled(User $user, array $payload = []): void
     {
-        throw new \LogicException('Not implemented yet');
+        $user->forceFill(['plan' => 'free'])->save();
     }
 
     public function handleInvoicePaid(User $user, string $planKey, string $invoiceId, array $payload = []): void
