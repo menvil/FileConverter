@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\CreditAccount;
 use App\Models\User;
+use App\Services\FeatureAccess\FeatureAccessService;
 
 it('creates a credit account for a user', function () {
     $user = User::factory()->create();
@@ -33,5 +34,7 @@ it('user has one credit account', function () {
 it('new user credit account is created with balance matching starter grant', function () {
     $user = User::factory()->create();
 
-    expect($user->creditAccount->balance)->toBeInt()->toBeGreaterThanOrEqual(0);
+    $expected = (int) app(FeatureAccessService::class)->limit($user, 'monthly_credits');
+
+    expect($user->creditAccount->balance)->toBe($expected);
 });

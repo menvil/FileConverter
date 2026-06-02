@@ -19,7 +19,6 @@ class CreditTransaction extends Model
     protected $fillable = [
         'user_id',
         'amount',
-        'balance_after',
         'type',
         'reason',
         'source_type',

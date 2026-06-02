@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 use App\Enums\CreditTransactionType;
 
-it('defines credit transaction types', function () {
-    expect(CreditTransactionType::Grant->value)->toBe('grant');
-    expect(CreditTransactionType::Purchase->value)->toBe('purchase');
-    expect(CreditTransactionType::Spend->value)->toBe('spend');
-    expect(CreditTransactionType::Refund->value)->toBe('refund');
-    expect(CreditTransactionType::Adjustment->value)->toBe('adjustment');
-    expect(CreditTransactionType::Expiration->value)->toBe('expiration');
+it('defines all expected credit transaction types', function () {
+    $expected = ['grant', 'purchase', 'spend', 'refund', 'adjustment', 'expiration'];
+    $actual = array_map(fn ($c) => $c->value, CreditTransactionType::cases());
+
+    expect($actual)->toBe($expected);
+    expect($actual)->toHaveCount(6);
 });

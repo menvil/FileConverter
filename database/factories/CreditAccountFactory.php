@@ -18,7 +18,7 @@ class CreditAccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'user_id' => fn () => User::withoutObservers(fn () => User::factory()->create())->id,
             'balance' => 0,
         ];
     }
