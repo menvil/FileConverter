@@ -10,6 +10,7 @@ it('grants credits after successful credit pack checkout', function () {
     config()->set('billing.credit_packs.small.stripe_price_id', 'price_small');
 
     $user = User::factory()->create();
+    $balanceBefore = app(CreditLedger::class)->balance($user);
 
     $event = fakeStripeCheckoutCompletedEvent([
         'event_id' => 'evt_credit_pack_1',
@@ -24,5 +25,5 @@ it('grants credits after successful credit pack checkout', function () {
     app(CreditPackWebhookHandler::class)
         ->handleCheckoutSessionCompleted($event);
 
-    expect(app(CreditLedger::class)->balance($user))->toBe(500);
+    expect(app(CreditLedger::class)->balance($user))->toBe($balanceBefore + 500);
 });
