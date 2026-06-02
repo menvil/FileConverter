@@ -36,7 +36,7 @@ final class DatabaseCreditLedger implements CreditLedger
             $account = CreditAccount::query()
                 ->where('user_id', $user->id)
                 ->lockForUpdate()
-                ->firstOrFail();
+                ->firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
 
             if ($account->balance < $amount) {
                 throw InsufficientCreditsException::make($amount, $account->balance);
