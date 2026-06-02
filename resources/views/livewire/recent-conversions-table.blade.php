@@ -79,6 +79,12 @@
                                                 class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)]"
                                             >Convert again</button>
                                         @endif
+
+                                        <button
+                                            type="button"
+                                            wire:click="toggleStar({{ $job->id }})"
+                                            class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)]"
+                                        >{{ $job->is_starred ? 'Starred' : 'Star' }}</button>
                                     </div>
                                 </td>
                             </tr>
