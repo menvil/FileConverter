@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Billing\BillingPaymentService;
 use App\Billing\CheckoutSessionDto;
+use App\Billing\Gateway\CreditPackCheckoutGateway;
+use App\Billing\Gateway\FakeCreditPackCheckoutGateway;
 use App\Billing\Gateway\FakeSubscriptionCheckoutGateway;
 use App\Billing\Gateway\SubscriptionCheckoutGateway;
 use App\Data\Billing\CreditPackDto;
@@ -12,6 +14,7 @@ use App\Services\Billing\CreditPackRepository;
 
 beforeEach(function () {
     app()->bind(SubscriptionCheckoutGateway::class, FakeSubscriptionCheckoutGateway::class);
+    app()->bind(CreditPackCheckoutGateway::class, FakeCreditPackCheckoutGateway::class);
 
     config()->set('billing.credit_packs.small.stripe_price_id', 'price_small_test');
 });
