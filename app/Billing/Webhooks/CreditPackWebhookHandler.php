@@ -42,7 +42,9 @@ final class CreditPackWebhookHandler
             return;
         }
 
-        DB::transaction(function () use ($user, $pack, $event, $session, $checkoutSessionId): void {
+        $payloadPriceId = $metadata['price_id'] ?? null;
+
+        DB::transaction(function () use ($user, $pack, $event, $session, $checkoutSessionId, $payloadPriceId): void {
             // Lock the credit account row to serialize concurrent Stripe webhook
             // retries for the same user — prevents double-grant on parallel delivery.
             CreditAccount::query()
@@ -65,7 +67,7 @@ final class CreditPackWebhookHandler
                     'stripe_checkout_session_id' => $checkoutSessionId,
                     'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
                     'stripe_customer_id' => $session['customer'] ?? null,
-                    'stripe_price_id' => $pack->stripePriceId,
+                    'stripe_price_id' => $payloadPriceId ?: $pack->stripePriceId,
                 ],
             );
         });
