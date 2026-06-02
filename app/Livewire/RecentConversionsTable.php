@@ -14,11 +14,15 @@ class RecentConversionsTable extends Component
 {
     public string $search = '';
 
+    public string $statusFilter = 'all';
+
     public function render(): View
     {
         $conversions = ConversionJob::query()
             ->where('user_id', auth()->id())
             ->with(['sourceFile', 'resultFile'])
+            ->when($this->statusFilter !== 'all', fn (Builder $query) => $query->where('status', $this->statusFilter)
+            )
             ->when($this->search !== '', function (Builder $query) {
                 $search = trim($this->search);
 
