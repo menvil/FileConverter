@@ -16,6 +16,7 @@
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">From</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">To</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Size</th>
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Date</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--ca-border)]">
@@ -32,6 +33,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-[var(--ca-text)]">
                                     {{ $this->formatBytes(($job->resultFile ?? $job->sourceFile)?->size_bytes) }}
+                                </td>
+                                <td class="px-4 py-3 text-[var(--ca-text)]">
+                                    {{ $job->created_at?->format('M j, Y') ?? '—' }}
                                 </td>
                             </tr>
                         @endforeach
