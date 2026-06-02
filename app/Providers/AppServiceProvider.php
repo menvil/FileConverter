@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Billing\Gateway\CashierCreditPackCheckoutGateway;
 use App\Billing\Gateway\CashierSubscriptionCheckoutGateway;
+use App\Billing\Gateway\CreditPackCheckoutGateway;
 use App\Billing\Gateway\SubscriptionCheckoutGateway;
 use App\Contracts\Billing\ConversionCostEstimator;
 use App\Contracts\Billing\CreditLedger;
@@ -22,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CreditLedger::class, DatabaseCreditLedger::class);
         $this->app->bind(ConversionCostEstimator::class, ConfigDrivenConversionCostEstimator::class);
         $this->app->bind(SubscriptionCheckoutGateway::class, CashierSubscriptionCheckoutGateway::class);
+        $this->app->bind(CreditPackCheckoutGateway::class, CashierCreditPackCheckoutGateway::class);
     }
 
     /**
