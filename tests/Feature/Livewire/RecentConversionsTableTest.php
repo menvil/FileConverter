@@ -37,6 +37,86 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('searches conversions by source file name', function () {
+    $user = User::factory()->create();
+
+    $matchFile = FileRecord::factory()->for($user)->create([
+        'original_name' => 'marketing-report.png',
+    ]);
+
+    $otherFile = FileRecord::factory()->for($user)->create([
+        'original_name' => 'product-photo.jpg',
+    ]);
+
+    ConversionJob::factory()->for($user)->for($matchFile, 'sourceFile')->create();
+    ConversionJob::factory()->for($user)->for($otherFile, 'sourceFile')->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('search', 'marketing')
+        ->assertSee('marketing-report.png')
+        ->assertDontSee('product-photo.jpg');
+});
+
+it('searches conversions by source format', function () {
+    $user = User::factory()->create();
+
+    $sourceA = FileRecord::factory()->for($user)->create(['original_name' => 'report.docx']);
+    $sourceB = FileRecord::factory()->for($user)->create(['original_name' => 'image.bmp']);
+
+    ConversionJob::factory()->for($user)->for($sourceA, 'sourceFile')->create([
+        'source_format' => 'docx',
+        'target_format' => 'jpg',
+    ]);
+    ConversionJob::factory()->for($user)->for($sourceB, 'sourceFile')->create([
+        'source_format' => 'bmp',
+        'target_format' => 'webp',
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('search', 'docx')
+        ->assertSee('DOCX')
+        ->assertDontSee('WEBP');
+});
+
+it('searches conversions by target format', function () {
+    $user = User::factory()->create();
+
+    $sourceA = FileRecord::factory()->for($user)->create(['original_name' => 'image.bmp']);
+    $sourceB = FileRecord::factory()->for($user)->create(['original_name' => 'report.docx']);
+
+    ConversionJob::factory()->for($user)->for($sourceA, 'sourceFile')->create([
+        'source_format' => 'bmp',
+        'target_format' => 'webp',
+    ]);
+    ConversionJob::factory()->for($user)->for($sourceB, 'sourceFile')->create([
+        'source_format' => 'docx',
+        'target_format' => 'tiff',
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('search', 'webp')
+        ->assertSee('WEBP')
+        ->assertDontSee('TIFF');
+});
+
+it('shows all conversions when search is empty', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->count(3)->for($user)->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('search', '')
+        ->assertViewHas('conversions', fn ($c) => $c->count() === 3);
+});
+
 it('shows download action for completed conversion with result file', function () {
     $user = User::factory()->create();
 

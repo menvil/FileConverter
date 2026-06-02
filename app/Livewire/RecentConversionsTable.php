@@ -7,15 +7,28 @@ namespace App\Livewire;
 use App\Enums\ConversionStatus;
 use App\Models\ConversionJob;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 
 class RecentConversionsTable extends Component
 {
+    public string $search = '';
+
     public function render(): View
     {
         $conversions = ConversionJob::query()
             ->where('user_id', auth()->id())
             ->with(['sourceFile', 'resultFile'])
+            ->when($this->search !== '', function (Builder $query) {
+                $search = trim($this->search);
+
+                $query->where(function (Builder $query) use ($search) {
+                    $query->where('source_format', 'like', "%{$search}%")
+                        ->orWhere('target_format', 'like', "%{$search}%")
+                        ->orWhereHas('sourceFile', fn (Builder $q) => $q->where('original_name', 'like', "%{$search}%")
+                        );
+                });
+            })
             ->latest()
             ->get();
 

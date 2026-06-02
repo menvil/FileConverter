@@ -1,6 +1,15 @@
 <section>
     <h2 class="text-xl font-semibold tracking-tight text-[var(--ca-text)]">Recent Conversions</h2>
 
+    <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <input
+            type="search"
+            wire:model.live.debounce.300ms="search"
+            placeholder="Search files, formats..."
+            class="w-full rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] placeholder-[var(--ca-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30 sm:max-w-xs"
+        >
+    </div>
+
     <div class="mt-4">
         @if ($conversions->isEmpty())
             <div class="flex flex-col items-center justify-center rounded-[var(--ca-radius-lg)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-12 text-center">
