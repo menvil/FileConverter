@@ -15,6 +15,7 @@
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">File Name</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">From</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">To</th>
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Size</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--ca-border)]">
@@ -28,6 +29,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-[var(--ca-text)]">
                                     {{ $job->target_format ? strtoupper($job->target_format) : '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-[var(--ca-text)]">
+                                    {{ $this->formatBytes(($job->resultFile ?? $job->sourceFile)?->size_bytes) }}
                                 </td>
                             </tr>
                         @endforeach
