@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Actions\Conversions\CreateConversionJobAction;
 use App\Actions\Conversions\EstimateConversionCostAction;
 use App\Actions\Files\StoreUploadedFileAction;
+use App\Contracts\Billing\CreditLedger;
 use App\Enums\ConversionStatus;
 use App\Exceptions\Billing\InsufficientCreditsException;
 use App\Exceptions\Billing\UnsupportedConversionCostException;
@@ -62,6 +63,8 @@ class DashboardConverter extends Component
     public int $pollCount = 0;
 
     public ?string $convertError = null;
+
+    public bool $hasInsufficientCredits = false;
 
     public ?int $estimatedCreditCost = null;
 
@@ -249,6 +252,7 @@ class DashboardConverter extends Component
         }
 
         $this->convertError = null;
+        $this->hasInsufficientCredits = false;
 
         try {
             $job = app(CreateConversionJobAction::class)->handle(
@@ -263,9 +267,10 @@ class DashboardConverter extends Component
 
             return;
         } catch (InsufficientCreditsException $e) {
-            $this->convertError = 'Not enough credits. This conversion requires '
+            $this->convertError = 'This conversion requires '
                 .($this->estimatedCreditCost ?? '?')
-                .' credit(s). Please top up your balance.';
+                .' credit(s). You have '.app(CreditLedger::class)->balance(auth()->user()).' credits.';
+            $this->hasInsufficientCredits = true;
 
             return;
         } catch (Throwable) {
