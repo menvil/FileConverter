@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Controllers\Billing\CashierWebhookController;
+use App\Http\Controllers\Billing\CreditPackCheckoutController;
 use App\Http\Controllers\Billing\StartSubscriptionCheckoutController;
 use App\Http\Controllers\DownloadConversionResultController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/stripe/webhook', [CashierWebhookController::class, 'handleWebhook'])
+    ->name('cashier.webhook');
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,8 +24,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/billing/checkout/{plan}', StartSubscriptionCheckoutController::class)
         ->name('billing.checkout');
 
+    Route::post('/billing/credits/{pack}', CreditPackCheckoutController::class)
+        ->name('billing.credits.checkout');
+
     Route::view('/billing/success', 'billing.success')->name('billing.success');
     Route::view('/billing/cancel', 'billing.cancel')->name('billing.cancel');
+
+    Route::view('/billing/credits/success', 'billing.credits-success')->name('billing.credits.success');
+    Route::view('/billing/credits/cancel', 'billing.credits-cancel')->name('billing.credits.cancel');
 
     Route::get('/conversions/{conversion}/download', DownloadConversionResultController::class)
         ->name('conversions.download');

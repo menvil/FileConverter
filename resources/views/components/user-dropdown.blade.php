@@ -61,7 +61,10 @@
 
             <div class="border-t px-4 py-3" style="border-color:var(--ca-border);">
                 <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--ca-muted)]">Credits</p>
-                <p class="text-sm font-semibold text-[var(--ca-text)]">{{ $creditsBalance }} <span class="text-xs font-normal text-[var(--ca-muted)]">available</span></p>
+                <div class="flex items-center justify-between gap-2">
+                    <p class="text-sm font-semibold text-[var(--ca-text)]">{{ $creditsBalance }} <span class="text-xs font-normal text-[var(--ca-muted)]">available</span></p>
+                    <x-billing.buy-credits-cta variant="compact" />
+                </div>
             </div>
 
             @if ($planLimits)
