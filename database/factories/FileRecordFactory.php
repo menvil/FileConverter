@@ -19,6 +19,26 @@ class FileRecordFactory extends Factory
         return $this->state(['expires_at' => now()->subHour()]);
     }
 
+    public function png(): static
+    {
+        return $this->state([
+            'original_name' => fake()->slug().'.png',
+            'stored_path' => 'uploads/'.fake()->uuid().'.png',
+            'mime_type' => 'image/png',
+            'extension' => 'png',
+        ]);
+    }
+
+    public function jpg(): static
+    {
+        return $this->state([
+            'original_name' => fake()->slug().'.jpg',
+            'stored_path' => 'uploads/'.fake()->uuid().'.jpg',
+            'mime_type' => 'image/jpeg',
+            'extension' => 'jpg',
+        ]);
+    }
+
     public function definition(): array
     {
         $extension = fake()->randomElement(['png', 'jpg', 'webp', 'pdf']);

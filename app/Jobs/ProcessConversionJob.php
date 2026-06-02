@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Actions\Conversions\RecordConversionResultFileAction;
+use App\Contracts\Billing\CreditLedger;
+use App\Enums\ConversionCreditChargeStatus;
 use App\Enums\ConversionStatus;
+use App\Models\ConversionCreditCharge;
 use App\Models\ConversionJob;
 use App\Support\Conversions\ConverterDriverRegistry;
 use App\Support\Conversions\DTO\ConversionContext;
@@ -14,6 +17,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -31,6 +35,7 @@ class ProcessConversionJob implements ShouldQueue
     public function handle(
         ConverterDriverRegistry $drivers,
         RecordConversionResultFileAction $recorder,
+        CreditLedger $creditLedger,
     ): void {
         $job = ConversionJob::find($this->conversionJobId);
 
@@ -64,6 +69,15 @@ class ProcessConversionJob implements ShouldQueue
                 'progress' => 100,
                 'completed_at' => now(),
             ])->save();
+
+            // Capture credits separately — a billing failure must not undo a
+            // successful conversion, so we report and move on rather than
+            // letting the exception propagate to the failure catch block below.
+            try {
+                $this->captureCredits($job, $creditLedger);
+            } catch (Throwable $captureException) {
+                report($captureException);
+            }
         } catch (Throwable $exception) {
             $job->forceFill([
                 'status' => ConversionStatus::Failed,
@@ -72,7 +86,56 @@ class ProcessConversionJob implements ShouldQueue
                 'completed_at' => now(),
             ])->save();
 
+            $this->markChargeFailed($job);
+
             report($exception);
         }
+    }
+
+    private function captureCredits(ConversionJob $job, CreditLedger $creditLedger): void
+    {
+        $charge = $job->creditCharge;
+
+        if ($charge === null) {
+            return;
+        }
+
+        DB::transaction(function () use ($job, $charge, $creditLedger) {
+            // Lock the charge row and verify it is still in the expected state
+            // before spending, so duplicate executions are idempotent.
+            $lockedCharge = ConversionCreditCharge::lockForUpdate()->find($charge->id);
+
+            if ($lockedCharge === null || $lockedCharge->status !== ConversionCreditChargeStatus::Estimated) {
+                return;
+            }
+
+            $creditLedger->spend(
+                user: $job->user,
+                amount: $lockedCharge->estimated_amount,
+                reason: 'conversion_completed',
+                meta: [
+                    'conversion_job_id' => $job->id,
+                    'converter_key' => $job->converter_key,
+                ],
+            );
+
+            $lockedCharge->forceFill([
+                'captured_amount' => $lockedCharge->estimated_amount,
+                'status' => ConversionCreditChargeStatus::Captured,
+            ])->save();
+        });
+    }
+
+    private function markChargeFailed(ConversionJob $job): void
+    {
+        $charge = $job->creditCharge;
+
+        if ($charge === null) {
+            return;
+        }
+
+        $charge->forceFill([
+            'status' => ConversionCreditChargeStatus::Failed,
+        ])->save();
     }
 }

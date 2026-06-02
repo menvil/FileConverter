@@ -168,10 +168,16 @@
                 @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
 
                 <div
-                    data-testid="estimated-cost-placeholder"
+                    data-testid="estimated-cost"
                     class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-4 py-3">
                     <span class="text-sm font-semibold text-[var(--ca-text)]">Estimated cost</span>
-                    <p class="text-sm text-[var(--ca-muted)]">Credit cost will be calculated before conversion.</p>
+                    @if ($estimatedCreditCost !== null)
+                        <p class="text-sm font-semibold text-[var(--ca-text)]">
+                            {{ $estimatedCreditCost }} {{ $estimatedCreditCost === 1 ? 'credit' : 'credits' }}
+                        </p>
+                    @else
+                        <p class="text-sm text-[var(--ca-muted)]">Credit cost will be calculated before conversion.</p>
+                    @endif
                 </div>
 
                 <div class="flex justify-end">
@@ -263,6 +269,13 @@
                 <div>
                     <x-button variant="ghost" size="sm" wire:click="goToSettingsStep">← Back</x-button>
                 </div>
+
+                @if ($convertError)
+                    <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-4 py-3">
+                        <p class="text-sm font-semibold text-red-700">Not enough credits</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $convertError }}</p>
+                    </div>
+                @endif
 
                 <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
                     <p class="text-base font-semibold text-[var(--ca-text)]">

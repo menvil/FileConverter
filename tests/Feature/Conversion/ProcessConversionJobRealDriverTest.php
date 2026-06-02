@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Actions\Conversions\RecordConversionResultFileAction;
+use App\Contracts\Billing\CreditLedger;
 use App\Enums\ConversionStatus;
 use App\Jobs\ProcessConversionJob;
 use App\Models\ConversionJob;
@@ -40,6 +41,7 @@ it('processes png to jpg conversion job with real driver', function () {
     (new ProcessConversionJob($job->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     $fresh = $job->fresh();
@@ -76,6 +78,7 @@ it('processes jpg to webp conversion job with real driver', function () {
     (new ProcessConversionJob($job->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     $fresh = $job->fresh();
@@ -113,6 +116,7 @@ it('processes png to pdf conversion job with real driver', function () {
     (new ProcessConversionJob($job->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     $fresh = $job->fresh();

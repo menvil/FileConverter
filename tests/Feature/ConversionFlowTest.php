@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Actions\Conversions\RecordConversionResultFileAction;
+use App\Contracts\Billing\CreditLedger;
 use App\Jobs\ProcessConversionJob;
 use App\Livewire\Dashboard\DashboardConverter;
 use App\Models\ConversionJob;
@@ -34,6 +35,7 @@ it('allows user to upload configure convert and download image result', function
     (new ProcessConversionJob($job->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     $component
