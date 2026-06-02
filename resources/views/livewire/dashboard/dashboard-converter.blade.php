@@ -270,6 +270,13 @@
                     <x-button variant="ghost" size="sm" wire:click="goToSettingsStep">← Back</x-button>
                 </div>
 
+                @if ($convertError)
+                    <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-4 py-3">
+                        <p class="text-sm font-semibold text-red-700">Not enough credits</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $convertError }}</p>
+                    </div>
+                @endif
+
                 <div class="rounded-[var(--ca-radius-md)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
                     <p class="text-base font-semibold text-[var(--ca-text)]">
                         Ready to convert {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}

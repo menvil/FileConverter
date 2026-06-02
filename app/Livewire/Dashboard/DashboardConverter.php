@@ -201,7 +201,7 @@ class DashboardConverter extends Component
                 $this->options,
             );
             $this->estimatedCreditCost = $cost->amount;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             $this->estimatedCreditCost = null;
         }
 
