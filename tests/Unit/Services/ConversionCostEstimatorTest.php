@@ -41,3 +41,12 @@ it('estimates jpg to pdf conversion as two credits', function () {
 
     expect($cost->amount)->toBe(2);
 });
+
+it('estimates png to webp conversion as one credit', function () {
+    $file = FileRecord::factory()->png()->make(['user_id' => 1]);
+    $converter = app(ConverterRegistry::class)->find('png', 'webp');
+
+    $cost = app(ConversionCostEstimator::class)->estimate($file, $converter, []);
+
+    expect($cost->amount)->toBe(1);
+});
