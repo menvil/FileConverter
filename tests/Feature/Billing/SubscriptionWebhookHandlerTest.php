@@ -33,3 +33,14 @@ it('updates user plan to max when subscription is activated with max plan', func
 
     expect($user->fresh()->plan->value)->toBe('max');
 });
+
+it('downgrades user to free when subscription is cancelled', function () {
+    $user = User::factory()->create(['plan' => 'pro']);
+
+    app(SubscriptionWebhookHandler::class)->handleSubscriptionCancelled(
+        user: $user,
+        payload: ['stripe_subscription_id' => 'sub_test_123'],
+    );
+
+    expect($user->fresh()->plan->value)->toBe('free');
+});
