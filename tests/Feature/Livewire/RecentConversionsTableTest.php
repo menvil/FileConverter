@@ -37,6 +37,45 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('filters conversions by completed status', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create(['status' => ConversionStatus::Completed]);
+    ConversionJob::factory()->for($user)->create(['status' => ConversionStatus::Failed]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('statusFilter', 'completed')
+        ->assertViewHas('conversions', fn ($c) => $c->count() === 1 && $c->first()->status === ConversionStatus::Completed);
+});
+
+it('filters conversions by failed status', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create(['status' => ConversionStatus::Completed]);
+    ConversionJob::factory()->for($user)->create(['status' => ConversionStatus::Failed]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('statusFilter', 'failed')
+        ->assertViewHas('conversions', fn ($c) => $c->count() === 1 && $c->first()->status === ConversionStatus::Failed);
+});
+
+it('shows all statuses when filter is all', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create(['status' => ConversionStatus::Completed]);
+    ConversionJob::factory()->for($user)->create(['status' => ConversionStatus::Failed]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->set('statusFilter', 'all')
+        ->assertViewHas('conversions', fn ($c) => $c->count() === 2);
+});
+
 it('searches conversions by source file name', function () {
     $user = User::factory()->create();
 
