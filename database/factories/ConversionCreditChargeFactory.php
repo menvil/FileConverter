@@ -6,7 +6,6 @@ namespace Database\Factories;
 
 use App\Enums\ConversionCreditChargeStatus;
 use App\Models\ConversionCreditCharge;
-use App\Models\ConversionJob;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

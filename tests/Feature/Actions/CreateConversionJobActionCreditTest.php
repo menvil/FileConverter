@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Actions\Conversions\CreateConversionJobAction;
 use App\Contracts\Billing\CreditLedger;
 use App\Exceptions\Billing\InsufficientCreditsException;
+use App\Jobs\ProcessConversionJob;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
@@ -66,5 +67,5 @@ it('creates conversion job when user has enough credits', function () {
 
     expect($job->exists)->toBeTrue();
     expect(ConversionJob::query()->count())->toBe(1);
-    Queue::assertPushed(\App\Jobs\ProcessConversionJob::class);
+    Queue::assertPushed(ProcessConversionJob::class);
 });

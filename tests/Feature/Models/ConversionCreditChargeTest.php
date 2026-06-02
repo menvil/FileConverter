@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\ConversionCreditChargeStatus;
 use App\Models\ConversionCreditCharge;
+use App\Models\ConversionJob;
 
 it('creates conversion credit charge record', function () {
     $charge = ConversionCreditCharge::factory()->create([
@@ -26,7 +27,7 @@ it('belongs to a user', function () {
 
 it('can be linked to a conversion job', function () {
     $charge = ConversionCreditCharge::factory()
-        ->for(\App\Models\ConversionJob::factory(), 'conversionJob')
+        ->for(ConversionJob::factory(), 'conversionJob')
         ->create();
 
     expect($charge->conversion_job_id)->not->toBeNull();
