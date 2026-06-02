@@ -4,6 +4,8 @@ namespace App\Billing\Webhooks;
 
 use App\Billing\BillingPlanRepository;
 use App\Contracts\Billing\CreditLedger;
+use App\Enums\Plan;
+use App\Models\CreditAccount;
 use App\Models\CreditTransaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +27,7 @@ class SubscriptionWebhookHandler
 
     public function handleSubscriptionCancelled(User $user, array $payload = []): void
     {
-        $user->forceFill(['plan' => 'free'])->save();
+        $user->forceFill(['plan' => Plan::Free])->save();
     }
 
     public function handleInvoicePaid(User $user, string $planKey, string $invoiceId, array $payload = []): void
@@ -37,11 +39,14 @@ class SubscriptionWebhookHandler
         }
 
         DB::transaction(function () use ($user, $plan, $invoiceId, $payload): void {
-            // Lock the credit account row to serialize concurrent invoice webhooks
-            // for the same user; prevents double-grant from duplicate Stripe delivery.
-            $user->creditAccount()->lockForUpdate()->firstOrFail();
+            // Lock (or create) the credit account row to serialize concurrent invoice
+            // webhooks for the same user; prevents double-grant from duplicate Stripe delivery.
+            CreditAccount::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
 
-            if ($this->alreadyGrantedForInvoice($invoiceId)) {
+            if ($this->alreadyGrantedForInvoice($user, $invoiceId)) {
                 return;
             }
 
@@ -58,11 +63,12 @@ class SubscriptionWebhookHandler
         });
     }
 
-    private function alreadyGrantedForInvoice(string $invoiceId): bool
+    private function alreadyGrantedForInvoice(User $user, string $invoiceId): bool
     {
         return CreditTransaction::query()
+            ->where('user_id', $user->id)
             ->where('reason', 'subscription_monthly_grant')
-            ->whereRaw("json_extract(metadata_json, '$.stripe_invoice_id') = ?", [$invoiceId])
+            ->where('metadata_json->stripe_invoice_id', $invoiceId)
             ->exists();
     }
 }
