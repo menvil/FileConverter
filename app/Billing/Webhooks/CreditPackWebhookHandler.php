@@ -3,6 +3,7 @@
 namespace App\Billing\Webhooks;
 
 use App\Contracts\Billing\CreditLedger;
+use App\Models\CreditAccount;
 use App\Models\CreditTransaction;
 use App\Models\User;
 use App\Services\Billing\CreditPackRepository;
@@ -42,6 +43,13 @@ final class CreditPackWebhookHandler
         }
 
         DB::transaction(function () use ($user, $pack, $event, $session, $checkoutSessionId): void {
+            // Lock the credit account row to serialize concurrent Stripe webhook
+            // retries for the same user — prevents double-grant on parallel delivery.
+            CreditAccount::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
+
             if ($this->alreadyGrantedForCheckoutSession($user, $checkoutSessionId)) {
                 return;
             }
