@@ -8,7 +8,24 @@
                 <p class="mt-1 text-sm text-[var(--ca-muted)]">Upload a file to start converting</p>
             </div>
         @else
-            <p>TODO: table rows</p>
+            <div class="overflow-hidden rounded-[var(--ca-radius-lg)] border border-[var(--ca-border)] bg-white shadow-[var(--ca-shadow-card)]">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40">
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">File Name</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--ca-border)]">
+                        @foreach ($conversions as $job)
+                            <tr class="hover:bg-[var(--ca-surface-muted)]/40">
+                                <td class="px-4 py-3 text-[var(--ca-text)]">
+                                    {{ $job->sourceFile?->original_name ?? '—' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 </section>
