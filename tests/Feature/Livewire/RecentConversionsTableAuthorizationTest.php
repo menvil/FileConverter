@@ -54,7 +54,7 @@ it('download action links to own conversion only', function () {
         'result_file_id' => $ownResult->id,
     ]);
 
-    ConversionJob::factory()->for($other)->completed()->create([
+    $otherJob = ConversionJob::factory()->for($other)->completed()->create([
         'result_file_id' => $otherResult->id,
     ]);
 
@@ -62,5 +62,5 @@ it('download action links to own conversion only', function () {
 
     Livewire::test(RecentConversionsTable::class)
         ->assertSeeHtml(route('conversions.download', $ownJob))
-        ->assertDontSeeHtml(route('conversions.download', ConversionJob::where('user_id', $other->id)->first()));
+        ->assertDontSeeHtml(route('conversions.download', $otherJob));
 });
