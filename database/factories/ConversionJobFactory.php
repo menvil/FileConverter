@@ -37,6 +37,16 @@ class ConversionJobFactory extends Factory
         ];
     }
 
+    public function pngToJpg(): static
+    {
+        return $this->state([
+            'source_format' => 'png',
+            'target_format' => 'jpg',
+            'converter_key' => 'png_to_jpg',
+            'options_json' => ['quality' => 'high'],
+        ]);
+    }
+
     public function queued(): static
     {
         return $this->state(['status' => ConversionStatus::Queued, 'progress' => 0]);

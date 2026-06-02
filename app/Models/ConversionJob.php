@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -80,6 +81,11 @@ class ConversionJob extends Model
     public function resultFile(): BelongsTo
     {
         return $this->belongsTo(FileRecord::class, 'result_file_id');
+    }
+
+    public function creditCharge(): HasOne
+    {
+        return $this->hasOne(ConversionCreditCharge::class);
     }
 
     public function isCompleted(): bool
