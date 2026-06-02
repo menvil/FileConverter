@@ -4,6 +4,7 @@ namespace App\Billing\Webhooks;
 
 use App\Billing\BillingPlanRepository;
 use App\Contracts\Billing\CreditLedger;
+use App\Models\CreditTransaction;
 use App\Models\User;
 
 class SubscriptionWebhookHandler
@@ -28,6 +29,33 @@ class SubscriptionWebhookHandler
 
     public function handleInvoicePaid(User $user, string $planKey, string $invoiceId, array $payload = []): void
     {
-        throw new \LogicException('Not implemented yet');
+        $plan = $this->plans->findOrFail($planKey);
+
+        if (! $plan->isPaid) {
+            return;
+        }
+
+        if ($this->alreadyGrantedForInvoice($invoiceId)) {
+            return;
+        }
+
+        $this->creditLedger->grant(
+            user: $user,
+            amount: $plan->monthlyCredits,
+            reason: 'subscription_monthly_grant',
+            meta: [
+                'stripe_invoice_id' => $invoiceId,
+                'plan' => $plan->key,
+                'payload' => $payload,
+            ],
+        );
+    }
+
+    private function alreadyGrantedForInvoice(string $invoiceId): bool
+    {
+        return CreditTransaction::query()
+            ->where('reason', 'subscription_monthly_grant')
+            ->whereRaw("json_extract(metadata_json, '$.stripe_invoice_id') = ?", [$invoiceId])
+            ->exists();
     }
 }
