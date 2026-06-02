@@ -7,6 +7,7 @@ use App\Actions\Conversions\EstimateConversionCostAction;
 use App\Actions\Files\StoreUploadedFileAction;
 use App\Enums\ConversionStatus;
 use App\Exceptions\Billing\InsufficientCreditsException;
+use App\Exceptions\Billing\UnsupportedConversionCostException;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Exceptions\Storage\StorageLimitExceededException;
@@ -201,7 +202,8 @@ class DashboardConverter extends Component
                 $this->options,
             );
             $this->estimatedCreditCost = $cost->amount;
-        } catch (Throwable) {
+        } catch (UnsupportedConversionCostException|\InvalidArgumentException) {
+            // Known pricing failures — unsupported pair or misconfigured rule.
             $this->estimatedCreditCost = null;
         }
 

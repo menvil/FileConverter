@@ -25,6 +25,11 @@ final readonly class CreditCostBreakdown
         if ($this->total < 0) {
             throw new \InvalidArgumentException('Breakdown total cannot be negative.');
         }
+        if ($this->total !== ($this->base + $this->size + $this->features)) {
+            throw new \InvalidArgumentException(
+                "Breakdown total ({$this->total}) must equal base + size + features ({$this->base} + {$this->size} + {$this->features})."
+            );
+        }
     }
 
     public function toArray(): array

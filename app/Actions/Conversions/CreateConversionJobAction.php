@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\Exceptions\UnsupportedFormatException;
+use Illuminate\Support\Facades\DB;
 
 final class CreateConversionJobAction
 {
@@ -65,29 +66,36 @@ final class CreateConversionJobAction
             );
         }
 
-        $job = ConversionJob::create([
-            'user_id' => $user->id,
-            'source_file_id' => $sourceFile->id,
-            'source_format' => $sourceFormat,
-            'target_format' => $normalizedTarget,
-            // Driver-registry key (e.g. "png_to_jpg") — distinct from the catalog
-            // Converter::key() ("png:jpg"). ConverterDriverRegistry::findOrFail()
-            // resolves drivers on this value, so it must match driver keys.
-            'converter_key' => "{$sourceFormat}_to_{$normalizedTarget}",
-            'options_json' => $normalizedOptions,
-            'status' => ConversionStatus::Queued,
-            'progress' => 0,
-        ]);
+        // Wrap job + charge creation in a transaction so a failed charge insert
+        // cannot leave an orphan queued job. Dispatch happens after commit so
+        // the worker never picks up a job whose charge record does not exist.
+        $job = DB::transaction(function () use ($user, $sourceFile, $sourceFormat, $normalizedTarget, $normalizedOptions, $cost) {
+            $job = ConversionJob::create([
+                'user_id' => $user->id,
+                'source_file_id' => $sourceFile->id,
+                'source_format' => $sourceFormat,
+                'target_format' => $normalizedTarget,
+                // Driver-registry key (e.g. "png_to_jpg") — distinct from the catalog
+                // Converter::key() ("png:jpg"). ConverterDriverRegistry::findOrFail()
+                // resolves drivers on this value, so it must match driver keys.
+                'converter_key' => "{$sourceFormat}_to_{$normalizedTarget}",
+                'options_json' => $normalizedOptions,
+                'status' => ConversionStatus::Queued,
+                'progress' => 0,
+            ]);
 
-        ConversionCreditCharge::create([
-            'user_id' => $user->id,
-            'conversion_job_id' => $job->id,
-            'estimated_amount' => $cost->amount,
-            'captured_amount' => 0,
-            'refunded_amount' => 0,
-            'status' => ConversionCreditChargeStatus::Estimated,
-            'breakdown_json' => $cost->breakdown,
-        ]);
+            ConversionCreditCharge::create([
+                'user_id' => $user->id,
+                'conversion_job_id' => $job->id,
+                'estimated_amount' => $cost->amount,
+                'captured_amount' => 0,
+                'refunded_amount' => 0,
+                'status' => ConversionCreditChargeStatus::Estimated,
+                'breakdown_json' => $cost->breakdown,
+            ]);
+
+            return $job;
+        });
 
         ProcessConversionJob::dispatch($job->id);
 

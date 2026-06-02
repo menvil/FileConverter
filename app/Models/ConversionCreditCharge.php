@@ -28,6 +28,9 @@ class ConversionCreditCharge extends Model
     protected $casts = [
         'status' => ConversionCreditChargeStatus::class,
         'breakdown_json' => 'array',
+        'estimated_amount' => 'integer',
+        'captured_amount' => 'integer',
+        'refunded_amount' => 'integer',
     ];
 
     public function user(): BelongsTo

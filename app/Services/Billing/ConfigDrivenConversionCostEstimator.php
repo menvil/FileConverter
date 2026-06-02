@@ -34,7 +34,16 @@ final class ConfigDrivenConversionCostEstimator implements ConversionCostEstimat
 
     private function makeCost(string $rule, FileRecord $file, Converter $converter): CreditCost
     {
-        $base = (int) config("conversion_costs.rules.{$rule}.base", 1);
+        $configKey = "conversion_costs.rules.{$rule}.base";
+        $raw = config($configKey);
+
+        if ($raw === null || ! is_numeric($raw)) {
+            throw new \InvalidArgumentException(
+                "Missing or invalid pricing rule: '{$configKey}'. Expected a numeric value."
+            );
+        }
+
+        $base = (int) $raw;
 
         $breakdown = new CreditCostBreakdown(
             base: $base,
