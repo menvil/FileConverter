@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\ConversionStatus;
 use App\Livewire\RecentConversionsTable;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
@@ -35,6 +36,37 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('No conversions yet')
         ->assertSee('Upload a file to start converting');
 });
+
+it('renders conversion status badge', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Completed,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('Completed');
+});
+
+it('renders correct badge for each status', function (string $status, string $expected) {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create(['status' => $status]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee($expected);
+})->with([
+    ['queued', 'Queued'],
+    ['processing', 'Processing'],
+    ['completed', 'Completed'],
+    ['failed', 'Failed'],
+    ['cancelled', 'Cancelled'],
+    ['expired', 'Expired'],
+]);
 
 it('renders conversion creation date', function () {
     $user = User::factory()->create();
