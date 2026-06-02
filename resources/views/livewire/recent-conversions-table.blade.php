@@ -13,6 +13,8 @@
                     <thead>
                         <tr class="border-b border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40">
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">File Name</th>
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">From</th>
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">To</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--ca-border)]">
@@ -20,6 +22,12 @@
                             <tr class="hover:bg-[var(--ca-surface-muted)]/40">
                                 <td class="px-4 py-3 text-[var(--ca-text)]">
                                     {{ $job->sourceFile?->original_name ?? '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-[var(--ca-text)]">
+                                    {{ $job->source_format ? strtoupper($job->source_format) : '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-[var(--ca-text)]">
+                                    {{ $job->target_format ? strtoupper($job->target_format) : '—' }}
                                 </td>
                             </tr>
                         @endforeach
