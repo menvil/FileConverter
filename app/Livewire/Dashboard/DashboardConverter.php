@@ -160,6 +160,8 @@ class DashboardConverter extends Component
             return;
         }
 
+        $this->convertError = null;
+        $this->hasInsufficientCredits = false;
         $this->step = 'settings';
     }
 
@@ -336,6 +338,8 @@ class DashboardConverter extends Component
             return;
         }
 
+        $this->convertError = null;
+        $this->hasInsufficientCredits = false;
         $this->rememberCurrentOptions();
         $this->step = 'format';
     }
@@ -367,6 +371,8 @@ class DashboardConverter extends Component
         $this->options = [];
         $this->optionsByTarget = [];
         $this->estimatedCreditCost = null;
+        $this->convertError = null;
+        $this->hasInsufficientCredits = false;
     }
 
     public function getCurrentJobProperty(): ?ConversionJob
@@ -385,7 +391,7 @@ class DashboardConverter extends Component
     {
         $this->reset(['upload', 'currentFileId', 'uploadError', 'selectedTargetFormat',
             'selectedConverterKey', 'targetFormatError', 'optionsSchema', 'options',
-            'optionsByTarget', 'currentConversionJobId']);
+            'optionsByTarget', 'currentConversionJobId', 'convertError', 'hasInsufficientCredits']);
         $this->step = 'upload';
     }
 
