@@ -7,14 +7,15 @@ use App\Actions\Files\StoreUploadedFileAction;
 use App\Enums\ConversionStatus;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
+use App\Exceptions\Storage\StorageLimitExceededException;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
+use App\Services\FeatureAccess\FeatureAccessService;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
 use App\Support\Converters\OptionsValidator;
-use App\Support\Files\UploadedFileRules;
 use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -61,31 +62,39 @@ class DashboardConverter extends Component
 
     public function updatedUpload(): void
     {
-        $this->storeUpload(app(StoreUploadedFileAction::class));
+        $this->storeUpload(app(StoreUploadedFileAction::class), app(FeatureAccessService::class));
     }
 
-    public function storeUpload(StoreUploadedFileAction $storeUploadedFile): void
+    public function storeUpload(StoreUploadedFileAction $storeUploadedFile, FeatureAccessService $featureAccess): void
     {
         $this->resetErrorBag();
         $this->uploadError = null;
+
+        $user = auth()->user();
+        $maxMb = $featureAccess->limits($user)->maxFileSizeMb;
 
         $this->validate([
             'upload' => [
                 'required',
                 'file',
-                'max:'.UploadedFileRules::MAX_FILE_KILOBYTES,
+                'max:'.($maxMb * 1024),
             ],
         ], [
-            'upload.max' => 'This file is too large. Max upload size is '.(UploadedFileRules::MAX_FILE_KILOBYTES / 1024).' MB.',
+            'upload.max' => "This file is too large for your current plan. Max size: {$maxMb} MB.",
         ]);
 
         try {
             $fileRecord = $storeUploadedFile->handle(
-                user: auth()->user(),
+                user: $user,
                 file: $this->upload,
             );
         } catch (UnsupportedFileFormatException) {
             $this->uploadError = 'This file type is not supported in beta. Upload PNG, JPG, WEBP or PDF.';
+            $this->step = 'upload';
+
+            return;
+        } catch (StorageLimitExceededException) {
+            $this->addError('upload', 'You have reached your storage limit. Delete some files to upload more.');
             $this->step = 'upload';
 
             return;
