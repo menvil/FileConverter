@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CreditTransactionType;
 use Database\Factories\CreditTransactionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,7 @@ class CreditTransaction extends Model
         return [
             'amount' => 'integer',
             'balance_after' => 'integer',
+            'type' => CreditTransactionType::class,
             'metadata_json' => 'array',
             'expires_at' => 'datetime',
         ];
