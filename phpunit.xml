@@ -32,5 +32,11 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="STRIPE_KEY" value="pk_test_placeholder"/>
+        <env name="STRIPE_SECRET" value="sk_test_placeholder"/>
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_test_placeholder"/>
+        <env name="CASHIER_CURRENCY" value="eur"/>
+        <env name="STRIPE_PRO_PRICE_ID" value="price_test_pro"/>
+        <env name="STRIPE_MAX_PRICE_ID" value="price_test_max"/>
     </php>
 </phpunit>
