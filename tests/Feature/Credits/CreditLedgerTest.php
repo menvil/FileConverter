@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Contracts\Billing\CreditLedger;
 use App\Enums\CreditTransactionType;
+use App\Exceptions\Billing\InsufficientCreditsException;
+use App\Models\CreditTransaction;
 use App\Models\User;
 
 it('spends credits and records transaction', function () {
@@ -21,6 +23,19 @@ it('spends credits and records transaction', function () {
     expect($transaction->balance_after)->toBe(70);
     expect($transaction->type)->toBe(CreditTransactionType::Spend);
     expect($transaction->reason)->toBe('test_spend');
+});
+
+it('does not allow spending more credits than available', function () {
+    $user = User::factory()->create();
+    $ledger = app(CreditLedger::class);
+
+    $ledger->grant($user, 10, 'test_grant');
+
+    expect(fn () => $ledger->spend($user, 20, 'too_expensive'))
+        ->toThrow(InsufficientCreditsException::class);
+
+    expect($ledger->balance($user))->toBe(10);
+    expect(CreditTransaction::query()->where('type', CreditTransactionType::Spend)->count())->toBe(0);
 });
 
 it('grants credits and records transaction', function () {
