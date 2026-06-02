@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\Billing\CashierWebhookController;
 use App\Http\Controllers\Billing\CreditPackCheckoutController;
 use App\Http\Controllers\Billing\StartSubscriptionCheckoutController;
 use App\Http\Controllers\DownloadConversionResultController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/stripe/webhook', [CashierWebhookController::class, 'handleWebhook'])
+    ->name('cashier.webhook');
 
 Route::get('/', function () {
     return view('welcome');
