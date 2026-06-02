@@ -42,6 +42,7 @@ it('captures credits after successful conversion', function () {
     (new ProcessConversionJob($job->id))->handle(
         app(ConverterDriverRegistry::class),
         app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
     );
 
     expect(app(CreditLedger::class)->balance($user))->toBe(9);
