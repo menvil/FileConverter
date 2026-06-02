@@ -10,6 +10,7 @@
         $planLabel = $user->plan->label();
     @endphp
 
+
     <div
         x-data="{ open: false }"
         @keydown.escape.window="open = false"
@@ -57,6 +58,22 @@
                     <span class="truncate text-sm text-[var(--ca-muted)]">{{ $email }}</span>
                 </div>
             </div>
+
+            @if ($planLimits)
+            <div class="border-t px-4 py-3" style="border-color:var(--ca-border);">
+                <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--ca-muted)]">Plan limits</p>
+                <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-[var(--ca-text)]">
+                    <dt class="text-[var(--ca-muted)]">Max file</dt>
+                    <dd class="font-medium">{{ $planLimits->maxFileSizeMb }} MB</dd>
+                    <dt class="text-[var(--ca-muted)]">Storage</dt>
+                    <dd class="font-medium">{{ $formattedStorage }}</dd>
+                    <dt class="text-[var(--ca-muted)]">Retention</dt>
+                    <dd class="font-medium">{{ $retentionDaysLabel }}</dd>
+                    <dt class="text-[var(--ca-muted)]">API access</dt>
+                    <dd class="font-medium">{{ $hasApiAccess ? 'Included' : 'Not included' }}</dd>
+                </dl>
+            </div>
+            @endif
 
             <nav class="border-t px-2 py-2" style="border-color:var(--ca-border);" role="none">
                 <a
