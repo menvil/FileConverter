@@ -36,4 +36,38 @@ class ConversionJobFactory extends Factory
             'error_message' => null,
         ];
     }
+
+    public function queued(): static
+    {
+        return $this->state(['status' => ConversionStatus::Queued, 'progress' => 0]);
+    }
+
+    public function processing(): static
+    {
+        return $this->state([
+            'status' => ConversionStatus::Processing,
+            'progress' => 10,
+            'started_at' => now(),
+        ]);
+    }
+
+    public function completed(): static
+    {
+        return $this->state([
+            'status' => ConversionStatus::Completed,
+            'progress' => 100,
+            'started_at' => now()->subSeconds(5),
+            'completed_at' => now(),
+        ]);
+    }
+
+    public function failed(): static
+    {
+        return $this->state([
+            'status' => ConversionStatus::Failed,
+            'error_code' => 'driver_failed',
+            'error_message' => 'Conversion driver encountered an error.',
+            'completed_at' => now(),
+        ]);
+    }
 }

@@ -180,6 +180,83 @@
             </div>
         @endif
 
+        @if ($step === 'failed')
+            <div class="flex flex-col gap-4">
+                <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-red-700">Conversion failed</p>
+                    <p class="mt-1 text-sm text-red-600">We could not convert this file. Try another file or change settings.</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <x-button wire:click="convertWithDifferentSettings" class="w-full">
+                        Change settings
+                    </x-button>
+
+                    <x-button variant="secondary" wire:click="convertAnother" class="w-full">
+                        Try another file
+                    </x-button>
+                </div>
+            </div>
+        @endif
+
+        @if ($step === 'completed' && $this->currentJob)
+            @php($job = $this->currentJob)
+            <div class="flex flex-col gap-4">
+                @if ($job->resultFile?->isExpired())
+                    <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                        <p class="text-base font-semibold text-[var(--ca-text)]">This result has expired</p>
+                        <p class="mt-1 text-sm text-[var(--ca-muted)]">Upload the original file again to create a new result.</p>
+                    </div>
+
+                    <x-button variant="ghost" wire:click="convertAnother" class="w-full">
+                        Convert another file
+                    </x-button>
+                @else
+                    <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-8 text-center">
+                        <p class="text-base font-semibold text-[var(--ca-text)]">Done! Your file is ready.</p>
+                        @if ($job->resultFile)
+                            <p class="mt-1 text-sm text-[var(--ca-muted)]">{{ $job->resultFile->original_name }}</p>
+                        @endif
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <a
+                            href="{{ route('conversions.download', $job) }}"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110"
+                            style="background:var(--ca-primary);"
+                        >Download</a>
+
+                        <x-button variant="secondary" wire:click="convertWithDifferentSettings" class="w-full">
+                            Change settings
+                        </x-button>
+
+                        <x-button variant="ghost" wire:click="convertAnother" class="w-full">
+                            Convert another file
+                        </x-button>
+                    </div>
+                @endif
+            </div>
+        @endif
+
+        @if ($step === 'converting')
+            <div wire:poll.2s="refreshConversionStatus">
+                <div class="flex flex-col items-center gap-4 py-8 text-center">
+                    <div class="h-12 w-12 animate-spin rounded-full border-4 border-[var(--ca-border)] border-t-[var(--ca-primary)]"></div>
+
+                    <div>
+                        <p class="text-base font-semibold text-[var(--ca-text)]">Converting your file</p>
+                        @if ($this->currentJob)
+                            <p class="mt-1 text-sm text-[var(--ca-muted)]">
+                                {{ strtoupper($this->currentJob->source_format) }} → {{ strtoupper($this->currentJob->target_format) }}
+                            </p>
+                        @endif
+                    </div>
+
+                    <p class="text-xs text-[var(--ca-muted)]">Please keep this page open while we prepare your file.</p>
+                </div>
+            </div>
+        @endif
+
         @if ($step === 'convert' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
@@ -191,8 +268,18 @@
                     <p class="text-base font-semibold text-[var(--ca-text)]">
                         Ready to convert {{ strtoupper($file->extension) }} to {{ strtoupper($selectedTargetFormat) }}
                     </p>
-                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Conversion will be available in Phase 9.</p>
                 </div>
+
+                <x-button
+                    wire:click="convert"
+                    wire:loading.attr="disabled"
+                    wire:target="convert"
+                    :disabled="$step === 'converting'"
+                    class="w-full"
+                >
+                    <span wire:loading.remove wire:target="convert">Convert Now</span>
+                    <span wire:loading wire:target="convert">Starting…</span>
+                </x-button>
             </div>
         @endif
     </x-card>

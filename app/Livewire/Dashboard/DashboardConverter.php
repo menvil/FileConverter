@@ -2,10 +2,14 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Actions\Conversions\CreateConversionJobAction;
 use App\Actions\Files\StoreUploadedFileAction;
+use App\Enums\ConversionStatus;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
+use App\Models\ConversionJob;
 use App\Models\FileRecord;
+use App\Support\Conversions\Exceptions\UnsupportedConversionException;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
@@ -14,6 +18,7 @@ use App\Support\Files\UploadedFileRules;
 use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Throwable;
 
 class DashboardConverter extends Component
 {
@@ -47,6 +52,12 @@ class DashboardConverter extends Component
      * @var array<string, array<string, mixed>>
      */
     public array $optionsByTarget = [];
+
+    public ?int $currentConversionJobId = null;
+
+    public int $pollCount = 0;
+
+    public ?string $convertError = null;
 
     public function updatedUpload(): void
     {
@@ -196,9 +207,44 @@ class DashboardConverter extends Component
             return;
         }
 
-        // Phase 8 stops at a convert placeholder. CreateConversionJobAction and
-        // the real conversion flow arrive in Phase 9.
         $this->step = 'convert';
+    }
+
+    public function convert(): void
+    {
+        if ($this->step === 'converting' || $this->currentConversionJobId !== null) {
+            return;
+        }
+
+        $file = $this->currentFile;
+
+        if ($file === null || $this->selectedTargetFormat === null) {
+            return;
+        }
+
+        $this->convertError = null;
+
+        try {
+            $job = app(CreateConversionJobAction::class)->handle(
+                user: auth()->user(),
+                sourceFile: $file,
+                targetFormat: $this->selectedTargetFormat,
+                options: $this->options,
+            );
+        } catch (UnsupportedConversionException $e) {
+            $this->convertError = 'This conversion is not supported. Please choose a different format.';
+            $this->step = 'format';
+
+            return;
+        } catch (Throwable) {
+            $this->convertError = 'Something went wrong. Please try again.';
+
+            return;
+        }
+
+        $this->currentConversionJobId = $job->id;
+        $this->pollCount = 0;
+        $this->step = 'converting';
     }
 
     public function validateSettings(): bool
@@ -283,6 +329,74 @@ class DashboardConverter extends Component
         $this->optionsSchema = [];
         $this->options = [];
         $this->optionsByTarget = [];
+    }
+
+    public function getCurrentJobProperty(): ?ConversionJob
+    {
+        if ($this->currentConversionJobId === null) {
+            return null;
+        }
+
+        return ConversionJob::query()
+            ->with(['sourceFile', 'resultFile'])
+            ->where('user_id', auth()->id())
+            ->find($this->currentConversionJobId);
+    }
+
+    public function convertAnother(): void
+    {
+        $this->reset(['upload', 'currentFileId', 'uploadError', 'selectedTargetFormat',
+            'selectedConverterKey', 'targetFormatError', 'optionsSchema', 'options',
+            'optionsByTarget', 'currentConversionJobId']);
+        $this->step = 'upload';
+    }
+
+    public function convertWithDifferentSettings(): void
+    {
+        $this->currentConversionJobId = null;
+        $this->pollCount = 0;
+
+        if ($this->currentFile === null || $this->selectedTargetFormat === null) {
+            $this->step = 'upload';
+
+            return;
+        }
+
+        $this->step = 'settings';
+    }
+
+    public function refreshConversionStatus(): void
+    {
+        if ($this->currentConversionJobId === null) {
+            return;
+        }
+
+        $this->pollCount++;
+
+        if ($this->pollCount > 60) {
+            $this->step = 'failed';
+            $this->convertError = 'Conversion is taking too long. Please try again.';
+
+            return;
+        }
+
+        $job = ConversionJob::query()
+            ->where('user_id', auth()->id())
+            ->find($this->currentConversionJobId);
+
+        if (! $job) {
+            return;
+        }
+
+        if ($job->status === ConversionStatus::Completed) {
+            $this->step = 'completed';
+
+            return;
+        }
+
+        if ($job->status === ConversionStatus::Failed) {
+            $this->step = 'failed';
+        }
     }
 
     public function getCurrentFileProperty(): ?FileRecord

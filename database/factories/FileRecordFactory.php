@@ -14,6 +14,11 @@ class FileRecordFactory extends Factory
 {
     protected $model = FileRecord::class;
 
+    public function expired(): static
+    {
+        return $this->state(['expires_at' => now()->subHour()]);
+    }
+
     public function definition(): array
     {
         $extension = fake()->randomElement(['png', 'jpg', 'webp', 'pdf']);
