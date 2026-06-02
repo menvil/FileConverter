@@ -50,3 +50,20 @@ it('estimates png to webp conversion as one credit', function () {
 
     expect($cost->amount)->toBe(1);
 });
+
+it('returns stable cost breakdown', function () {
+    $file = FileRecord::factory()->png()->make(['user_id' => 1]);
+    $converter = app(ConverterRegistry::class)->find('png', 'pdf');
+
+    $cost = app(ConversionCostEstimator::class)->estimate($file, $converter, []);
+
+    expect($cost->breakdown)->toHaveKeys([
+        'base',
+        'size',
+        'features',
+        'total',
+        'details',
+    ]);
+
+    expect($cost->breakdown['total'])->toBe($cost->amount);
+});
