@@ -17,6 +17,7 @@
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">To</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Size</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Date</th>
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--ca-border)]">
@@ -36,6 +37,11 @@
                                 </td>
                                 <td class="px-4 py-3 text-[var(--ca-text)]">
                                     {{ $job->created_at?->format('M j, Y') ?? '—' }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $this->statusBadgeClasses($job->status) }}">
+                                        {{ ucfirst($job->status->value) }}
+                                    </span>
                                 </td>
                             </tr>
                         @endforeach
