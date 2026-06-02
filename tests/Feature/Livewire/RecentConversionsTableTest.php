@@ -36,6 +36,21 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('renders source and target formats in recent conversions table', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->create([
+        'source_format' => 'png',
+        'target_format' => 'jpg',
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('PNG')
+        ->assertSee('JPG');
+});
+
 it('renders source file name in recent conversions table', function () {
     $user = User::factory()->create();
 
