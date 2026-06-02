@@ -80,4 +80,10 @@
             </div>
         @endif
     </div>
+
+    @if ($conversions->hasPages())
+        <div class="mt-4">
+            {{ $conversions->links() }}
+        </div>
+    @endif
 </section>

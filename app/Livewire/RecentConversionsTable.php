@@ -9,32 +9,45 @@ use App\Models\ConversionJob;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class RecentConversionsTable extends Component
 {
+    use WithPagination;
+
     public string $search = '';
 
     public string $statusFilter = 'all';
+
+    public int $perPage = 10;
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedStatusFilter(): void
+    {
+        $this->resetPage();
+    }
 
     public function render(): View
     {
         $conversions = ConversionJob::query()
             ->where('user_id', auth()->id())
             ->with(['sourceFile', 'resultFile'])
-            ->when($this->statusFilter !== 'all', fn (Builder $query) => $query->where('status', $this->statusFilter)
-            )
+            ->when($this->statusFilter !== 'all', fn (Builder $query) => $query->where('status', $this->statusFilter))
             ->when($this->search !== '', function (Builder $query) {
                 $search = trim($this->search);
 
                 $query->where(function (Builder $query) use ($search) {
                     $query->where('source_format', 'like', "%{$search}%")
                         ->orWhere('target_format', 'like', "%{$search}%")
-                        ->orWhereHas('sourceFile', fn (Builder $q) => $q->where('original_name', 'like', "%{$search}%")
-                        );
+                        ->orWhereHas('sourceFile', fn (Builder $q) => $q->where('original_name', 'like', "%{$search}%"));
                 });
             })
             ->latest()
-            ->get();
+            ->paginate($this->perPage);
 
         return view('livewire.recent-conversions-table', [
             'conversions' => $conversions,

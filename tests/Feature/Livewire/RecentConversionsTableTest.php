@@ -37,6 +37,46 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('paginates recent conversions with default 10 per page', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->count(16)->for($user)->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertViewHas('conversions', fn ($c) => $c->count() === 10)
+        ->assertViewHas('conversions', fn ($c) => $c->total() === 16);
+});
+
+it('resets page when search changes', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->count(16)->for($user)->create();
+
+    $this->actingAs($user);
+
+    $component = Livewire::test(RecentConversionsTable::class);
+    $component->call('nextPage');
+    $component->set('search', 'something');
+
+    $component->assertViewHas('conversions', fn ($c) => $c->currentPage() === 1);
+});
+
+it('resets page when status filter changes', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->count(16)->for($user)->create();
+
+    $this->actingAs($user);
+
+    $component = Livewire::test(RecentConversionsTable::class);
+    $component->call('nextPage');
+    $component->set('statusFilter', 'completed');
+
+    $component->assertViewHas('conversions', fn ($c) => $c->currentPage() === 1);
+});
+
 it('filters conversions by completed status', function () {
     $user = User::factory()->create();
 
