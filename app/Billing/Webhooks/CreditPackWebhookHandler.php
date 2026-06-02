@@ -3,8 +3,10 @@
 namespace App\Billing\Webhooks;
 
 use App\Contracts\Billing\CreditLedger;
+use App\Models\CreditTransaction;
 use App\Models\User;
 use App\Services\Billing\CreditPackRepository;
+use Illuminate\Support\Facades\DB;
 
 final class CreditPackWebhookHandler
 {
@@ -21,8 +23,9 @@ final class CreditPackWebhookHandler
 
         $userId = $metadata['user_id'] ?? null;
         $packKey = $metadata['pack_key'] ?? null;
+        $checkoutSessionId = $session['id'] ?? null;
 
-        if (! $userId || ! $packKey) {
+        if (! $userId || ! $packKey || ! $checkoutSessionId) {
             return;
         }
 
@@ -38,19 +41,34 @@ final class CreditPackWebhookHandler
             return;
         }
 
-        $this->creditLedger->grant(
-            user: $user,
-            amount: $pack->credits,
-            reason: 'credit_pack_purchase',
-            meta: [
-                'pack_key' => $pack->key,
-                'pack_credits' => $pack->credits,
-                'stripe_event_id' => $event['id'] ?? null,
-                'stripe_checkout_session_id' => $session['id'] ?? null,
-                'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
-                'stripe_customer_id' => $session['customer'] ?? null,
-                'stripe_price_id' => $pack->stripePriceId,
-            ],
-        );
+        DB::transaction(function () use ($user, $pack, $event, $session, $checkoutSessionId): void {
+            if ($this->alreadyGrantedForCheckoutSession($user, $checkoutSessionId)) {
+                return;
+            }
+
+            $this->creditLedger->grant(
+                user: $user,
+                amount: $pack->credits,
+                reason: 'credit_pack_purchase',
+                meta: [
+                    'pack_key' => $pack->key,
+                    'pack_credits' => $pack->credits,
+                    'stripe_event_id' => $event['id'] ?? null,
+                    'stripe_checkout_session_id' => $checkoutSessionId,
+                    'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
+                    'stripe_customer_id' => $session['customer'] ?? null,
+                    'stripe_price_id' => $pack->stripePriceId,
+                ],
+            );
+        });
+    }
+
+    private function alreadyGrantedForCheckoutSession(User $user, string $checkoutSessionId): bool
+    {
+        return CreditTransaction::query()
+            ->where('user_id', $user->id)
+            ->where('reason', 'credit_pack_purchase')
+            ->where('metadata_json->stripe_checkout_session_id', $checkoutSessionId)
+            ->exists();
     }
 }
