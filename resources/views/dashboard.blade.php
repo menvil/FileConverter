@@ -37,6 +37,10 @@
     </div>
 
     <div class="mt-10">
+        <livewire:recent-conversions-table />
+    </div>
+
+    <div class="mt-10">
         <x-footer-help-cards />
     </div>
 </x-layouts.app>
