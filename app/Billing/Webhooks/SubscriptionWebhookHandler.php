@@ -6,6 +6,7 @@ use App\Billing\BillingPlanRepository;
 use App\Contracts\Billing\CreditLedger;
 use App\Models\CreditTransaction;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionWebhookHandler
 {
@@ -35,20 +36,26 @@ class SubscriptionWebhookHandler
             return;
         }
 
-        if ($this->alreadyGrantedForInvoice($invoiceId)) {
-            return;
-        }
+        DB::transaction(function () use ($user, $plan, $invoiceId, $payload): void {
+            // Lock the credit account row to serialize concurrent invoice webhooks
+            // for the same user; prevents double-grant from duplicate Stripe delivery.
+            $user->creditAccount()->lockForUpdate()->firstOrFail();
 
-        $this->creditLedger->grant(
-            user: $user,
-            amount: $plan->monthlyCredits,
-            reason: 'subscription_monthly_grant',
-            meta: [
-                'stripe_invoice_id' => $invoiceId,
-                'plan' => $plan->key,
-                'payload' => $payload,
-            ],
-        );
+            if ($this->alreadyGrantedForInvoice($invoiceId)) {
+                return;
+            }
+
+            $this->creditLedger->grant(
+                user: $user,
+                amount: $plan->monthlyCredits,
+                reason: 'subscription_monthly_grant',
+                meta: [
+                    'stripe_invoice_id' => $invoiceId,
+                    'plan' => $plan->key,
+                    'payload' => $payload,
+                ],
+            );
+        });
     }
 
     private function alreadyGrantedForInvoice(string $invoiceId): bool

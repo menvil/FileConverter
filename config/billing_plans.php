@@ -10,13 +10,13 @@ return [
         ],
         'pro' => [
             'label' => 'Pro',
-            'stripe_price_id' => env('STRIPE_PRO_PRICE_ID', 'price_test_pro'),
+            'stripe_price_id' => env('STRIPE_PRO_PRICE_ID'),
             'monthly_credits' => 1000,
             'is_paid' => true,
         ],
         'max' => [
             'label' => 'Max',
-            'stripe_price_id' => env('STRIPE_MAX_PRICE_ID', 'price_test_max'),
+            'stripe_price_id' => env('STRIPE_MAX_PRICE_ID'),
             'monthly_credits' => 5000,
             'is_paid' => true,
         ],

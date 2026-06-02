@@ -18,7 +18,7 @@ final class BillingPaymentService
         string $successUrl,
         string $cancelUrl,
     ): CheckoutSessionDto {
-        if (! $plan->isPaid || $plan->stripePriceId === null) {
+        if (! $plan->isPaid || blank($plan->stripePriceId)) {
             throw CannotCheckoutFreePlanException::make();
         }
 
