@@ -71,6 +71,14 @@
                                                 class="text-sm font-medium text-[var(--ca-primary)] hover:underline"
                                             >Download</a>
                                         @endif
+
+                                        @if ($job->isCompleted() || $job->status === \App\Enums\ConversionStatus::Failed)
+                                            <button
+                                                type="button"
+                                                wire:click="convertAgain({{ $job->id }})"
+                                                class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)]"
+                                            >Convert again</button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
