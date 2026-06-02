@@ -4,8 +4,11 @@ namespace App\Actions\Files;
 
 use App\Enums\FileStatus;
 use App\Exceptions\Files\FileStorageException;
+use App\Exceptions\Storage\StorageLimitExceededException;
 use App\Models\FileRecord;
 use App\Models\User;
+use App\Services\FeatureAccess\FeatureAccessService;
+use App\Services\Storage\StorageUsageService;
 use App\Support\Files\FileExpirationPolicy;
 use App\Support\Files\FileFormatDetector;
 use App\Support\Files\FileRecordCreator;
@@ -21,10 +24,21 @@ final class StoreUploadedFileAction
         private readonly ImageMetadataExtractor $metadataExtractor,
         private readonly FileExpirationPolicy $expirationPolicy,
         private readonly FileRecordCreator $recordCreator,
+        private readonly FeatureAccessService $featureAccess,
+        private readonly StorageUsageService $storageUsage,
     ) {}
 
     public function handle(User $user, UploadedFile $file): FileRecord
     {
+        $limits = $this->featureAccess->limits($user);
+        $limitBytes = $limits->storageMb * 1024 * 1024;
+        $usedBytes = $this->storageUsage->usedBytes($user);
+        $newFileBytes = $file->getSize();
+
+        if ($usedBytes + $newFileBytes > $limitBytes) {
+            throw StorageLimitExceededException::make($limits->storageMb, $usedBytes, $newFileBytes);
+        }
+
         $format = $this->formatDetector->detect($file);
         $metadata = $this->metadataExtractor->extract($file, $format);
 
