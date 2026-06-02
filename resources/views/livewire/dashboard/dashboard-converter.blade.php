@@ -274,6 +274,11 @@
                     <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-4 py-3">
                         <p class="text-sm font-semibold text-red-700">Not enough credits</p>
                         <p class="mt-1 text-sm text-red-600">{{ $convertError }}</p>
+                        @if ($hasInsufficientCredits)
+                            <div class="mt-3">
+                                <x-billing.buy-credits-cta variant="compact" />
+                            </div>
+                        @endif
                     </div>
                 @endif
 
