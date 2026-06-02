@@ -54,6 +54,19 @@ class RecentConversionsTable extends Component
         ]);
     }
 
+    public function convertAgain(int $conversionJobId): void
+    {
+        $job = ConversionJob::query()
+            ->where('user_id', auth()->id())
+            ->find($conversionJobId);
+
+        if (! $job) {
+            return;
+        }
+
+        $this->dispatch('conversion-repeat-requested', conversionJobId: $job->id);
+    }
+
     public function statusBadgeClasses(ConversionStatus $status): string
     {
         return match ($status) {
