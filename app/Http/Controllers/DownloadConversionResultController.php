@@ -13,15 +13,13 @@ final class DownloadConversionResultController extends Controller
 {
     public function __invoke(Request $request, ConversionJob $conversion)
     {
-        abort_unless($conversion->user_id === $request->user()->id, 403);
+        abort_unless((int) $conversion->user_id === (int) $request->user()->id, 403);
         abort_unless($conversion->status === ConversionStatus::Completed, 404);
         abort_unless($conversion->resultFile !== null, 404);
 
         $file = $conversion->resultFile;
 
-        if ($file->expires_at !== null && $file->expires_at->isPast()) {
-            abort(410);
-        }
+        abort_if($file->isExpired(), 410);
 
         abort_unless(Storage::disk('local')->exists($file->stored_path), 404);
 
