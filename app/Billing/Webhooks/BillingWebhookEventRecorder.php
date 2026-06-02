@@ -10,9 +10,8 @@ final class BillingWebhookEventRecorder
     public function recordIfNew(string $provider, string $eventId, string $type, array $payload): BillingWebhookEvent
     {
         return BillingWebhookEvent::firstOrCreate(
-            ['provider_event_id' => $eventId],
+            ['provider' => $provider, 'provider_event_id' => $eventId],
             [
-                'provider' => $provider,
                 'type' => $type,
                 'payload' => $payload,
             ],
@@ -27,6 +26,7 @@ final class BillingWebhookEventRecorder
     public function wasProcessed(string $provider, string $eventId): bool
     {
         return BillingWebhookEvent::query()
+            ->where('provider', $provider)
             ->where('provider_event_id', $eventId)
             ->whereNotNull('processed_at')
             ->exists();
