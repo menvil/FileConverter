@@ -50,7 +50,30 @@ final class DatabaseCreditLedger implements CreditLedger
 
     public function spend(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
-        throw new \LogicException('Not implemented yet.');
+        return DB::transaction(function () use ($user, $amount, $reason, $meta, $source) {
+            if ($amount <= 0) {
+                throw InvalidCreditAmountException::becauseAmountMustBePositive();
+            }
+
+            $account = CreditAccount::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $account->decrement('balance', $amount);
+            $account->refresh();
+
+            return CreditTransaction::create([
+                'user_id' => $user->id,
+                'amount' => -$amount,
+                'balance_after' => $account->balance,
+                'type' => CreditTransactionType::Spend,
+                'reason' => $reason,
+                'metadata_json' => $meta ?: null,
+                'source_type' => $source?->getMorphClass(),
+                'source_id' => $source?->getKey(),
+            ]);
+        });
     }
 
     public function refund(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
