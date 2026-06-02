@@ -18,6 +18,7 @@
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Size</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Date</th>
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Status</th>
+                            <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--ca-border)]">
@@ -42,6 +43,16 @@
                                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $this->statusBadgeClasses($job->status) }}">
                                         {{ ucfirst($job->status->value) }}
                                     </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        @if ($job->isCompleted() && $job->result_file_id)
+                                            <a
+                                                href="{{ route('conversions.download', $job) }}"
+                                                class="text-sm font-medium text-[var(--ca-primary)] hover:underline"
+                                            >Download</a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
