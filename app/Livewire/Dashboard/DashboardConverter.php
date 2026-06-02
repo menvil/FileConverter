@@ -3,8 +3,10 @@
 namespace App\Livewire\Dashboard;
 
 use App\Actions\Conversions\CreateConversionJobAction;
+use App\Actions\Conversions\EstimateConversionCostAction;
 use App\Actions\Files\StoreUploadedFileAction;
 use App\Enums\ConversionStatus;
+use App\Exceptions\Billing\InsufficientCreditsException;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Exceptions\Storage\StorageLimitExceededException;
@@ -59,6 +61,8 @@ class DashboardConverter extends Component
     public int $pollCount = 0;
 
     public ?string $convertError = null;
+
+    public ?int $estimatedCreditCost = null;
 
     public function updatedUpload(): void
     {
@@ -190,6 +194,17 @@ class DashboardConverter extends Component
             $this->initializeOptionsFromSchema();
         }
 
+        try {
+            $cost = app(EstimateConversionCostAction::class)->handle(
+                $this->currentFile,
+                $converter,
+                $this->options,
+            );
+            $this->estimatedCreditCost = $cost->amount;
+        } catch (\Throwable) {
+            $this->estimatedCreditCost = null;
+        }
+
         $this->step = 'settings';
     }
 
@@ -243,6 +258,12 @@ class DashboardConverter extends Component
         } catch (UnsupportedConversionException $e) {
             $this->convertError = 'This conversion is not supported. Please choose a different format.';
             $this->step = 'format';
+
+            return;
+        } catch (InsufficientCreditsException $e) {
+            $this->convertError = 'Not enough credits. This conversion requires '
+                .($this->estimatedCreditCost ?? '?')
+                .' credit(s). Please top up your balance.';
 
             return;
         } catch (Throwable) {
@@ -338,6 +359,7 @@ class DashboardConverter extends Component
         $this->optionsSchema = [];
         $this->options = [];
         $this->optionsByTarget = [];
+        $this->estimatedCreditCost = null;
     }
 
     public function getCurrentJobProperty(): ?ConversionJob
