@@ -16,7 +16,9 @@ class SubscriptionWebhookHandler
 
     public function handleSubscriptionActivated(User $user, string $planKey, array $payload = []): void
     {
-        throw new \LogicException('Not implemented yet');
+        $plan = $this->plans->findOrFail($planKey);
+
+        $user->forceFill(['plan' => $plan->key])->save();
     }
 
     public function handleSubscriptionCancelled(User $user, array $payload = []): void
