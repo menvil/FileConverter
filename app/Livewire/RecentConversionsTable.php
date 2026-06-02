@@ -22,4 +22,25 @@ class RecentConversionsTable extends Component
             'conversions' => $conversions,
         ]);
     }
+
+    public function formatBytes(?int $bytes): string
+    {
+        if ($bytes === null) {
+            return '—';
+        }
+
+        if ($bytes >= 1_000_000_000) {
+            return round($bytes / 1_000_000_000, 1).' GB';
+        }
+
+        if ($bytes >= 1_000_000) {
+            return round($bytes / 1_000_000, 1).' MB';
+        }
+
+        if ($bytes >= 1_000) {
+            return round($bytes / 1_000).' KB';
+        }
+
+        return $bytes.' B';
+    }
 }

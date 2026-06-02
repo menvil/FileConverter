@@ -36,6 +36,47 @@ it('shows empty state when user has no conversions', function () {
         ->assertSee('Upload a file to start converting');
 });
 
+it('renders result file size when result file exists', function () {
+    $user = User::factory()->create();
+
+    $source = FileRecord::factory()->for($user)->create([
+        'size_bytes' => 900_000,
+    ]);
+
+    $result = FileRecord::factory()->for($user)->create([
+        'size_bytes' => 420_000,
+    ]);
+
+    ConversionJob::factory()
+        ->for($user)
+        ->for($source, 'sourceFile')
+        ->for($result, 'resultFile')
+        ->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('420 KB');
+});
+
+it('renders source file size when no result file', function () {
+    $user = User::factory()->create();
+
+    $source = FileRecord::factory()->for($user)->create([
+        'size_bytes' => 900_000,
+    ]);
+
+    ConversionJob::factory()
+        ->for($user)
+        ->for($source, 'sourceFile')
+        ->create(['result_file_id' => null]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('900 KB');
+});
+
 it('renders source and target formats in recent conversions table', function () {
     $user = User::factory()->create();
 
