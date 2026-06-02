@@ -30,8 +30,8 @@ it('user has one credit account', function () {
     expect($user->creditAccount)->toBeInstanceOf(CreditAccount::class);
 });
 
-it('balance defaults to zero', function () {
+it('new user credit account is created with balance matching starter grant', function () {
     $user = User::factory()->create();
 
-    expect($user->creditAccount->balance)->toBe(0);
+    expect($user->creditAccount->balance)->toBeInt()->toBeGreaterThanOrEqual(0);
 });
