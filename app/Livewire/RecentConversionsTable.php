@@ -75,7 +75,7 @@ class RecentConversionsTable extends Component
             ->where('user_id', auth()->id())
             ->find($conversionJobId);
 
-        if (! $job) {
+        if (! $job || ! $this->canConvertAgain($job)) {
             return;
         }
 

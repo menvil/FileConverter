@@ -39,6 +39,20 @@ it('does not dispatch convert again event for another users conversion', functio
         ->assertNotDispatched('conversion-repeat-requested');
 });
 
+it('does not dispatch convert again event for an ineligible status', function () {
+    $user = User::factory()->create();
+
+    $job = ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Processing,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->call('convertAgain', $job->id)
+        ->assertNotDispatched('conversion-repeat-requested');
+});
+
 it('can toggle starred state for own conversion', function () {
     $user = User::factory()->create();
 
