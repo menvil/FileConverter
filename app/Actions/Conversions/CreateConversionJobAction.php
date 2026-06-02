@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Conversions;
 
+use App\Contracts\Billing\CreditLedger;
+use App\Enums\ConversionCreditChargeStatus;
 use App\Enums\ConversionStatus;
 use App\Enums\FileFormat;
+use App\Exceptions\Billing\InsufficientCreditsException;
 use App\Jobs\ProcessConversionJob;
+use App\Models\ConversionCreditCharge;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
@@ -18,6 +22,8 @@ final class CreateConversionJobAction
 {
     public function __construct(
         private readonly ConverterRegistry $converterRegistry,
+        private readonly EstimateConversionCostAction $estimateCost,
+        private readonly CreditLedger $creditLedger,
     ) {}
 
     /**
@@ -48,6 +54,17 @@ final class CreateConversionJobAction
 
         $normalizedOptions = $converter->validateOptions($options);
 
+        $cost = $this->estimateCost->handle($sourceFile, $converter, $normalizedOptions);
+
+        $balance = $this->creditLedger->balance($user);
+
+        if ($balance < $cost->amount) {
+            throw InsufficientCreditsException::make(
+                required: $cost->amount,
+                available: $balance,
+            );
+        }
+
         $job = ConversionJob::create([
             'user_id' => $user->id,
             'source_file_id' => $sourceFile->id,
@@ -60,6 +77,16 @@ final class CreateConversionJobAction
             'options_json' => $normalizedOptions,
             'status' => ConversionStatus::Queued,
             'progress' => 0,
+        ]);
+
+        ConversionCreditCharge::create([
+            'user_id' => $user->id,
+            'conversion_job_id' => $job->id,
+            'estimated_amount' => $cost->amount,
+            'captured_amount' => 0,
+            'refunded_amount' => 0,
+            'status' => ConversionCreditChargeStatus::Estimated,
+            'breakdown_json' => $cost->breakdown,
         ]);
 
         ProcessConversionJob::dispatch($job->id);
