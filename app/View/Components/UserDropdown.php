@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\View\Components;
 
+use App\Contracts\Billing\CreditLedger;
 use App\Services\FeatureAccess\FeatureAccessService;
 use App\Services\FeatureAccess\PlanLimit;
 use Closure;
@@ -20,8 +21,11 @@ final class UserDropdown extends Component
 
     public string $retentionDaysLabel = '';
 
+    public int $creditsBalance = 0;
+
     public function __construct(
         private readonly FeatureAccessService $featureAccess,
+        private readonly CreditLedger $creditLedger,
     ) {
         $user = auth()->user();
 
@@ -32,6 +36,7 @@ final class UserDropdown extends Component
             $this->retentionDaysLabel = $this->planLimits->retentionDays === 1
                 ? '1 day'
                 : "{$this->planLimits->retentionDays} days";
+            $this->creditsBalance = $this->creditLedger->balance($user);
         }
     }
 
