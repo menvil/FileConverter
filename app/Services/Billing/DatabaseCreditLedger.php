@@ -6,6 +6,7 @@ namespace App\Services\Billing;
 
 use App\Contracts\Billing\CreditLedger;
 use App\Enums\CreditTransactionType;
+use App\Exceptions\Billing\InsufficientCreditsException;
 use App\Exceptions\Billing\InvalidCreditAmountException;
 use App\Models\CreditAccount;
 use App\Models\CreditTransaction;
@@ -59,6 +60,10 @@ final class DatabaseCreditLedger implements CreditLedger
                 ->where('user_id', $user->id)
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            if ($account->balance < $amount) {
+                throw InsufficientCreditsException::make($amount, $account->balance);
+            }
 
             $account->decrement('balance', $amount);
             $account->refresh();
