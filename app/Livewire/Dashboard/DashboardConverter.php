@@ -94,7 +94,7 @@ class DashboardConverter extends Component
 
             return;
         } catch (StorageLimitExceededException) {
-            $this->addError('upload', 'You have reached your storage limit. Delete some files to upload more.');
+            $this->uploadError = 'You have reached your storage limit. Delete some files to upload more.';
             $this->step = 'upload';
 
             return;

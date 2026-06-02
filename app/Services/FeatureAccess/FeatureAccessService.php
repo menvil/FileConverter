@@ -27,7 +27,10 @@ final class FeatureAccessService
     {
         $plan = $this->planKey($user);
 
-        return PlanLimit::fromArray(config("feature-access.plans.{$plan}.limits"));
+        $limits = config("feature-access.plans.{$plan}.limits")
+            ?? config('feature-access.plans.free.limits', []);
+
+        return PlanLimit::fromArray($limits);
     }
 
     private function planKey(User $user): string

@@ -89,7 +89,8 @@ it('rejects upload when storage quota would be exceeded', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('upload', $file)
-        ->assertHasErrors(['upload']);
+        ->assertSet('step', 'upload')
+        ->assertSet('uploadError', 'You have reached your storage limit. Delete some files to upload more.');
 });
 
 it('allows upload when storage quota is not exceeded', function () {

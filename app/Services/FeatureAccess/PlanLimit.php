@@ -13,9 +13,18 @@ final readonly class PlanLimit
         public int $monthlyCredits,
     ) {}
 
-    /** @param array<string, int> $limits */
+    /** @param array<string, int|string> $limits */
     public static function fromArray(array $limits): self
     {
+        $required = ['max_file_size_mb', 'storage_mb', 'retention_days', 'monthly_credits'];
+        $missing = array_diff($required, array_keys($limits));
+
+        if ($missing !== []) {
+            throw new \InvalidArgumentException(
+                'PlanLimit::fromArray missing required keys: '.implode(', ', $missing)
+            );
+        }
+
         return new self(
             maxFileSizeMb: (int) $limits['max_file_size_mb'],
             storageMb: (int) $limits['storage_mb'],
