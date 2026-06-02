@@ -18,35 +18,12 @@ final class DatabaseCreditLedger implements CreditLedger
 {
     public function balance(User $user): int
     {
-        return (int) $user->creditAccount()->firstOrCreate(['user_id' => $user->id], ['balance' => 0])->balance;
+        return $user->creditAccount()->firstOrCreate(['user_id' => $user->id], ['balance' => 0])->balance;
     }
 
     public function grant(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
-        return DB::transaction(function () use ($user, $amount, $reason, $meta, $source) {
-            if ($amount <= 0) {
-                throw InvalidCreditAmountException::becauseAmountMustBePositive();
-            }
-
-            $account = CreditAccount::query()
-                ->where('user_id', $user->id)
-                ->lockForUpdate()
-                ->firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
-
-            $account->increment('balance', $amount);
-            $account->refresh();
-
-            return CreditTransaction::create([
-                'user_id' => $user->id,
-                'amount' => $amount,
-                'balance_after' => $account->balance,
-                'type' => CreditTransactionType::Grant,
-                'reason' => $reason,
-                'metadata_json' => $meta ?: null,
-                'source_type' => $source?->getMorphClass(),
-                'source_id' => $source?->getKey(),
-            ]);
-        });
+        return $this->addToBalance($user, $amount, CreditTransactionType::Grant, $reason, $meta, $source);
     }
 
     public function spend(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
@@ -68,7 +45,7 @@ final class DatabaseCreditLedger implements CreditLedger
             $account->decrement('balance', $amount);
             $account->refresh();
 
-            return CreditTransaction::create([
+            return CreditTransaction::forceCreate([
                 'user_id' => $user->id,
                 'amount' => -$amount,
                 'balance_after' => $account->balance,
@@ -83,7 +60,12 @@ final class DatabaseCreditLedger implements CreditLedger
 
     public function refund(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
-        return DB::transaction(function () use ($user, $amount, $reason, $meta, $source) {
+        return $this->addToBalance($user, $amount, CreditTransactionType::Refund, $reason, $meta, $source);
+    }
+
+    private function addToBalance(User $user, int $amount, CreditTransactionType $type, string $reason, array $meta, ?Model $source): CreditTransaction
+    {
+        return DB::transaction(function () use ($user, $amount, $type, $reason, $meta, $source) {
             if ($amount <= 0) {
                 throw InvalidCreditAmountException::becauseAmountMustBePositive();
             }
@@ -96,11 +78,11 @@ final class DatabaseCreditLedger implements CreditLedger
             $account->increment('balance', $amount);
             $account->refresh();
 
-            return CreditTransaction::create([
+            return CreditTransaction::forceCreate([
                 'user_id' => $user->id,
                 'amount' => $amount,
                 'balance_after' => $account->balance,
-                'type' => CreditTransactionType::Refund,
+                'type' => $type,
                 'reason' => $reason,
                 'metadata_json' => $meta ?: null,
                 'source_type' => $source?->getMorphClass(),
