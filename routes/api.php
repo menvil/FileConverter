@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ConverterController;
+use App\Http\Controllers\Api\V1\FileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')
@@ -24,5 +25,7 @@ Route::prefix('v1')
 
             Route::get('/converters', [ConverterController::class, 'index'])->name('converters.index');
             Route::get('/converters/{source}/{target}/schema', [ConverterController::class, 'schema'])->name('converters.schema');
+
+            Route::post('/files', [FileController::class, 'store'])->name('files.store');
         });
     });
