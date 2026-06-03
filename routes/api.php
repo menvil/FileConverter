@@ -31,5 +31,6 @@ Route::prefix('v1')
             Route::get('/files/{file}/targets', [FileController::class, 'targets'])->name('files.targets');
 
             Route::post('/conversions/estimate', [ConversionController::class, 'estimate'])->name('conversions.estimate');
+            Route::post('/conversions', [ConversionController::class, 'store'])->name('conversions.store');
         });
     });
