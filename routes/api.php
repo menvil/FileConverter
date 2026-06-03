@@ -32,5 +32,6 @@ Route::prefix('v1')
 
             Route::post('/conversions/estimate', [ConversionController::class, 'estimate'])->name('conversions.estimate');
             Route::post('/conversions', [ConversionController::class, 'store'])->name('conversions.store');
+            Route::get('/conversions/{conversion}', [ConversionController::class, 'show'])->name('conversions.show');
         });
     });
