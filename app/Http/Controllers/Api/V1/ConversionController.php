@@ -13,6 +13,7 @@ use App\Http\Requests\Api\V1\EstimateConversionRequest;
 use App\Http\Resources\Api\V1\ConversionResource;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
+use App\Support\Api\ApiOwnershipGuard;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
 use App\Support\Converters\ConverterRegistry;
 use Illuminate\Http\JsonResponse;
@@ -24,13 +25,14 @@ final class ConversionController
     public function __construct(
         private readonly ConverterRegistry $registry,
         private readonly CreditLedger $creditLedger,
+        private readonly ApiOwnershipGuard $ownershipGuard,
     ) {}
 
     public function estimate(EstimateConversionRequest $request): JsonResponse
     {
         $file = FileRecord::findOrFail($request->integer('file_id'));
 
-        abort_if($file->user_id !== $request->user()->id, 403, 'You do not own this file.');
+        $this->ownershipGuard->ensureFileOwner($request->user(), $file);
 
         $converter = $this->registry->find($file->extension, $request->string('target_format')->toString());
 
@@ -57,7 +59,7 @@ final class ConversionController
     {
         $file = FileRecord::findOrFail($request->integer('file_id'));
 
-        abort_if($file->user_id !== $request->user()->id, 403, 'You do not own this file.');
+        $this->ownershipGuard->ensureFileOwner($request->user(), $file);
 
         $job = app(CreateConversionJobAction::class)->handle(
             user: $request->user(),
@@ -73,14 +75,14 @@ final class ConversionController
 
     public function show(Request $request, ConversionJob $conversion): JsonResponse
     {
-        abort_if($conversion->user_id !== $request->user()->id, 403, 'You do not own this conversion.');
+        $this->ownershipGuard->ensureConversionOwner($request->user(), $conversion);
 
         return response()->json(['data' => (new ConversionResource($conversion))->resolve()]);
     }
 
     public function download(Request $request, ConversionJob $conversion): mixed
     {
-        abort_if($conversion->user_id !== $request->user()->id, 403, 'You do not own this conversion.');
+        $this->ownershipGuard->ensureConversionOwner($request->user(), $conversion);
 
         if ($conversion->status !== ConversionStatus::Completed) {
             return response()->json([

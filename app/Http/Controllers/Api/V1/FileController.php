@@ -9,6 +9,7 @@ use App\Http\Requests\Api\V1\UploadFileRequest;
 use App\Http\Resources\Api\V1\FileResource;
 use App\Http\Resources\Api\V1\TargetFormatResource;
 use App\Models\FileRecord;
+use App\Support\Api\ApiOwnershipGuard;
 use App\Support\Converters\ConverterRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ final class FileController
 {
     public function __construct(
         private readonly ConverterRegistry $registry,
+        private readonly ApiOwnershipGuard $ownershipGuard,
     ) {}
 
     public function store(UploadFileRequest $request): JsonResponse
@@ -34,11 +36,7 @@ final class FileController
 
     public function targets(Request $request, FileRecord $file): JsonResource
     {
-        abort_if(
-            $file->user_id !== $request->user()->id,
-            403,
-            'You do not own this file.',
-        );
+        $this->ownershipGuard->ensureFileOwner($request->user(), $file);
 
         $targets = $this->registry->targetsFor($file->extension);
 
