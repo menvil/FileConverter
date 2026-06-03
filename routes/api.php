@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ConversionController;
 use App\Http\Controllers\Api\V1\ConverterController;
 use App\Http\Controllers\Api\V1\FileController;
 use Illuminate\Support\Facades\Route;
@@ -28,5 +29,7 @@ Route::prefix('v1')
 
             Route::post('/files', [FileController::class, 'store'])->name('files.store');
             Route::get('/files/{file}/targets', [FileController::class, 'targets'])->name('files.targets');
+
+            Route::post('/conversions/estimate', [ConversionController::class, 'estimate'])->name('conversions.estimate');
         });
     });
