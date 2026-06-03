@@ -21,5 +21,16 @@
             </div>
         </x-card>
 
+        {{-- Credits balance card --}}
+        <x-card variant="elevated">
+            <p class="text-xs font-medium uppercase tracking-wide text-[var(--ca-muted)]">Credits balance</p>
+            <div class="mt-2">
+                <span class="text-2xl font-semibold text-[var(--ca-text)]">
+                    {{ number_format($this->creditsBalance) }}
+                </span>
+                <span class="ml-1 text-sm text-[var(--ca-muted)]">credits</span>
+            </div>
+        </x-card>
+
     </div>
 </div>

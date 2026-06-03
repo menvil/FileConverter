@@ -35,3 +35,29 @@ it('shows free plan for free user on billing page', function () {
         ->assertSee('Current plan')
         ->assertSee('Free');
 });
+
+it('shows current credits balance on billing page', function () {
+    $user = User::factory()->create();
+
+    app(\App\Contracts\Billing\CreditLedger::class)->grant(
+        user: $user,
+        amount: 500,
+        reason: 'test_grant',
+    );
+
+    $balance = app(\App\Contracts\Billing\CreditLedger::class)->balance($user);
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertSee('Credits balance')
+        ->assertSee((string) $balance);
+});
+
+it('shows zero credits balance when user has no credits', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertSee('Credits balance')
+        ->assertSee('0');
+});
