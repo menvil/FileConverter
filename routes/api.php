@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\ConversionController;
 use App\Http\Controllers\Api\V1\ConverterController;
+use App\Http\Controllers\Api\V1\CreditController;
 use App\Http\Controllers\Api\V1\FileController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,5 +35,7 @@ Route::prefix('v1')
             Route::post('/conversions', [ConversionController::class, 'store'])->name('conversions.store');
             Route::get('/conversions/{conversion}', [ConversionController::class, 'show'])->name('conversions.show');
             Route::get('/conversions/{conversion}/download', [ConversionController::class, 'download'])->name('conversions.download');
+
+            Route::get('/credits/balance', [CreditController::class, 'balance'])->name('credits.balance');
         });
     });
