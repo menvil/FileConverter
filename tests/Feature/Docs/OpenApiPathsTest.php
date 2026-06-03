@@ -17,43 +17,77 @@ it('documents converter schema endpoint', function () {
 });
 
 it('documents file upload endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/files")
-        ->and($paths["/files"])->toHaveKey("post");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/files')
+        ->and($paths['/files'])->toHaveKey('post');
 });
 
 it('documents file target formats endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/files/{file}/targets")
-        ->and($paths["/files/{file}/targets"])->toHaveKey("get");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/files/{file}/targets')
+        ->and($paths['/files/{file}/targets'])->toHaveKey('get');
 });
 
 it('documents conversion cost estimate endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/conversions/estimate")
-        ->and($paths["/conversions/estimate"])->toHaveKey("post");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/conversions/estimate')
+        ->and($paths['/conversions/estimate'])->toHaveKey('post');
 });
 
 it('documents create conversion endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/conversions")
-        ->and($paths["/conversions"])->toHaveKey("post");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/conversions')
+        ->and($paths['/conversions'])->toHaveKey('post');
 });
 
 it('documents conversion status endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/conversions/{conversion}")
-        ->and($paths["/conversions/{conversion}"])->toHaveKey("get");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/conversions/{conversion}')
+        ->and($paths['/conversions/{conversion}'])->toHaveKey('get');
 });
 
 it('documents conversion download endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/conversions/{conversion}/download")
-        ->and($paths["/conversions/{conversion}/download"])->toHaveKey("get");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/conversions/{conversion}/download')
+        ->and($paths['/conversions/{conversion}/download'])->toHaveKey('get');
 });
 
 it('documents credits balance endpoint', function () {
-    $paths = openApiSpec()["paths"];
-    expect($paths)->toHaveKey("/credits/balance")
-        ->and($paths["/credits/balance"])->toHaveKey("get");
+    $paths = openApiSpec()['paths'];
+    expect($paths)->toHaveKey('/credits/balance')
+        ->and($paths['/credits/balance'])->toHaveKey('get');
+});
+
+it('documents all phase 19 api endpoints', function () {
+    $paths = openApiSpec()['paths'];
+
+    foreach ([
+        '/converters',
+        '/converters/{source}/{target}/schema',
+        '/files',
+        '/files/{file}/targets',
+        '/conversions/estimate',
+        '/conversions',
+        '/conversions/{conversion}',
+        '/conversions/{conversion}/download',
+        '/credits/balance',
+    ] as $path) {
+        expect($paths)->toHaveKey($path);
+    }
+});
+
+it('defines required api schemas', function () {
+    $schemas = openApiSpec()['components']['schemas'];
+
+    foreach ([
+        'ErrorResponse',
+        'Converter',
+        'ConverterSchemaResponse',
+        'File',
+        'Conversion',
+        'CreditCost',
+        'CreditBalance',
+    ] as $schema) {
+        expect($schemas)->toHaveKey($schema);
+    }
 });

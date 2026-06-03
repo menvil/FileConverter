@@ -24,3 +24,7 @@ it('shows curl examples on api docs page', function () {
         ->assertSee('/api/v1/files')
         ->assertSee('/api/v1/conversions');
 });
+
+it('renders public api docs without authentication', function () {
+    $this->get('/docs/api')->assertOk();
+});
