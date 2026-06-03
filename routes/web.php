@@ -5,6 +5,7 @@ use App\Http\Controllers\Billing\CreditPackCheckoutController;
 use App\Http\Controllers\Billing\StartSubscriptionCheckoutController;
 use App\Http\Controllers\DownloadConversionResultController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Billing\BillingPage;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [CashierWebhookController::class, 'handleWebhook'])
@@ -21,6 +22,8 @@ Route::view('/dashboard', 'dashboard')
 Route::view('/ui-kit', 'ui-kit')->name('ui-kit');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/billing', BillingPage::class)->name('billing');
+
     Route::post('/billing/checkout/{plan}', StartSubscriptionCheckoutController::class)
         ->name('billing.checkout');
 
