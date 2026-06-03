@@ -27,3 +27,9 @@ it('documents file target formats endpoint', function () {
     expect($paths)->toHaveKey("/files/{file}/targets")
         ->and($paths["/files/{file}/targets"])->toHaveKey("get");
 });
+
+it('documents conversion cost estimate endpoint', function () {
+    $paths = openApiSpec()["paths"];
+    expect($paths)->toHaveKey("/conversions/estimate")
+        ->and($paths["/conversions/estimate"])->toHaveKey("post");
+});
