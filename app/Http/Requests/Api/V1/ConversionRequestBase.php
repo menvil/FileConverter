@@ -11,7 +11,7 @@ abstract class ConversionRequestBase extends FormRequest
     protected function conversionRules(): array
     {
         return [
-            'file_id' => ['required', 'integer'],
+            'file_id' => ['required', 'integer', 'exists:files,id'],
             'target_format' => ['required', 'string'],
             'options' => ['sometimes', 'array'],
         ];
