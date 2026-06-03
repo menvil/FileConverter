@@ -84,4 +84,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ConversionJob::class);
     }
+
+    public function apiKeys(): HasMany
+    {
+        return $this->hasMany(ApiKey::class);
+    }
 }
