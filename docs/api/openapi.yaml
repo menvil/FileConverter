@@ -15,7 +15,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: API key
-      description: Use an API key generated in your account. Send it as `Authorization: Bearer <token>`.
+      description: "Use an API key generated in your account. Send it as `Authorization: Bearer <token>`."
   schemas: {}
   responses: {}
 security:
