@@ -39,3 +39,9 @@ it('documents create conversion endpoint', function () {
     expect($paths)->toHaveKey("/conversions")
         ->and($paths["/conversions"])->toHaveKey("post");
 });
+
+it('documents conversion status endpoint', function () {
+    $paths = openApiSpec()["paths"];
+    expect($paths)->toHaveKey("/conversions/{conversion}")
+        ->and($paths["/conversions/{conversion}"])->toHaveKey("get");
+});
