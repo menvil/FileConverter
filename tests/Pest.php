@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\Yaml\Yaml;
 use Tests\TestCase;
 
 /*
@@ -49,6 +50,11 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function openApiSpec(): array
+{
+    return Yaml::parseFile(base_path('docs/api/openapi.yaml'));
 }
 
 require __DIR__.'/Support/FakeStripeEvents.php';
