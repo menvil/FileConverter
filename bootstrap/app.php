@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AuthenticateApiKey;
+use App\Http\Middleware\EnsureApiAccessIsAllowed;
 use App\Support\Api\ApiExceptionMapper;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'api.key' => AuthenticateApiKey::class,
+            'api.access' => EnsureApiAccessIsAllowed::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

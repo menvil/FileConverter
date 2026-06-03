@@ -11,10 +11,14 @@ Route::prefix('v1')
         ]))->name('health');
 
         Route::middleware('api.key')->group(function () {
-            // Test-only route to verify auth middleware wiring.
-            // Only registered in testing environment.
             if (app()->environment('testing')) {
                 Route::get('/auth-test', fn () => response()->json(['authenticated' => true]));
+            }
+        });
+
+        Route::middleware(['api.key', 'api.access'])->group(function () {
+            if (app()->environment('testing')) {
+                Route::get('/access-test', fn () => response()->json(['access' => true]));
             }
         });
     });
