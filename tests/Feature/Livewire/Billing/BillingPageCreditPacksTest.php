@@ -27,7 +27,7 @@ it('starts credit pack checkout', function () {
     Livewire::actingAs($user)
         ->test(BillingPage::class)
         ->call('buyCreditPack', 'small')
-        ->assertRedirect();
+        ->assertRedirect('https://checkout.stripe.test/fake-credit-pack-session');
 });
 
 it('rejects invalid credit pack', function () {
