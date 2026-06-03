@@ -16,3 +16,11 @@ it('shows developer quickstart on api docs page', function () {
         ->assertSee('Create a conversion')
         ->assertSee('Download the result');
 });
+
+it('shows curl examples on api docs page', function () {
+    $this->get('/docs/api')
+        ->assertOk()
+        ->assertSee('curl')
+        ->assertSee('/api/v1/files')
+        ->assertSee('/api/v1/conversions');
+});
