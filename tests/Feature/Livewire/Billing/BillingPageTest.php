@@ -61,3 +61,26 @@ it('shows zero credits balance when user has no credits', function () {
         ->assertSee('Credits balance')
         ->assertSee('0');
 });
+
+it('shows current plan limits on billing page', function () {
+    $user = User::factory()->create([
+        'plan' => \App\Enums\Plan::Free,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertSee('Plan limits')
+        ->assertSee('Max file size')
+        ->assertSee('API access');
+});
+
+it('shows correct free plan limit values', function () {
+    $user = User::factory()->create([
+        'plan' => \App\Enums\Plan::Free,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertSee('25 MB')
+        ->assertSee('Disabled');
+});
