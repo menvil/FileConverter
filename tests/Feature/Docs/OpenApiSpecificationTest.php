@@ -23,3 +23,10 @@ it('documents bearer api key authentication', function () {
         ->and($spec['components']['securitySchemes']['ApiKeyBearer']['type'])->toBe('http')
         ->and($spec['components']['securitySchemes']['ApiKeyBearer']['scheme'])->toBe('bearer');
 });
+
+it('documents standard api error response schema', function () {
+    $schemas = openApiSpec()['components']['schemas'];
+
+    expect($schemas)->toHaveKey('ErrorResponse')
+        ->and($schemas['ErrorResponse']['properties'])->toHaveKey('error');
+});

@@ -15,8 +15,85 @@ components:
       type: http
       scheme: bearer
       bearerFormat: API key
-      description: "Use an API key generated in your account. Send it as `Authorization: Bearer <token>`."
-  schemas: {}
-  responses: {}
+      description: "Use an API key generated in your account. Send it as `Authorization: Bearer <token>`. Example: `Authorization: Bearer fc_live_xxx`"
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+
+    ErrorObject:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: |
+            Machine-readable error code. Known codes:
+            - `unauthorized` — Missing or invalid API key.
+            - `api_not_available` — API access is not available on your plan.
+            - `unsupported_format` — File format is not supported.
+            - `unsupported_conversion` — Source → target conversion is not supported.
+            - `invalid_options` — Conversion options are invalid.
+            - `file_too_large` — File exceeds allowed size.
+            - `insufficient_credits` — Not enough credits to perform conversion.
+            - `conversion_failed` — Conversion job failed.
+            - `result_expired` — Conversion result has expired.
+            - `rate_limited` — Too many requests.
+          example: unsupported_conversion
+        message:
+          type: string
+          example: PNG to MP3 is not supported.
+        details:
+          type: object
+          additionalProperties: true
+          example:
+            source_format: png
+            target_format: mp3
+
+  responses:
+    UnauthorizedError:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: unauthorized
+              message: Missing or invalid API key.
+              details: {}
+
+    ValidationError:
+      description: Request validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: invalid_options
+              message: The target_format field is required.
+              details:
+                target_format:
+                  - The target_format field is required.
+
+    NotFoundError:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: not_found
+              message: The requested resource was not found.
+              details: {}
+
 security:
   - ApiKeyBearer: []
