@@ -26,6 +26,8 @@ final class CleanupExpiredFilesJob implements ShouldQueue
                         Storage::disk(config('filesystems.default'))
                             ->delete($file->stored_path);
                     }
+
+                    $file->forceFill(['status' => FileStatus::Expired])->save();
                 }
             });
     }
