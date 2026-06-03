@@ -1,0 +1,22 @@
+openapi: 3.1.0
+info:
+  title: File Converter API
+  version: 1.0.0
+  description: API for uploading files, creating conversion jobs, checking status, and downloading results.
+servers:
+  - url: https://example.com/api/v1
+    description: Production
+  - url: http://localhost/api/v1
+    description: Local development
+paths: {}
+components:
+  securitySchemes:
+    ApiKeyBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: Use an API key generated in your account. Send it as `Authorization: Bearer <token>`.
+  schemas: {}
+  responses: {}
+security:
+  - ApiKeyBearer: []
