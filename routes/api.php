@@ -16,7 +16,7 @@ Route::prefix('v1')
             }
         });
 
-        Route::middleware(['api.key', 'api.access'])->group(function () {
+        Route::middleware(['api.key', 'api.access', 'throttle:api-v1'])->group(function () {
             if (app()->environment('testing')) {
                 Route::get('/access-test', fn () => response()->json(['access' => true]));
             }
