@@ -95,3 +95,24 @@ it('shows available billing plans', function () {
         ->assertSee('Pro')
         ->assertSee('Max');
 });
+
+it('highlights the current plan', function () {
+    $user = User::factory()->create([
+        'plan' => \App\Enums\Plan::Pro,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertSee('Current plan')
+        ->assertSee('Pro');
+});
+
+it('does not show upgrade button for current plan', function () {
+    $user = User::factory()->create([
+        'plan' => \App\Enums\Plan::Pro,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertDontSee('Upgrade to Pro');
+});
