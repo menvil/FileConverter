@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Billing;
 
-use App\Billing\BillingPaymentService;
+use App\Actions\Billing\BuyCreditPackAction;
+use App\Actions\Billing\StartSubscriptionCheckoutAction;
 use App\Billing\BillingPlanDto;
 use App\Billing\BillingPlanRepository;
 use App\Contracts\Billing\CreditLedger;
 use App\Data\Billing\CreditPackDto;
-use App\Enums\Plan;
 use App\Models\CreditTransaction;
 use App\Models\User;
 use App\Services\Billing\CreditPackRepository;
@@ -57,6 +57,16 @@ class BillingPage extends Component
         return app(FeatureAccessService::class)->limits($this->authUser);
     }
 
+    public function getApiAccessProperty(): bool
+    {
+        return app(FeatureAccessService::class)->allows($this->authUser, 'api_access');
+    }
+
+    public function getBatchConversionProperty(): bool
+    {
+        return app(FeatureAccessService::class)->allows($this->authUser, 'batch_conversion');
+    }
+
     /** @return BillingPlanDto[] */
     public function getPlansProperty(): array
     {
@@ -80,25 +90,9 @@ class BillingPage extends Component
 
     public function startSubscriptionCheckout(string $planKey): void
     {
-        try {
-            $plan = Plan::from($planKey);
-        } catch (\ValueError) {
-            throw ValidationException::withMessages(['plan' => 'Invalid plan selected.']);
-        }
-
-        if ($plan === Plan::Free) {
-            throw ValidationException::withMessages(['plan' => 'Free plan does not require checkout.']);
-        }
-
-        if ($this->authUser->plan === $plan) {
-            throw ValidationException::withMessages(['plan' => 'You are already on this plan.']);
-        }
-
-        $billingPlan = app(BillingPlanRepository::class)->findOrFail($planKey);
-
-        $session = app(BillingPaymentService::class)->createSubscriptionCheckout(
+        $session = app(StartSubscriptionCheckoutAction::class)->handle(
             user: $this->authUser,
-            plan: $billingPlan,
+            planKey: $planKey,
             successUrl: route('billing', ['checkout' => 'success']),
             cancelUrl: route('billing', ['checkout' => 'cancelled']),
         );
@@ -108,15 +102,9 @@ class BillingPage extends Component
 
     public function buyCreditPack(string $packKey): void
     {
-        $pack = app(CreditPackRepository::class)->find($packKey);
-
-        if ($pack === null) {
-            throw ValidationException::withMessages(['pack' => 'This credit pack is no longer available.']);
-        }
-
-        $session = app(BillingPaymentService::class)->createCreditPackCheckout(
+        $session = app(BuyCreditPackAction::class)->handle(
             user: $this->authUser,
-            pack: $pack,
+            packKey: $packKey,
             successUrl: route('billing', ['checkout' => 'success']),
             cancelUrl: route('billing', ['checkout' => 'cancelled']),
         );

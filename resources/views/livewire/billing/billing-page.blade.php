@@ -55,7 +55,7 @@
         {{-- Plan limits card --}}
         <x-card variant="elevated">
             <p class="text-xs font-medium uppercase tracking-wide text-[var(--ca-muted)]">Plan limits</p>
-            @php $limits = $this->planLimits; $featureAccess = app(\App\Services\FeatureAccess\FeatureAccessService::class); $user = $this->authUser; @endphp
+            @php $limits = $this->planLimits; @endphp
             <ul class="mt-3 space-y-2 text-sm">
                 <li class="flex justify-between">
                     <span class="text-[var(--ca-muted)]">Max file size</span>
@@ -71,7 +71,7 @@
                 </li>
                 <li class="flex justify-between">
                     <span class="text-[var(--ca-muted)]">API access</span>
-                    @if($featureAccess->allows($user, 'api_access'))
+                    @if($this->apiAccess)
                         <x-badge variant="success">Enabled</x-badge>
                     @else
                         <x-badge variant="neutral">Disabled</x-badge>
@@ -79,7 +79,7 @@
                 </li>
                 <li class="flex justify-between">
                     <span class="text-[var(--ca-muted)]">Batch conversion</span>
-                    @if($featureAccess->allows($user, 'batch_conversion'))
+                    @if($this->batchConversion)
                         <x-badge variant="success">Enabled</x-badge>
                     @else
                         <x-badge variant="neutral">Disabled</x-badge>
