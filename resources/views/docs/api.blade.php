@@ -46,22 +46,22 @@
     <h2>curl examples</h2>
 
     <p><strong>1. Upload a file</strong></p>
-    <pre><code>curl -X POST "https://example.com/api/v1/files" \
+    <pre><code>curl -X POST "{{ url('/api/v1/files') }}" \
   -H "Authorization: Bearer fc_live_xxx" \
   -F "file=@product-photo.png"</code></pre>
 
     <p><strong>2. List target formats</strong></p>
-    <pre><code>curl -X GET "https://example.com/api/v1/files/file_01HX7abc/targets" \
+    <pre><code>curl -X GET "{{ url('/api/v1/files/file_01HX7abc/targets') }}" \
   -H "Authorization: Bearer fc_live_xxx"</code></pre>
 
     <p><strong>3. Estimate conversion cost</strong></p>
-    <pre><code>curl -X POST "https://example.com/api/v1/conversions/estimate" \
+    <pre><code>curl -X POST "{{ url('/api/v1/conversions/estimate') }}" \
   -H "Authorization: Bearer fc_live_xxx" \
   -H "Content-Type: application/json" \
   -d '{"file_id": "file_01HX7abc", "target_format": "jpg"}'</code></pre>
 
     <p><strong>4. Create a conversion</strong></p>
-    <pre><code>curl -X POST "https://example.com/api/v1/conversions" \
+    <pre><code>curl -X POST "{{ url('/api/v1/conversions') }}" \
   -H "Authorization: Bearer fc_live_xxx" \
   -H "Content-Type: application/json" \
   -d '{
@@ -74,11 +74,11 @@
   }'</code></pre>
 
     <p><strong>5. Poll conversion status</strong></p>
-    <pre><code>curl -X GET "https://example.com/api/v1/conversions/conv_01HX8abc" \
+    <pre><code>curl -X GET "{{ url('/api/v1/conversions/conv_01HX8abc') }}" \
   -H "Authorization: Bearer fc_live_xxx"</code></pre>
 
     <p><strong>6. Download the result</strong></p>
-    <pre><code>curl -L -X GET "https://example.com/api/v1/conversions/conv_01HX8abc/download" \
+    <pre><code>curl -L -X GET "{{ url('/api/v1/conversions/conv_01HX8abc/download') }}" \
   -H "Authorization: Bearer fc_live_xxx" \
   -o result.jpg</code></pre>
 
@@ -86,7 +86,7 @@
 </div>
 
 <redoc spec-url="{{ route('docs.api.openapi') }}"></redoc>
-<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+<script src="https://cdn.redoc.ly/redoc/2.x/bundles/redoc.standalone.js"></script>
 
 </body>
 </html>
