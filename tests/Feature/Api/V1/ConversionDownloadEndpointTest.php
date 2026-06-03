@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\FileStatus;
 use App\Enums\Plan;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
@@ -43,6 +44,51 @@ it('returns 422 when conversion is not complete', function () {
         ->getJson("/api/v1/conversions/{$job->id}/download")
         ->assertStatus(422)
         ->assertJsonPath('error.code', 'result_not_ready');
+});
+
+// CONV-344: Block expired API downloads
+
+it('returns result_expired error for expired api download', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create(['plan' => Plan::Pro]);
+    $token = app(ApiKeyGenerator::class)->create($user, 'API')->plainToken;
+
+    $resultFile = FileRecord::factory()->for($user)->create([
+        'stored_path' => 'results/expired.jpg',
+        'expires_at' => now()->subDay(),
+    ]);
+
+    $job = ConversionJob::factory()->for($user)->completed()->create([
+        'result_file_id' => $resultFile->id,
+    ]);
+
+    $this->withToken($token)
+        ->getJson("/api/v1/conversions/{$job->id}/download")
+        ->assertStatus(410)
+        ->assertJsonPath('error.code', 'result_expired');
+});
+
+it('returns result_expired error for file with expired status', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create(['plan' => Plan::Pro]);
+    $token = app(ApiKeyGenerator::class)->create($user, 'API')->plainToken;
+
+    $resultFile = FileRecord::factory()->for($user)->create([
+        'stored_path' => 'results/expired.jpg',
+        'status' => FileStatus::Expired,
+        'expires_at' => now()->addDay(),
+    ]);
+
+    $job = ConversionJob::factory()->for($user)->completed()->create([
+        'result_file_id' => $resultFile->id,
+    ]);
+
+    $this->withToken($token)
+        ->getJson("/api/v1/conversions/{$job->id}/download")
+        ->assertStatus(410)
+        ->assertJsonPath('error.code', 'result_expired');
 });
 
 it('does not allow another user to download conversion result', function () {

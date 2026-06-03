@@ -84,7 +84,7 @@ final class ConversionController
 
         $resultFile = $conversion->resultFile;
 
-        if ($resultFile === null || ! Storage::disk('local')->exists($resultFile->stored_path)) {
+        if ($resultFile === null) {
             return response()->json([
                 'error' => [
                     'code' => 'result_not_found',
@@ -98,10 +98,22 @@ final class ConversionController
             return response()->json([
                 'error' => [
                     'code' => 'result_expired',
-                    'message' => 'Conversion result has expired.',
-                    'details' => [],
+                    'message' => 'This conversion result has expired and can no longer be downloaded.',
+                    'details' => [
+                        'expired_at' => $resultFile->expires_at?->toIso8601String(),
+                    ],
                 ],
             ], 410);
+        }
+
+        if (! Storage::disk('local')->exists($resultFile->stored_path)) {
+            return response()->json([
+                'error' => [
+                    'code' => 'result_not_found',
+                    'message' => 'Conversion result file not found.',
+                    'details' => [],
+                ],
+            ], 404);
         }
 
         return Storage::disk('local')->download(
