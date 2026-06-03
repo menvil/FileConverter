@@ -15,3 +15,11 @@ it('parses openapi specification', function () {
         ->and($spec)->toHaveKey('paths')
         ->and($spec)->toHaveKey('components');
 });
+
+it('documents bearer api key authentication', function () {
+    $spec = openApiSpec();
+
+    expect($spec['components']['securitySchemes'])->toHaveKey('ApiKeyBearer')
+        ->and($spec['components']['securitySchemes']['ApiKeyBearer']['type'])->toBe('http')
+        ->and($spec['components']['securitySchemes']['ApiKeyBearer']['scheme'])->toBe('bearer');
+});
