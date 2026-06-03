@@ -30,6 +30,17 @@ class BillingPage extends Component
 {
     use WithPagination;
 
+    public ?string $checkoutStatus = null;
+
+    public function mount(): void
+    {
+        $status = request()->query('checkout');
+
+        if (in_array($status, ['success', 'cancelled'], true)) {
+            $this->checkoutStatus = $status;
+        }
+    }
+
     public function getAuthUserProperty(): User
     {
         /** @var User */

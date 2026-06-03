@@ -5,6 +5,17 @@
         <p class="mt-1 text-[var(--ca-muted)]">Manage your plan, credits, and payment details.</p>
     </section>
 
+    {{-- Checkout result notices --}}
+    @if($checkoutStatus === 'success')
+        <div class="mt-4 rounded-[var(--ca-radius-md)] border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+            <strong>Payment received.</strong> Your plan or credits will update after payment confirmation.
+        </div>
+    @elseif($checkoutStatus === 'cancelled')
+        <div class="mt-4 rounded-[var(--ca-radius-md)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <strong>Checkout was cancelled.</strong> No changes were made.
+        </div>
+    @endif
+
     {{-- Summary row --}}
     <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
