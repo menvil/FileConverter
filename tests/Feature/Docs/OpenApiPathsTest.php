@@ -21,3 +21,9 @@ it('documents file upload endpoint', function () {
     expect($paths)->toHaveKey("/files")
         ->and($paths["/files"])->toHaveKey("post");
 });
+
+it('documents file target formats endpoint', function () {
+    $paths = openApiSpec()["paths"];
+    expect($paths)->toHaveKey("/files/{file}/targets")
+        ->and($paths["/files/{file}/targets"])->toHaveKey("get");
+});
