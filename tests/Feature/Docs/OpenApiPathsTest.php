@@ -45,3 +45,9 @@ it('documents conversion status endpoint', function () {
     expect($paths)->toHaveKey("/conversions/{conversion}")
         ->and($paths["/conversions/{conversion}"])->toHaveKey("get");
 });
+
+it('documents conversion download endpoint', function () {
+    $paths = openApiSpec()["paths"];
+    expect($paths)->toHaveKey("/conversions/{conversion}/download")
+        ->and($paths["/conversions/{conversion}/download"])->toHaveKey("get");
+});
