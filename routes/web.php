@@ -44,4 +44,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/docs/api', function () {
+    return view('docs.api');
+})->name('docs.api');
+
+Route::get('/docs/api/openapi.yaml', function () {
+    return response()->file(base_path('docs/api/openapi.yaml'), [
+        'Content-Type' => 'application/yaml',
+    ]);
+})->name('docs.api.openapi');
+
 require __DIR__.'/auth.php';
