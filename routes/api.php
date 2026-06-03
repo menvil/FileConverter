@@ -27,5 +27,6 @@ Route::prefix('v1')
             Route::get('/converters/{source}/{target}/schema', [ConverterController::class, 'schema'])->name('converters.schema');
 
             Route::post('/files', [FileController::class, 'store'])->name('files.store');
+            Route::get('/files/{file}/targets', [FileController::class, 'targets'])->name('files.targets');
         });
     });
