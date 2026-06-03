@@ -81,6 +81,30 @@
 
     </div>
 
+    {{-- Credit packs section --}}
+    <section class="mt-10">
+        <h2 class="text-xl font-semibold text-[var(--ca-text)]">Buy credits</h2>
+        <p class="mt-1 text-sm text-[var(--ca-muted)]">Top up your credits balance with a one-time purchase.</p>
+
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach($this->creditPacks as $pack)
+                <x-card variant="elevated">
+                    <p class="font-semibold text-[var(--ca-text)]">{{ $pack->label }}</p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">{{ $pack->description }}</p>
+                    <div class="mt-4">
+                        <x-button
+                            variant="secondary"
+                            class="w-full"
+                            wire:click="buyCreditPack('{{ $pack->key }}')"
+                        >
+                            Buy {{ $pack->label }}
+                        </x-button>
+                    </div>
+                </x-card>
+            @endforeach
+        </div>
+    </section>
+
     {{-- Available plans section --}}
     <section class="mt-10">
         <h2 class="text-xl font-semibold text-[var(--ca-text)]">Available plans</h2>
