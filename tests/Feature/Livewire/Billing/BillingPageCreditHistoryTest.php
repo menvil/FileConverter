@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Contracts\Billing\CreditLedger;
+use App\Enums\Plan;
 use App\Livewire\Billing\BillingPage;
+use App\Models\CreditTransaction;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -24,10 +26,10 @@ it('shows credit transaction history', function () {
 
 it('shows empty state when user has no credit transactions', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Free,
+        'plan' => Plan::Free,
     ]);
 
-    \App\Models\CreditTransaction::where('user_id', $user->id)->delete();
+    CreditTransaction::where('user_id', $user->id)->delete();
 
     Livewire::actingAs($user)
         ->test(BillingPage::class)

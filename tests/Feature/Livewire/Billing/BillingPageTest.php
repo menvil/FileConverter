@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Contracts\Billing\CreditLedger;
+use App\Enums\Plan;
 use App\Livewire\Billing\BillingPage;
 use App\Models\User;
 use Livewire\Livewire;
@@ -16,7 +18,7 @@ it('renders billing page livewire component', function () {
 
 it('shows current user plan on billing page', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Pro,
+        'plan' => Plan::Pro,
     ]);
 
     Livewire::actingAs($user)
@@ -27,7 +29,7 @@ it('shows current user plan on billing page', function () {
 
 it('shows free plan for free user on billing page', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Free,
+        'plan' => Plan::Free,
     ]);
 
     Livewire::actingAs($user)
@@ -39,13 +41,13 @@ it('shows free plan for free user on billing page', function () {
 it('shows current credits balance on billing page', function () {
     $user = User::factory()->create();
 
-    app(\App\Contracts\Billing\CreditLedger::class)->grant(
+    app(CreditLedger::class)->grant(
         user: $user,
         amount: 500,
         reason: 'test_grant',
     );
 
-    $balance = app(\App\Contracts\Billing\CreditLedger::class)->balance($user);
+    $balance = app(CreditLedger::class)->balance($user);
 
     Livewire::actingAs($user)
         ->test(BillingPage::class)
@@ -64,7 +66,7 @@ it('shows zero credits balance when user has no credits', function () {
 
 it('shows current plan limits on billing page', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Free,
+        'plan' => Plan::Free,
     ]);
 
     Livewire::actingAs($user)
@@ -76,7 +78,7 @@ it('shows current plan limits on billing page', function () {
 
 it('shows correct free plan limit values', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Free,
+        'plan' => Plan::Free,
     ]);
 
     Livewire::actingAs($user)
@@ -98,7 +100,7 @@ it('shows available billing plans', function () {
 
 it('highlights the current plan', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Pro,
+        'plan' => Plan::Pro,
     ]);
 
     Livewire::actingAs($user)
@@ -109,7 +111,7 @@ it('highlights the current plan', function () {
 
 it('does not show upgrade button for current plan', function () {
     $user = User::factory()->create([
-        'plan' => \App\Enums\Plan::Pro,
+        'plan' => Plan::Pro,
     ]);
 
     Livewire::actingAs($user)

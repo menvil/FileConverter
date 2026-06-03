@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Billing\Gateway\FakeCreditPackCheckoutGateway;
 use App\Billing\Gateway\CreditPackCheckoutGateway;
+use App\Billing\Gateway\FakeCreditPackCheckoutGateway;
 use App\Livewire\Billing\BillingPage;
 use App\Models\User;
 use Livewire\Livewire;

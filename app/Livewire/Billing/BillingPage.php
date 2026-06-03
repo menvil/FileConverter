@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Billing;
 
+use App\Billing\BillingPaymentService;
 use App\Billing\BillingPlanDto;
 use App\Billing\BillingPlanRepository;
-use App\Billing\BillingPaymentService;
-use App\Billing\Exceptions\UnknownBillingPlanException;
 use App\Contracts\Billing\CreditLedger;
 use App\Data\Billing\CreditPackDto;
 use App\Enums\Plan;
@@ -17,6 +16,7 @@ use App\Services\Billing\CreditPackRepository;
 use App\Services\FeatureAccess\FeatureAccessService;
 use App\Services\FeatureAccess\PlanLimit;
 use Illuminate\Contracts\View\View;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
@@ -69,7 +69,7 @@ class BillingPage extends Component
         return app(CreditPackRepository::class)->all();
     }
 
-    /** @return \Illuminate\Pagination\LengthAwarePaginator<CreditTransaction> */
+    /** @return LengthAwarePaginator<CreditTransaction> */
     public function getTransactionsProperty()
     {
         return CreditTransaction::query()
