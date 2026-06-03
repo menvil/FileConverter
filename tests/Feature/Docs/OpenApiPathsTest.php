@@ -15,3 +15,9 @@ it('documents converter schema endpoint', function () {
     expect($paths)->toHaveKey('/converters/{source}/{target}/schema')
         ->and($paths['/converters/{source}/{target}/schema'])->toHaveKey('get');
 });
+
+it('documents file upload endpoint', function () {
+    $paths = openApiSpec()["paths"];
+    expect($paths)->toHaveKey("/files")
+        ->and($paths["/files"])->toHaveKey("post");
+});
