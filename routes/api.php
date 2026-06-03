@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ConverterController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')
@@ -20,5 +21,7 @@ Route::prefix('v1')
             if (app()->environment('testing')) {
                 Route::get('/access-test', fn () => response()->json(['access' => true]));
             }
+
+            Route::get('/converters', [ConverterController::class, 'index'])->name('converters.index');
         });
     });
