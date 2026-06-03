@@ -16,6 +16,15 @@
         </div>
     @endif
 
+    {{-- Validation errors --}}
+    @if($errors->any())
+        <div class="mt-4 rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            @foreach($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+
     {{-- Summary row --}}
     <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
@@ -112,18 +121,19 @@
 
         <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($this->plans as $plan)
-                <x-card variant="elevated" class="{{ $this->authUser->plan->value === $plan->key ? 'ring-2' : '' }}" style="{{ $this->authUser->plan->value === $plan->key ? 'ring-color:var(--ca-primary);' : '' }}">
+                @php $isCurrent = $this->authUser->plan->value === $plan->key; @endphp
+                <x-card variant="elevated" class="{{ $isCurrent ? 'ring-2 ring-[var(--ca-primary)]' : '' }}">
                     <div class="flex items-start justify-between">
                         <div>
                             <p class="font-semibold text-[var(--ca-text)]">{{ $plan->label }}</p>
                             <p class="mt-1 text-sm text-[var(--ca-muted)]">{{ number_format($plan->monthlyCredits) }} credits / month</p>
                         </div>
-                        @if($this->authUser->plan->value === $plan->key)
+                        @if($isCurrent)
                             <x-badge variant="success">Current plan</x-badge>
                         @endif
                     </div>
                     <div class="mt-4">
-                        @if($this->authUser->plan->value === $plan->key)
+                        @if($isCurrent)
                             <x-button variant="secondary" disabled class="w-full">Current plan</x-button>
                         @elseif(!$plan->isPaid)
                             <x-button variant="secondary" disabled class="w-full">Free</x-button>
@@ -140,6 +150,97 @@
                 </x-card>
             @endforeach
         </div>
+    </section>
+
+    {{-- Credit history section --}}
+    <section class="mt-10">
+        <h2 class="text-xl font-semibold text-[var(--ca-text)]">Credit history</h2>
+        <p class="mt-1 text-sm text-[var(--ca-muted)]">Your credit grants and conversion charges.</p>
+
+        @php
+            $transactions = $this->transactions;
+            $typeLabels = [
+                'registration_grant'          => 'Registration grant',
+                'subscription_monthly_grant'  => 'Monthly subscription credits',
+                'credit_pack_purchase'        => 'Credit pack purchase',
+                'conversion_completed'        => 'Conversion completed',
+                'conversion_refund'           => 'Conversion refund',
+            ];
+        @endphp
+
+        <div class="mt-4 overflow-x-auto">
+            @if($transactions->isEmpty())
+                <x-card variant="elevated">
+                    <div class="py-8 text-center">
+                        <p class="font-medium text-[var(--ca-text)]">No credit transactions yet</p>
+                        <p class="mt-1 text-sm text-[var(--ca-muted)]">Your credit grants and conversion charges will appear here.</p>
+                    </div>
+                </x-card>
+            @else
+                <x-card variant="elevated" padding="none">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b text-left text-xs font-medium uppercase tracking-wide text-[var(--ca-muted)]" style="border-color:var(--ca-border);">
+                                <th class="px-4 py-3">Date</th>
+                                <th class="px-4 py-3">Type</th>
+                                <th class="px-4 py-3">Reason</th>
+                                <th class="px-4 py-3 text-right">Amount</th>
+                                <th class="px-4 py-3 text-right">Balance after</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y" style="divide-color:var(--ca-border);">
+                            @foreach($transactions as $tx)
+                                @php
+                                    $isPositive = $tx->amount > 0;
+                                    $typeVariant = match($tx->type->value) {
+                                        'grant', 'purchase', 'refund' => 'success',
+                                        'spend', 'expiration'         => 'warning',
+                                        default                       => 'neutral',
+                                    };
+                                    $label = $typeLabels[$tx->reason] ?? $tx->reason;
+                                @endphp
+                                <tr>
+                                    <td class="px-4 py-3 text-[var(--ca-muted)]">{{ $tx->created_at->format('M j, Y') }}</td>
+                                    <td class="px-4 py-3">
+                                        <x-badge variant="{{ $typeVariant }}">{{ ucfirst($tx->type->value) }}</x-badge>
+                                    </td>
+                                    <td class="px-4 py-3 text-[var(--ca-text)]">{{ $label }}</td>
+                                    <td class="px-4 py-3 text-right font-medium {{ $isPositive ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $isPositive ? '+' : '' }}{{ $tx->amount }}
+                                    </td>
+                                    <td class="px-4 py-3 text-right text-[var(--ca-muted)]">{{ number_format($tx->balance_after) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @if($transactions->hasPages())
+                        <div class="px-4 py-3 border-t" style="border-color:var(--ca-border);">
+                            {{ $transactions->links() }}
+                        </div>
+                    @endif
+                </x-card>
+            @endif
+        </div>
+    </section>
+
+    {{-- Manage billing section --}}
+    <section class="mt-10">
+        <h2 class="text-xl font-semibold text-[var(--ca-text)]">Manage billing</h2>
+        <p class="mt-1 text-sm text-[var(--ca-muted)]">Payment method, invoices, and subscription details.</p>
+
+        <x-card variant="elevated" class="mt-4">
+            <p class="text-sm text-[var(--ca-muted)]">
+                Payment method, invoices, and subscription details are handled securely by our payment provider.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-3">
+                <x-button variant="secondary" wire:click="openCustomerPortal">
+                    Invoices &amp; payment portal
+                </x-button>
+            </div>
+            @error('portal')
+                <p class="mt-2 text-xs text-amber-700">{{ $message }}</p>
+            @enderror
+        </x-card>
     </section>
 
 </div>
