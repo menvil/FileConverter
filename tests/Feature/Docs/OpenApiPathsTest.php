@@ -51,3 +51,9 @@ it('documents conversion download endpoint', function () {
     expect($paths)->toHaveKey("/conversions/{conversion}/download")
         ->and($paths["/conversions/{conversion}/download"])->toHaveKey("get");
 });
+
+it('documents credits balance endpoint', function () {
+    $paths = openApiSpec()["paths"];
+    expect($paths)->toHaveKey("/credits/balance")
+        ->and($paths["/credits/balance"])->toHaveKey("get");
+});
