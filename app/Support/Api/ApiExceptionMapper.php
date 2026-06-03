@@ -13,6 +13,7 @@ use App\Support\Converters\Exceptions\UnsupportedFormatException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 final class ApiExceptionMapper
@@ -61,6 +62,21 @@ final class ApiExceptionMapper
                 code: 'rate_limited',
                 message: 'Too many requests.',
                 status: 429,
+            ),
+            $e instanceof HttpException && $e->getStatusCode() === 401 => new MappedApiError(
+                code: 'unauthorized',
+                message: 'Unauthenticated.',
+                status: 401,
+            ),
+            $e instanceof HttpException && $e->getStatusCode() === 403 => new MappedApiError(
+                code: 'forbidden',
+                message: 'Forbidden.',
+                status: 403,
+            ),
+            $e instanceof HttpException && $e->getStatusCode() === 404 => new MappedApiError(
+                code: 'not_found',
+                message: 'Resource not found.',
+                status: 404,
             ),
             default => null,
         };
