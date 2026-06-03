@@ -23,5 +23,6 @@ Route::prefix('v1')
             }
 
             Route::get('/converters', [ConverterController::class, 'index'])->name('converters.index');
+            Route::get('/converters/{source}/{target}/schema', [ConverterController::class, 'schema'])->name('converters.schema');
         });
     });
