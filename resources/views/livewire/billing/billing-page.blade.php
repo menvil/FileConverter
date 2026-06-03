@@ -69,4 +69,42 @@
         </x-card>
 
     </div>
+
+    {{-- Available plans section --}}
+    <section class="mt-10">
+        <h2 class="text-xl font-semibold text-[var(--ca-text)]">Available plans</h2>
+        <p class="mt-1 text-sm text-[var(--ca-muted)]">Choose the plan that fits your needs.</p>
+
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach($this->plans as $plan)
+                <x-card variant="elevated" class="{{ $this->authUser->plan->value === $plan->key ? 'ring-2' : '' }}" style="{{ $this->authUser->plan->value === $plan->key ? 'ring-color:var(--ca-primary);' : '' }}">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="font-semibold text-[var(--ca-text)]">{{ $plan->label }}</p>
+                            <p class="mt-1 text-sm text-[var(--ca-muted)]">{{ number_format($plan->monthlyCredits) }} credits / month</p>
+                        </div>
+                        @if($this->authUser->plan->value === $plan->key)
+                            <x-badge variant="success">Current plan</x-badge>
+                        @endif
+                    </div>
+                    <div class="mt-4">
+                        @if($this->authUser->plan->value === $plan->key)
+                            <x-button variant="secondary" disabled class="w-full">Current plan</x-button>
+                        @elseif(!$plan->isPaid)
+                            <x-button variant="secondary" disabled class="w-full">Free</x-button>
+                        @else
+                            <x-button
+                                variant="gradient"
+                                class="w-full"
+                                wire:click="startSubscriptionCheckout('{{ $plan->key }}')"
+                            >
+                                Upgrade to {{ $plan->label }}
+                            </x-button>
+                        @endif
+                    </div>
+                </x-card>
+            @endforeach
+        </div>
+    </section>
+
 </div>

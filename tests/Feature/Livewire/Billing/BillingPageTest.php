@@ -84,3 +84,14 @@ it('shows correct free plan limit values', function () {
         ->assertSee('25 MB')
         ->assertSee('Disabled');
 });
+
+it('shows available billing plans', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(BillingPage::class)
+        ->assertSee('Available plans')
+        ->assertSee('Free')
+        ->assertSee('Pro')
+        ->assertSee('Max');
+});
