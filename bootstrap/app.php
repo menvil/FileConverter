@@ -2,10 +2,12 @@
 
 use App\Http\Middleware\AuthenticateApiKey;
 use App\Http\Middleware\EnsureApiAccessIsAllowed;
+use App\Support\Api\ApiErrorResponseFactory;
 use App\Support\Api\ApiExceptionMapper;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -41,12 +43,19 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            return response()->json([
-                'error' => [
-                    'code' => $mapped->code,
-                    'message' => $mapped->message,
-                    'details' => $mapped->details,
-                ],
-            ], $mapped->status);
+            $response = app(ApiErrorResponseFactory::class)->make(
+                code: $mapped->code,
+                message: $mapped->message,
+                status: $mapped->status,
+                details: $mapped->details,
+            );
+
+            if ($e instanceof ThrottleRequestsException) {
+                foreach ($e->getHeaders() as $header => $value) {
+                    $response->header($header, $value);
+                }
+            }
+
+            return $response;
         });
     })->create();

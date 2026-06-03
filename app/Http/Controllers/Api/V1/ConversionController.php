@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Actions\Conversions\CreateConversionJobAction;
-use App\Actions\Conversions\EstimateConversionCostAction;
-use App\Contracts\Billing\CreditLedger;
+use App\Actions\Conversions\EstimateConversionFlowAction;
 use App\Enums\ConversionStatus;
 use App\Http\Requests\Api\V1\CreateConversionRequest;
 use App\Http\Requests\Api\V1\EstimateConversionRequest;
@@ -14,8 +13,6 @@ use App\Http\Resources\Api\V1\ConversionResource;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Support\Api\ApiOwnershipGuard;
-use App\Support\Conversions\Exceptions\UnsupportedConversionException;
-use App\Support\Converters\ConverterRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,34 +20,24 @@ use Illuminate\Support\Facades\Storage;
 final class ConversionController
 {
     public function __construct(
-        private readonly ConverterRegistry $registry,
-        private readonly CreditLedger $creditLedger,
+        private readonly EstimateConversionFlowAction $estimateFlow,
         private readonly ApiOwnershipGuard $ownershipGuard,
     ) {}
 
     public function estimate(EstimateConversionRequest $request): JsonResponse
     {
-        $file = FileRecord::findOrFail($request->integer('file_id'));
-
-        $this->ownershipGuard->ensureFileOwner($request->user(), $file);
-
-        $converter = $this->registry->find($file->extension, $request->string('target_format')->toString());
-
-        if ($converter === null) {
-            throw UnsupportedConversionException::forPair($file->extension, $request->string('target_format')->toString());
-        }
-
-        $options = $converter->validateOptions($request->array('options', []));
-
-        $cost = app(EstimateConversionCostAction::class)->handle($file, $converter, $options);
-
-        $balance = $this->creditLedger->balance($request->user());
+        $result = $this->estimateFlow->handle(
+            user: $request->user(),
+            fileId: $request->integer('file_id'),
+            targetFormat: $request->string('target_format')->toString(),
+            options: $request->array('options', []),
+        );
 
         return response()->json([
             'data' => [
-                'amount' => $cost->amount,
-                'breakdown' => $cost->breakdown,
-                'has_enough_credits' => $balance >= $cost->amount,
+                'amount' => $result->amount,
+                'breakdown' => $result->breakdown,
+                'has_enough_credits' => $result->hasEnoughCredits,
             ],
         ]);
     }
@@ -58,7 +45,6 @@ final class ConversionController
     public function store(CreateConversionRequest $request): JsonResponse
     {
         $file = FileRecord::findOrFail($request->integer('file_id'));
-
         $this->ownershipGuard->ensureFileOwner($request->user(), $file);
 
         $job = app(CreateConversionJobAction::class)->handle(
@@ -73,15 +59,17 @@ final class ConversionController
             ->setStatusCode(201);
     }
 
-    public function show(Request $request, ConversionJob $conversion): JsonResponse
+    public function show(Request $request, int $conversionId): JsonResponse
     {
+        $conversion = ConversionJob::findOrFail($conversionId);
         $this->ownershipGuard->ensureConversionOwner($request->user(), $conversion);
 
         return response()->json(['data' => (new ConversionResource($conversion))->resolve()]);
     }
 
-    public function download(Request $request, ConversionJob $conversion): mixed
+    public function download(Request $request, int $conversionId): mixed
     {
+        $conversion = ConversionJob::findOrFail($conversionId);
         $this->ownershipGuard->ensureConversionOwner($request->user(), $conversion);
 
         if ($conversion->status !== ConversionStatus::Completed) {

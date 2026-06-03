@@ -34,8 +34,9 @@ final class FileController
             ->setStatusCode(201);
     }
 
-    public function targets(Request $request, FileRecord $file): JsonResource
+    public function targets(Request $request, int $fileId): JsonResource
     {
+        $file = FileRecord::findOrFail($fileId);
         $this->ownershipGuard->ensureFileOwner($request->user(), $file);
 
         $targets = $this->registry->targetsFor($file->extension);

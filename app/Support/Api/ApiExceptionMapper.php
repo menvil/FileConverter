@@ -13,6 +13,7 @@ use App\Support\Converters\Exceptions\UnsupportedFormatException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
@@ -57,6 +58,12 @@ final class ApiExceptionMapper
                 code: 'forbidden',
                 message: 'Forbidden.',
                 status: 403,
+            ),
+            $e instanceof ValidationException => new MappedApiError(
+                code: 'validation_failed',
+                message: $e->getMessage(),
+                status: 422,
+                details: $e->errors(),
             ),
             $e instanceof ThrottleRequestsException => new MappedApiError(
                 code: 'rate_limited',

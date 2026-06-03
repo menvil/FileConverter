@@ -12,22 +12,16 @@ it('rate limiter api-v1 is registered', function () {
     expect(RateLimiter::limiter('api-v1'))->not->toBeNull();
 });
 
-it('rate limits api requests with 429 after limit exceeded', function () {
+it('returns 429 when api rate limit is exceeded on a throttled endpoint', function () {
     $user = User::factory()->create(['plan' => Plan::Pro]);
-    $generated = app(ApiKeyGenerator::class)->create($user, 'Pro key');
+    $token = app(ApiKeyGenerator::class)->create($user, 'Pro key')->plainToken;
 
-    RateLimiter::for('api-v1-test', fn () => Limit::perMinute(2)->by($user->id));
+    // Override the limiter with a limit of 1 to make testing practical.
+    RateLimiter::for('api-v1', fn () => Limit::perMinute(1)->by($user->id));
 
-    for ($i = 0; $i < 2; $i++) {
-        $this->withToken($generated->plainToken)
-            ->getJson('/api/v1/health');
-    }
+    // First request should succeed.
+    $this->withToken($token)->getJson('/api/v1/converters')->assertOk();
 
-    $response = $this->withToken($generated->plainToken)
-        ->withHeaders(['X-RateLimit-Test-Key' => 'api-v1-test'])
-        ->getJson('/api/v1/health');
-
-    // The health endpoint itself uses the api-v1 limiter; we just confirm it's wired.
-    // 200 is fine here as health is public and limit depends on config.
-    expect($response->status())->toBeIn([200, 429]);
+    // Second request exceeds the limit.
+    $this->withToken($token)->getJson('/api/v1/converters')->assertStatus(429);
 });
