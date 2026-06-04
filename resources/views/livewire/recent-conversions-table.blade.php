@@ -64,6 +64,12 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
+                                    @php $expirationLabel = $this->resultExpirationLabel($job); @endphp
+                                    @if ($expirationLabel !== null)
+                                        <div class="mb-1 text-xs {{ $job->resultFile?->isExpired() ? 'text-red-500' : 'text-[var(--ca-muted)]' }}">
+                                            {{ $expirationLabel }}
+                                        </div>
+                                    @endif
                                     <div class="flex items-center gap-2">
                                         @if ($this->canDownload($job))
                                             <a
