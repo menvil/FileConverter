@@ -23,8 +23,7 @@ final class CleanupExpiredFilesJob implements ShouldQueue
             ->chunkById(100, function ($files): void {
                 foreach ($files as $file) {
                     if ($file->stored_path) {
-                        Storage::disk(config('filesystems.default'))
-                            ->delete($file->stored_path);
+                        Storage::disk('local')->delete($file->stored_path);
                     }
 
                     $file->forceFill(['status' => FileStatus::Expired])->save();
