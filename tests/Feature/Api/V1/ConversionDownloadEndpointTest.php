@@ -66,7 +66,8 @@ it('returns result_expired error for expired api download', function () {
     $this->withToken($token)
         ->getJson("/api/v1/conversions/{$job->id}/download")
         ->assertStatus(410)
-        ->assertJsonPath('error.code', 'result_expired');
+        ->assertJsonPath('error.code', 'result_expired')
+        ->assertJsonPath('error.details.expired_at', $resultFile->expires_at->toIso8601String());
 });
 
 it('returns result_expired error for file with expired status', function () {
@@ -88,7 +89,8 @@ it('returns result_expired error for file with expired status', function () {
     $this->withToken($token)
         ->getJson("/api/v1/conversions/{$job->id}/download")
         ->assertStatus(410)
-        ->assertJsonPath('error.code', 'result_expired');
+        ->assertJsonPath('error.code', 'result_expired')
+        ->assertJsonStructure(['error' => ['details' => ['expired_at']]]);
 });
 
 it('does not allow another user to download conversion result', function () {

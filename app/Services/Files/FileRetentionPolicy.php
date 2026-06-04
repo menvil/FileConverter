@@ -18,12 +18,14 @@ final class FileRetentionPolicy
 
     public function expiresAtFor(User $user, ?CarbonInterface $from = null): CarbonInterface
     {
-        $days = (int) $this->features->limit($user, 'retention_days');
+        $raw = $this->features->limit($user, 'retention_days');
 
-        if ($days <= 0) {
-            throw InvalidRetentionPolicyException::forInvalidDays($days);
+        $validated = filter_var($raw, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+        if ($validated === false) {
+            throw InvalidRetentionPolicyException::forInvalidDays($raw);
         }
 
-        return ($from ?? Date::now())->copy()->addDays($days);
+        return ($from ?? Date::now())->copy()->addDays($validated);
     }
 }

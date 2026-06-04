@@ -90,7 +90,10 @@ class RecentConversionsTable extends Component
             && ! $job->resultFile->isExpired();
     }
 
-    public function resultExpirationLabel(ConversionJob $job): ?string
+    /**
+     * @return array{label: string, class: string}|null
+     */
+    public function expirationMetaFor(ConversionJob $job): ?array
     {
         $file = $job->resultFile;
 
@@ -99,10 +102,10 @@ class RecentConversionsTable extends Component
         }
 
         if ($file->isExpired()) {
-            return 'Expired';
+            return ['label' => 'Expired', 'class' => 'text-red-500'];
         }
 
-        return 'Expires '.$file->expires_at->diffForHumans();
+        return ['label' => 'Expires '.$file->expires_at->diffForHumans(), 'class' => 'text-[var(--ca-muted)]'];
     }
 
     public function canConvertAgain(ConversionJob $job): bool
