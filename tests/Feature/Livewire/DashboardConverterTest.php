@@ -144,3 +144,16 @@ it('renders upload loading state hooks in the upload dropzone', function () {
         ->assertSeeHtml('wire:target="upload,storeUpload"')
         ->assertSee('Uploading');
 });
+
+it('renders target selection loading state hooks on format step', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSet('step', 'format')
+        ->assertSeeHtml('wire:target="selectTargetFormat"')
+        ->assertSee('Loading converter settings');
+});
