@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
 use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\Exceptions\UnsupportedFormatException;
+use App\Support\Logging\ConversionLogger;
 use Illuminate\Support\Facades\DB;
 
 final class CreateConversionJobAction
@@ -25,6 +26,7 @@ final class CreateConversionJobAction
         private readonly ConverterRegistry $converterRegistry,
         private readonly EstimateConversionCostAction $estimateCost,
         private readonly CreditLedger $creditLedger,
+        private readonly ConversionLogger $logger,
     ) {}
 
     /**
@@ -98,6 +100,8 @@ final class CreateConversionJobAction
         });
 
         ProcessConversionJob::dispatch($job->id);
+
+        $this->logger->jobCreated($job);
 
         return $job;
     }
