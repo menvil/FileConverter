@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\ConversionStatus;
 use App\Livewire\ConversionHistoryTable;
+use App\Models\ConversionCreditCharge;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
@@ -90,4 +91,29 @@ it('renders status badges in history table', function () {
         ->test(ConversionHistoryTable::class)
         ->assertSee('Completed')
         ->assertSee('Failed');
+});
+
+it('renders captured credit cost in history table', function () {
+    $user = User::factory()->create();
+
+    $job = ConversionJob::factory()->for($user)->completed()->create();
+
+    ConversionCreditCharge::factory()->for($user)->for($job, 'conversionJob')->create([
+        'captured_amount' => 2,
+        'status' => 'captured',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class)
+        ->assertSee('2 credits');
+});
+
+it('renders dash when job has no captured credit charge', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->failed()->create();
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class)
+        ->assertSee('—');
 });
