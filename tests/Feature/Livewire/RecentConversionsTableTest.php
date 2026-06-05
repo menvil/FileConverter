@@ -427,3 +427,13 @@ it('shows helpful empty state with CTA when there are no conversions', function 
         ->assertSee('Upload your first')
         ->assertSee('Start your first conversion');
 });
+
+it('renders recent conversions table with file name and actions columns after responsive changes', function () {
+    $user = User::factory()->create();
+    ConversionJob::factory()->for($user)->create();
+
+    Livewire::actingAs($user)
+        ->test(RecentConversionsTable::class)
+        ->assertSee('File Name')
+        ->assertSee('Actions');
+});

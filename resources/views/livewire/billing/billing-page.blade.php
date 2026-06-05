@@ -184,8 +184,8 @@
                     </div>
                 </x-card>
             @else
-                <x-card variant="elevated" padding="none">
-                    <table class="w-full text-sm">
+                <x-card variant="elevated" padding="none" class="overflow-x-auto">
+                    <table class="w-full min-w-[36rem] text-sm">
                         <thead>
                             <tr class="border-b text-left text-xs font-medium uppercase tracking-wide text-[var(--ca-muted)]" style="border-color:var(--ca-border);">
                                 <th class="px-4 py-3">Date</th>
