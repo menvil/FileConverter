@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\Yaml\Yaml;
 use Tests\TestCase;
@@ -20,6 +21,8 @@ pest()->extend(TestCase::class)
     ->in('Feature');
 
 uses(TestCase::class)->in('Unit');
+
+afterEach(fn () => Carbon::setTestNow());
 
 /*
 |--------------------------------------------------------------------------

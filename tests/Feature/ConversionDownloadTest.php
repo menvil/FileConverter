@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\FileStatus;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
@@ -71,6 +72,8 @@ it('does not allow downloading a failed conversion', function () {
         ->assertNotFound();
 });
 
+// CONV-343: Block expired web downloads
+
 it('does not allow downloading an expired result', function () {
     Storage::fake('local');
 
@@ -81,6 +84,27 @@ it('does not allow downloading an expired result', function () {
     $resultFile = FileRecord::factory()->for($user)->create([
         'stored_path' => 'conversions/result.jpg',
         'expires_at' => now()->subHour(),
+    ]);
+
+    $job = ConversionJob::factory()->for($user)->completed()->create([
+        'result_file_id' => $resultFile->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('conversions.download', $job))
+        ->assertStatus(410)
+        ->assertSee('expired');
+});
+
+it('does not allow downloading a result with expired status', function () {
+    Storage::fake('local');
+
+    $user = User::factory()->create();
+
+    $resultFile = FileRecord::factory()->for($user)->create([
+        'stored_path' => 'conversions/result.jpg',
+        'status' => FileStatus::Expired,
+        'expires_at' => now()->addDay(),
     ]);
 
     $job = ConversionJob::factory()->for($user)->completed()->create([

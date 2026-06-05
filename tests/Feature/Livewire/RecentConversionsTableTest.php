@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\ConversionStatus;
+use App\Enums\FileStatus;
 use App\Livewire\RecentConversionsTable;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
@@ -354,4 +355,65 @@ it('renders source file name in recent conversions table', function () {
 
     Livewire::test(RecentConversionsTable::class)
         ->assertSee('product-photo.png');
+});
+
+// CONV-345: Show retention and expiration info in UI
+
+it('shows expiration info for completed conversion with non-expired result', function () {
+    $user = User::factory()->create();
+
+    $result = FileRecord::factory()->for($user)->create([
+        'expires_at' => now()->addDay(),
+        'status' => FileStatus::Analyzed,
+    ]);
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Completed,
+        'result_file_id' => $result->id,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertSee('Expires');
+});
+
+it('does not show download action for completed conversion with expired result', function () {
+    $user = User::factory()->create();
+
+    $result = FileRecord::factory()->for($user)->create([
+        'expires_at' => now()->subDay(),
+        'status' => FileStatus::Analyzed,
+    ]);
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Completed,
+        'result_file_id' => $result->id,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertDontSee('Download')
+        ->assertSee('Expired');
+});
+
+it('does not show download for result with FileStatus::Expired even when expires_at is in the future', function () {
+    $user = User::factory()->create();
+
+    $result = FileRecord::factory()->for($user)->create([
+        'status' => FileStatus::Expired,
+        'expires_at' => now()->addDay(),
+    ]);
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Completed,
+        'result_file_id' => $result->id,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertDontSee('Download')
+        ->assertSee('Expired');
 });

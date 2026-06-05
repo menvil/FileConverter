@@ -64,6 +64,12 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
+                                    @php $expirationMeta = $this->expirationMetaFor($job); @endphp
+                                    @if ($expirationMeta !== null)
+                                        <div class="mb-1 text-xs {{ $expirationMeta['class'] }}">
+                                            {{ $expirationMeta['label'] }}
+                                        </div>
+                                    @endif
                                     <div class="flex items-center gap-2">
                                         @if ($this->canDownload($job))
                                             <a

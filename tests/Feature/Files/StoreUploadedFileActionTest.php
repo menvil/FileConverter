@@ -29,7 +29,7 @@ it('throws storage limit exceeded exception when quota would be exceeded', funct
         ->toThrow(StorageLimitExceededException::class);
 });
 
-// CONV-195: Apply retention days to files
+// CONV-195 / CONV-331: Upload file expiration by plan
 
 it('sets uploaded file expiration based on free plan retention', function () {
     Storage::fake('local');

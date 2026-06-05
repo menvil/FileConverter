@@ -84,7 +84,28 @@ class RecentConversionsTable extends Component
 
     public function canDownload(ConversionJob $job): bool
     {
-        return $job->isCompleted() && $job->result_file_id !== null;
+        return $job->isCompleted()
+            && $job->result_file_id !== null
+            && $job->resultFile !== null
+            && ! $job->resultFile->isExpired();
+    }
+
+    /**
+     * @return array{label: string, class: string}|null
+     */
+    public function expirationMetaFor(ConversionJob $job): ?array
+    {
+        $file = $job->resultFile;
+
+        if ($file === null || $file->expires_at === null) {
+            return null;
+        }
+
+        if ($file->isExpired()) {
+            return ['label' => 'Expired', 'class' => 'text-red-500'];
+        }
+
+        return ['label' => 'Expires '.$file->expires_at->diffForHumans(), 'class' => 'text-[var(--ca-muted)]'];
     }
 
     public function canConvertAgain(ConversionJob $job): bool

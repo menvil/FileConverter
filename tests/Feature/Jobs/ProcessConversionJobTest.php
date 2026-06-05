@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Actions\Conversions\RecordConversionResultFileAction;
 use App\Contracts\Billing\CreditLedger;
 use App\Enums\ConversionStatus;
+use App\Enums\Plan;
 use App\Jobs\ProcessConversionJob;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
 use App\Support\Conversions\ConverterDriverRegistry;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Tests\Fakes\Conversions\FakeConverterDriver;
 
@@ -125,4 +127,50 @@ it('ignores conversion jobs that are not queued', function () {
     );
 
     expect($conversionJob->fresh()->status)->toBe(ConversionStatus::Completed);
+});
+
+// CONV-333: Test result file expiration by plan
+
+it('assigns expiration date to conversion result file based on user plan', function () {
+    Carbon::setTestNow('2026-06-01 10:00:00');
+
+    Storage::fake('local');
+
+    $user = User::factory()->create(['plan' => Plan::Free]); // 1 retention day
+
+    $sourceFile = FileRecord::factory()->for($user)->create([
+        'extension' => 'png',
+        'mime_type' => 'image/png',
+    ]);
+
+    $conversionJob = ConversionJob::factory()
+        ->for($user)
+        ->for($sourceFile, 'sourceFile')
+        ->create([
+            'source_format' => 'png',
+            'target_format' => 'jpg',
+            'converter_key' => 'png_to_jpg',
+            'options_json' => ['quality' => 'high'],
+            'status' => ConversionStatus::Queued,
+            'progress' => 0,
+        ]);
+
+    app()->instance(
+        ConverterDriverRegistry::class,
+        new ConverterDriverRegistry([
+            new FakeConverterDriver('png_to_jpg'),
+        ]),
+    );
+
+    (new ProcessConversionJob($conversionJob->id))->handle(
+        app(ConverterDriverRegistry::class),
+        app(RecordConversionResultFileAction::class),
+        app(CreditLedger::class),
+    );
+
+    $resultFile = FileRecord::find($conversionJob->fresh()->result_file_id);
+
+    expect($resultFile)->not->toBeNull();
+    expect($resultFile->expires_at)->not->toBeNull();
+    expect($resultFile->expires_at->toDateTimeString())->toBe('2026-06-02 10:00:00');
 });
