@@ -99,6 +99,34 @@ it('rejects invalid default image quality preference', function () {
         ->assertHasErrors(['imageQuality']);
 });
 
+it('allows user to save remove metadata preference', function () {
+    $user = User::factory()->create([
+        'settings' => [],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('removeMetadata', false)
+        ->call('saveConversionPreferences')
+        ->assertHasNoErrors();
+
+    expect($user->fresh()->settings['conversion']['remove_metadata'])->toBeFalse();
+});
+
+it('loads existing remove metadata preference on mount', function () {
+    $user = User::factory()->create([
+        'settings' => [
+            'conversion' => [
+                'remove_metadata' => false,
+            ],
+        ],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->assertSet('removeMetadata', false);
+});
+
 it('shows current user profile data in settings form', function () {
     $user = User::factory()->create([
         'name' => 'Alex Johnson',
