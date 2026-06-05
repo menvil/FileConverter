@@ -87,34 +87,28 @@
                 <a
                     href="{{ route('dashboard') }}"
                     role="menuitem"
-                    class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-primary)]"
+                    class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-primary)] ca-focus-ring"
                     style="background:color-mix(in srgb, var(--ca-primary) 10%, var(--ca-surface));"
                 >
                     <x-user-dropdown.icon name="home" />
                     <span>Dashboard</span>
                 </a>
-                <button
-                    type="button"
+                <a
+                    href="{{ route('billing') }}"
                     role="menuitem"
-                    disabled
-                    aria-disabled="true"
-                    title="Coming soon"
-                    class="flex w-full items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-left text-sm font-medium text-[var(--ca-muted)] opacity-60 cursor-not-allowed"
+                    class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring"
                 >
                     <x-user-dropdown.icon name="card" />
                     <span>Billing</span>
-                </button>
-                <button
-                    type="button"
+                </a>
+                <a
+                    href="{{ route('settings') }}"
                     role="menuitem"
-                    disabled
-                    aria-disabled="true"
-                    title="Coming soon"
-                    class="flex w-full items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-left text-sm font-medium text-[var(--ca-muted)] opacity-60 cursor-not-allowed"
+                    class="flex items-center gap-3 rounded-[var(--ca-radius-md)] px-3 py-2 text-sm font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring"
                 >
                     <x-user-dropdown.icon name="cog" />
                     <span>Settings</span>
-                </button>
+                </a>
             </nav>
 
             <div class="border-t px-2 py-2" style="border-color:var(--ca-border);">

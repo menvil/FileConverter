@@ -24,3 +24,21 @@ it('renders accessible labels for filter inputs on dashboard', function () {
         ->assertOk()
         ->assertSeeHtml('for="recent-search"');
 });
+
+it('renders keyboard accessible user dropdown trigger with aria attributes', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertSeeHtml('aria-expanded')
+        ->assertSeeHtml('aria-haspopup');
+});
+
+it('renders billing and settings links in user dropdown', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertSeeHtml('href="' . route('billing') . '"')
+        ->assertSeeHtml('href="' . route('settings') . '"')
+        ->assertSee('Billing')
+        ->assertSee('Settings');
+});
