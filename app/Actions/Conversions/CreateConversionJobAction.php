@@ -60,7 +60,7 @@ final class CreateConversionJobAction
         $balance = $this->creditLedger->balance($user);
 
         if ($balance < $cost->amount) {
-            throw InsufficientCreditsException::make(
+            throw InsufficientCreditsException::forCost(
                 required: $cost->amount,
                 available: $balance,
             );

@@ -39,7 +39,7 @@ final class DatabaseCreditLedger implements CreditLedger
                 ->firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
 
             if ($account->balance < $amount) {
-                throw InsufficientCreditsException::make($amount, $account->balance);
+                throw InsufficientCreditsException::forCost($amount, $account->balance);
             }
 
             $account->decrement('balance', $amount);
