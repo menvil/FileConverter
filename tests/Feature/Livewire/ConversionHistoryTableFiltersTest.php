@@ -167,3 +167,21 @@ it('filters history by target format', function () {
         ->assertSee('to-jpg-file.png')
         ->assertDontSee('to-webp-file.png');
 });
+
+it('resets pagination when filter changes', function () {
+    $user = User::factory()->create();
+
+    for ($i = 0; $i < 20; $i++) {
+        ConversionJob::factory()->for($user)->create([
+            'source_format' => 'png',
+            'target_format' => 'jpg',
+        ]);
+    }
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class)
+        ->call('gotoPage', 2)
+        ->assertSet('paginators.page', 2)
+        ->set('search', 'something')
+        ->assertSet('paginators.page', 1);
+});

@@ -128,6 +128,7 @@ class ConversionHistoryTable extends Component
     {
         $job = ConversionJob::query()
             ->where('user_id', auth()->id())
+            ->with('sourceFile')
             ->find($jobId);
 
         if (! $job || ! $this->canConvertAgain($job)) {

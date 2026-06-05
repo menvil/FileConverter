@@ -98,7 +98,7 @@
                                     </x-badge>
                                 </td>
                                 <td class="px-4 py-3 text-[var(--ca-text)]">
-                                    @if ($job->creditCharge?->captured_amount)
+                                    @if ($job->creditCharge !== null && $job->creditCharge->captured_amount !== null)
                                         {{ $job->creditCharge->captured_amount }} {{ $job->creditCharge->captured_amount === 1 ? 'credit' : 'credits' }}
                                     @else
                                         —

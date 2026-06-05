@@ -8,6 +8,7 @@ use App\Models\ConversionCreditCharge;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
 it('renders conversion history table component', function () {
@@ -116,4 +117,30 @@ it('renders dash when job has no captured credit charge', function () {
     Livewire::actingAs($user)
         ->test(ConversionHistoryTable::class)
         ->assertSee('—');
+});
+
+it('eager-loads sourceFile resultFile and creditCharge without N+1 queries', function () {
+    $user = User::factory()->create();
+
+    for ($i = 0; $i < 5; $i++) {
+        $source = FileRecord::factory()->for($user)->create();
+        $result = FileRecord::factory()->for($user)->create();
+        $job = ConversionJob::factory()->for($user)->completed()->create([
+            'source_file_id' => $source->id,
+            'result_file_id' => $result->id,
+        ]);
+        ConversionCreditCharge::factory()->for($user)->for($job, 'conversionJob')->captured()->create();
+    }
+
+    DB::enableQueryLog();
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class);
+
+    $queryCount = count(DB::getQueryLog());
+    DB::disableQueryLog();
+
+    // With eager loading: auth check + jobs + sourceFile + resultFile + creditCharge + pagination count = ~6-7 queries.
+    // N+1 would produce 3 queries per row (15+ queries for 5 rows).
+    expect($queryCount)->toBeLessThan(10);
 });

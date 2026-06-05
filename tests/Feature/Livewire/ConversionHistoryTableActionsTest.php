@@ -16,13 +16,14 @@ it('shows download action for completed non-expired result', function () {
         'expires_at' => now()->addDay(),
     ]);
 
-    ConversionJob::factory()->for($user)->completed()->create([
+    $job = ConversionJob::factory()->for($user)->completed()->create([
         'result_file_id' => $result->id,
     ]);
 
     Livewire::actingAs($user)
         ->test(ConversionHistoryTable::class)
-        ->assertSee('Download');
+        ->assertSee('Download')
+        ->assertSee(route('conversions.download', $job));
 });
 
 it('does not show active download for expired result', function () {
@@ -59,11 +60,14 @@ it('shows convert again for completed job with available source file', function 
         'expires_at' => now()->addDay(),
     ]);
 
-    ConversionJob::factory()->for($user)->completed()->for($source, 'sourceFile')->create();
+    $job = ConversionJob::factory()->for($user)->completed()->for($source, 'sourceFile')->create();
 
     Livewire::actingAs($user)
         ->test(ConversionHistoryTable::class)
-        ->assertSee('Convert Again');
+        ->assertSee('Convert Again')
+        ->call('convertAgain', $job->id)
+        ->assertDispatched('conversion-repeat-requested', conversionJobId: $job->id)
+        ->assertRedirect(route('dashboard'));
 });
 
 it('does not show convert again when source file is expired', function () {
