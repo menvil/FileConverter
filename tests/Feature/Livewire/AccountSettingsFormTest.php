@@ -51,6 +51,30 @@ it('requires profile name', function () {
         ->assertHasErrors(['name' => 'required']);
 });
 
+it('displays email as read only on settings page', function () {
+    $user = User::factory()->create([
+        'email' => 'alex@example.com',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->assertSee('alex@example.com')
+        ->assertSee('Email');
+});
+
+it('does not update email from settings form', function () {
+    $user = User::factory()->create([
+        'email' => 'alex@example.com',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('email', 'changed@example.com')
+        ->call('saveProfile');
+
+    expect($user->fresh()->email)->toBe('alex@example.com');
+});
+
 it('shows current user profile data in settings form', function () {
     $user = User::factory()->create([
         'name' => 'Alex Johnson',
