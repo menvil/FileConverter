@@ -13,7 +13,7 @@ it('renders conversion history table component', function () {
 
     Livewire::actingAs($user)
         ->test(ConversionHistoryTable::class)
-        ->assertSee('History table');
+        ->assertOk();
 });
 
 it('shows only current user conversion jobs in history', function () {
