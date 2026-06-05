@@ -189,7 +189,7 @@ it('dispatches toast after successful file upload', function () {
         ->assertDispatched('toast');
 })->skip('upload requires a real Livewire file upload; covered by storeUpload integration');
 
-it('dispatches toast when conversion starts successfully', function () {
+it('dispatches toast and transitions to converting when conversion starts successfully', function () {
     Queue::fake();
 
     $user = User::factory()->create();
@@ -200,10 +200,13 @@ it('dispatches toast when conversion starts successfully', function () {
         ->set('currentFileId', $file->id)
         ->call('selectTargetFormat', 'jpg')
         ->call('convert')
-        ->assertDispatched('toast');
+        ->assertDispatched('toast')
+        ->assertSet('hasInsufficientCredits', false)
+        ->assertSet('convertError', null)
+        ->assertNotSet('currentConversionJobId', null);
 });
 
-it('dispatches toast when conversion fails due to insufficient credits', function () {
+it('dispatches toast and sets error state when conversion fails due to insufficient credits', function () {
     Queue::fake();
 
     $user = User::factory()->create();
@@ -222,5 +225,8 @@ it('dispatches toast when conversion fails due to insufficient credits', functio
         ->set('currentFileId', $file->id)
         ->call('selectTargetFormat', 'jpg')
         ->call('convert')
-        ->assertDispatched('toast');
+        ->assertDispatched('toast')
+        ->assertSet('hasInsufficientCredits', true)
+        ->assertSet('currentConversionJobId', null)
+        ->assertNotSet('convertError', null);
 });

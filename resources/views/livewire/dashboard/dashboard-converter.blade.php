@@ -53,8 +53,8 @@
                     <p class="text-sm text-[var(--ca-muted)]">PNG, JPG, WEBP and PDF supported in beta</p>
                 </div>
 
-                <label class="cursor-pointer" aria-label="Upload file">
-                    <input type="file" wire:model="upload" wire:loading.attr="disabled" wire:target="upload,storeUpload" class="sr-only">
+                <label class="cursor-pointer">
+                    <input type="file" wire:model="upload" wire:loading.attr="disabled" wire:target="upload,storeUpload" class="sr-only" aria-label="Upload file">
                     <span class="inline-flex items-center justify-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110" style="background:var(--ca-primary);">
                         <span wire:loading.remove wire:target="upload,storeUpload">Choose file</span>
                         <span wire:loading wire:target="upload,storeUpload" aria-live="polite">Uploading…</span>
