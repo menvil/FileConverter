@@ -50,11 +50,17 @@ class ConversionHistoryTable extends Component
 
     public function updatedDateFrom(): void
     {
+        if (trim((string) $this->dateFrom) === '') {
+            $this->dateFrom = null;
+        }
         $this->resetPage();
     }
 
     public function updatedDateTo(): void
     {
+        if (trim((string) $this->dateTo) === '') {
+            $this->dateTo = null;
+        }
         $this->resetPage();
     }
 
@@ -171,6 +177,16 @@ class ConversionHistoryTable extends Component
         }
 
         return $bytes.' B';
+    }
+
+    public function hasActiveFilters(): bool
+    {
+        return trim($this->search) !== ''
+            || $this->status !== 'all'
+            || $this->sourceFormat !== 'all'
+            || $this->targetFormat !== 'all'
+            || $this->dateFrom !== null
+            || $this->dateTo !== null;
     }
 
     public function render(): View

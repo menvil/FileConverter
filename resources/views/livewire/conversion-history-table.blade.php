@@ -1,14 +1,18 @@
 <div>
     {{-- Filters --}}
     <div class="flex flex-wrap gap-3">
+        <label class="sr-only" for="history-search">Search conversions</label>
         <input
+            id="history-search"
             type="search"
             wire:model.live.debounce.300ms="search"
             placeholder="Search files or formats..."
             class="w-full rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] placeholder-[var(--ca-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30 sm:max-w-xs"
         >
 
+        <label class="sr-only" for="history-status">Filter by status</label>
         <select
+            id="history-status"
             wire:model.live="status"
             class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30"
         >
@@ -17,7 +21,9 @@
             @endforeach
         </select>
 
+        <label class="sr-only" for="history-source-format">Filter by source format</label>
         <select
+            id="history-source-format"
             wire:model.live="sourceFormat"
             class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30"
         >
@@ -26,7 +32,9 @@
             @endforeach
         </select>
 
+        <label class="sr-only" for="history-target-format">Filter by target format</label>
         <select
+            id="history-target-format"
             wire:model.live="targetFormat"
             class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30"
         >
@@ -35,15 +43,21 @@
             @endforeach
         </select>
 
+        <label class="sr-only" for="history-date-from">From date</label>
         <input
+            id="history-date-from"
             type="date"
             wire:model.live="dateFrom"
+            aria-label="Filter from date"
             class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30"
         >
 
+        <label class="sr-only" for="history-date-to">To date</label>
         <input
+            id="history-date-to"
             type="date"
             wire:model.live="dateTo"
+            aria-label="Filter to date"
             class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30"
         >
     </div>
@@ -52,12 +66,24 @@
     <div class="mt-4">
         @if ($jobs->isEmpty())
             <div class="flex flex-col items-center justify-center rounded-[var(--ca-radius-lg)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-12 text-center">
-                <p class="text-base font-semibold text-[var(--ca-text)]">No conversions found</p>
-                <p class="mt-1 text-sm text-[var(--ca-muted)]">Try adjusting your filters or upload a file to start converting</p>
+                @if ($this->hasActiveFilters())
+                    <p class="text-base font-semibold text-[var(--ca-text)]">No conversions match your filters</p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Try adjusting or clearing the filters above.</p>
+                @else
+                    <p class="text-base font-semibold text-[var(--ca-text)]">No conversion history yet</p>
+                    <p class="mt-1 text-sm text-[var(--ca-muted)]">Once you convert files, every result will appear here.</p>
+                    <div class="mt-4">
+                        <a
+                            href="{{ route('dashboard') }}"
+                            class="inline-flex items-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110"
+                            style="background:var(--ca-primary);"
+                        >Start your first conversion</a>
+                    </div>
+                @endif
             </div>
         @else
-            <div class="overflow-hidden rounded-[var(--ca-radius-lg)] border border-[var(--ca-border)] bg-white shadow-[var(--ca-shadow-card)]">
-                <table class="w-full text-sm">
+            <div class="overflow-x-auto rounded-[var(--ca-radius-lg)] border border-[var(--ca-border)] bg-white shadow-[var(--ca-shadow-card)]">
+                <table class="w-full min-w-[56rem] text-sm">
                     <thead>
                         <tr class="border-b border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40">
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">File Name</th>
@@ -109,14 +135,17 @@
                                         @if ($this->canDownload($job))
                                             <a
                                                 href="{{ route('conversions.download', $job) }}"
-                                                class="text-sm font-medium text-[var(--ca-primary)] hover:underline"
+                                                aria-label="Download {{ $job->resultFile?->original_name ?? 'result' }}"
+                                                class="text-sm font-medium text-[var(--ca-primary)] hover:underline ca-focus-ring rounded"
                                             >Download</a>
                                         @endif
 
                                         @if ($this->canConvertAgain($job))
                                             <button
+                                                type="button"
                                                 wire:click="convertAgain({{ $job->id }})"
-                                                class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)] hover:underline"
+                                                aria-label="Convert {{ $job->sourceFile?->original_name ?? 'file' }} again"
+                                                class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)] hover:underline ca-focus-ring rounded"
                                             >Convert Again</button>
                                         @endif
                                     </div>

@@ -7,17 +7,36 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen antialiased" style="background:var(--ca-bg);color:var(--ca-text);">
-    <header class="border-b bg-white" style="border-color:var(--ca-border);">
+    <header
+        x-data="{ mobileMenuOpen: false }"
+        class="border-b bg-white"
+        style="border-color:var(--ca-border);"
+    >
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
             <a href="{{ url('/') }}" class="text-lg font-semibold tracking-tight">ConvertAI</a>
 
             <nav class="hidden gap-6 text-sm text-[var(--ca-muted)] md:flex">
                 <a href="{{ url('/dashboard') }}" class="hover:text-[var(--ca-text)]">Dashboard</a>
-                <a href="#" class="hover:text-[var(--ca-text)]">Tools</a>
-                <a href="#" class="hover:text-[var(--ca-text)]">Pricing</a>
+                <a href="{{ route('history') }}" class="hover:text-[var(--ca-text)]">History</a>
+                <a href="{{ route('billing') }}" class="hover:text-[var(--ca-text)]">Billing</a>
             </nav>
 
             <div class="flex items-center gap-2">
+                {{-- Mobile menu button --}}
+                <button
+                    type="button"
+                    @click="mobileMenuOpen = !mobileMenuOpen"
+                    :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
+                    aria-controls="mobile-nav"
+                    aria-label="Toggle navigation menu"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--ca-radius-md)] border bg-white ca-focus-ring md:hidden"
+                    style="border-color:var(--ca-border);"
+                >
+                    <svg aria-hidden="true" class="h-5 w-5 text-[var(--ca-text)]" viewBox="0 0 20 20" fill="currentColor">
+                        <path x-show="!mobileMenuOpen" fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75Zm0 10.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Z" clip-rule="evenodd"/>
+                        <path x-show="mobileMenuOpen" d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+                    </svg>
+                </button>
                 {{-- Language pill --}}
                 <button
                     type="button"
@@ -57,6 +76,22 @@
                 <x-user-dropdown />
             </div>
         </div>
+
+        {{-- Mobile nav --}}
+        <div
+            x-show="mobileMenuOpen"
+            x-cloak
+            id="mobile-nav"
+            class="border-t md:hidden"
+            style="border-color:var(--ca-border);"
+        >
+            <nav class="flex flex-col gap-1 px-4 py-3 text-sm">
+                <a href="{{ url('/dashboard') }}" class="rounded-[var(--ca-radius-md)] px-3 py-2 font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring">Dashboard</a>
+                <a href="{{ route('history') }}" class="rounded-[var(--ca-radius-md)] px-3 py-2 font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring">History</a>
+                <a href="{{ route('billing') }}" class="rounded-[var(--ca-radius-md)] px-3 py-2 font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring">Billing</a>
+                <a href="{{ route('settings') }}" class="rounded-[var(--ca-radius-md)] px-3 py-2 font-medium text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] ca-focus-ring">Settings</a>
+            </nav>
+        </div>
     </header>
 
     <main class="mx-auto max-w-7xl px-6 py-10">
@@ -76,5 +111,7 @@
             </nav>
         </div>
     </footer>
+
+    <x-toast-region />
 </body>
 </html>

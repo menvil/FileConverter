@@ -39,6 +39,8 @@
                 x-on:dragleave.prevent="isDragging = false"
                 x-on:drop="isDragging = false"
                 x-bind:class="isDragging ? 'border-[var(--ca-primary)] bg-[var(--ca-primary)]/5' : 'border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40'"
+                role="region"
+                aria-label="File upload area"
                 class="flex flex-col items-center justify-center gap-4 rounded-[var(--ca-radius-md)] border-2 border-dashed px-6 py-12 text-center transition-colors">
                 <div class="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ca-surface-muted)] text-[var(--ca-muted)]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -52,10 +54,10 @@
                 </div>
 
                 <label class="cursor-pointer">
-                    <input type="file" wire:model="upload" wire:loading.attr="disabled" wire:target="upload,storeUpload" class="sr-only">
+                    <input type="file" wire:model="upload" wire:loading.attr="disabled" wire:target="upload,storeUpload" class="sr-only" aria-label="Upload file">
                     <span class="inline-flex items-center justify-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110" style="background:var(--ca-primary);">
                         <span wire:loading.remove wire:target="upload,storeUpload">Choose file</span>
-                        <span wire:loading wire:target="upload,storeUpload">Uploading…</span>
+                        <span wire:loading wire:target="upload,storeUpload" aria-live="polite">Uploading…</span>
                     </span>
                 </label>
 
@@ -106,8 +108,8 @@
                     </div>
                 @endif
 
-                <div wire:loading wire:target="selectTargetFormat" class="flex items-center gap-2 text-sm text-[var(--ca-muted)]">
-                    <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <div wire:loading wire:target="selectTargetFormat" aria-live="polite" class="flex items-center gap-2 text-sm text-[var(--ca-muted)]">
+                    <svg class="h-4 w-4 animate-spin" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
                     </svg>
@@ -296,7 +298,7 @@
                     class="w-full"
                 >
                     <span wire:loading.remove wire:target="convert">Convert Now</span>
-                    <span wire:loading wire:target="convert">Starting…</span>
+                    <span wire:loading wire:target="convert" aria-live="polite">Starting conversion…</span>
                 </x-button>
             </div>
         @endif

@@ -1,9 +1,11 @@
 <?php
 
 use App\Livewire\Dashboard\DashboardConverter;
+use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
 use App\ViewModels\TargetFormatCardViewModel;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 it('renders empty upload state', function () {
@@ -136,4 +138,95 @@ it('shows an empty state when the source format has no available targets', funct
         ->assertSee('No conversion targets available')
         ->assertSee('Upload another file')
         ->assertDontSee('Convert PDF to');
+});
+
+it('renders upload loading state hooks in the upload dropzone', function () {
+    Livewire::test(DashboardConverter::class)
+        ->assertSeeHtml('wire:loading')
+        ->assertSeeHtml('wire:target="upload,storeUpload"')
+        ->assertSee('Uploading');
+});
+
+it('renders target selection loading state hooks on format step', function () {
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('goToFormatStep')
+        ->assertSet('step', 'format')
+        ->assertSeeHtml('wire:target="selectTargetFormat"')
+        ->assertSee('Loading converter settings');
+});
+
+it('does not create duplicate conversion jobs on repeated convert call', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->call('convert')
+        ->call('convert');
+
+    expect(ConversionJob::query()->where('user_id', $user->id)->count())->toBe(1);
+});
+
+it('dispatches toast after successful file upload', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('storeUpload', app(\App\Actions\Files\StoreUploadedFileAction::class), app(\App\Services\FeatureAccess\FeatureAccessService::class))
+        ->assertDispatched('toast');
+})->skip('upload requires a real Livewire file upload; covered by storeUpload integration');
+
+it('dispatches toast and transitions to converting when conversion starts successfully', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->call('convert')
+        ->assertDispatched('toast')
+        ->assertSet('hasInsufficientCredits', false)
+        ->assertSet('convertError', null)
+        ->assertNotSet('currentConversionJobId', null);
+});
+
+it('dispatches toast and sets error state when conversion fails due to insufficient credits', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+
+    // drain all credits so the next convert fails
+    app(\App\Contracts\Billing\CreditLedger::class)->spend(
+        user: $user,
+        amount: app(\App\Contracts\Billing\CreditLedger::class)->balance($user),
+        reason: 'test_drain',
+    );
+
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->call('convert')
+        ->assertDispatched('toast')
+        ->assertSet('hasInsufficientCredits', true)
+        ->assertSet('currentConversionJobId', null)
+        ->assertNotSet('convertError', null);
 });

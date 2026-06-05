@@ -118,3 +118,13 @@ it('does not show upgrade button for current plan', function () {
         ->test(BillingPage::class)
         ->assertDontSee('Upgrade to Pro');
 });
+
+it('shows helpful empty state for credit transactions when user has none', function () {
+    $user = User::factory()->create();
+    \App\Models\CreditTransaction::query()->where('user_id', $user->id)->delete();
+
+    $this->actingAs($user)
+        ->get('/billing')
+        ->assertOk()
+        ->assertSee('No credit transactions yet');
+});
