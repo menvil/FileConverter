@@ -24,7 +24,14 @@
         @if ($conversions->isEmpty())
             <div class="flex flex-col items-center justify-center rounded-[var(--ca-radius-lg)] border border-dashed border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-6 py-12 text-center">
                 <p class="text-base font-semibold text-[var(--ca-text)]">No conversions yet</p>
-                <p class="mt-1 text-sm text-[var(--ca-muted)]">Upload a file to start converting</p>
+                <p class="mt-1 text-sm text-[var(--ca-muted)]">Upload your first PNG, JPG, WEBP or PDF file to start converting.</p>
+                <div class="mt-4">
+                    <a
+                        href="{{ route('dashboard') }}"
+                        class="inline-flex items-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110"
+                        style="background:var(--ca-primary);"
+                    >Start your first conversion</a>
+                </div>
             </div>
         @else
             <div class="overflow-hidden rounded-[var(--ca-radius-lg)] border border-[var(--ca-border)] bg-white shadow-[var(--ca-shadow-card)]">
