@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\ConversionStatus;
 use App\Livewire\ConversionHistoryTable;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
@@ -48,4 +49,33 @@ it('shows only current user conversion jobs in history', function () {
         ->test(ConversionHistoryTable::class)
         ->assertSee('own-image.png')
         ->assertDontSee('other-image.png');
+});
+
+it('renders conversion history table columns', function () {
+    $user = User::factory()->create();
+
+    $source = FileRecord::factory()->for($user)->create([
+        'original_name' => 'photo.png',
+        'size_bytes' => 102400,
+    ]);
+
+    $result = FileRecord::factory()->for($user)->create([
+        'original_name' => 'photo.jpg',
+        'size_bytes' => 51200,
+    ]);
+
+    ConversionJob::factory()->for($user)->create([
+        'source_file_id' => $source->id,
+        'result_file_id' => $result->id,
+        'source_format' => 'png',
+        'target_format' => 'jpg',
+        'status' => ConversionStatus::Completed,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class)
+        ->assertSee('photo.png')
+        ->assertSee('PNG')
+        ->assertSee('JPG')
+        ->assertSee('Completed');
 });
