@@ -117,11 +117,7 @@ class DashboardConverter extends Component
         $this->currentFileId = $fileRecord->id;
         $this->step = 'format';
 
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'title' => 'File uploaded',
-            'message' => 'Choose the output format to continue.',
-        ]);
+        $this->dispatch('toast', type: 'success', title: 'File uploaded', message: 'Choose the output format to continue.');
     }
 
     public function goToFormatStep(): void
@@ -274,11 +270,7 @@ class DashboardConverter extends Component
             $this->convertError = 'This conversion is not supported. Please choose a different format.';
             $this->step = 'format';
 
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'title' => 'Unsupported conversion',
-                'message' => 'Please choose a different format.',
-            ]);
+            $this->dispatch('toast', type: 'error', title: 'Unsupported conversion', message: 'Please choose a different format.');
 
             return;
         } catch (InsufficientCreditsException $e) {
@@ -287,21 +279,13 @@ class DashboardConverter extends Component
                 .' credit(s). You have '.app(CreditLedger::class)->balance(auth()->user()).' credits.';
             $this->hasInsufficientCredits = true;
 
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'title' => 'Not enough credits',
-                'message' => 'Top up your credits to continue.',
-            ]);
+            $this->dispatch('toast', type: 'error', title: 'Not enough credits', message: 'Top up your credits to continue.');
 
             return;
         } catch (Throwable) {
             $this->convertError = 'Something went wrong. Please try again.';
 
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'title' => 'Conversion failed',
-                'message' => 'Please try again.',
-            ]);
+            $this->dispatch('toast', type: 'error', title: 'Conversion failed', message: 'Please try again.');
 
             return;
         }
@@ -310,11 +294,7 @@ class DashboardConverter extends Component
         $this->pollCount = 0;
         $this->step = 'converting';
 
-        $this->dispatch('toast', [
-            'type' => 'info',
-            'title' => 'Conversion started',
-            'message' => 'Your file is being processed.',
-        ]);
+        $this->dispatch('toast', type: 'info', title: 'Conversion started', message: 'Your file is being processed.');
     }
 
     public function validateSettings(): bool

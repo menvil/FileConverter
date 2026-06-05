@@ -5,7 +5,10 @@ window.toastRegion = function () {
         toasts: [],
         nextId: 1,
 
-        add(toast) {
+        add(detail) {
+            // Livewire 4 named-argument dispatch produces a flat object.
+            // Guard against the array-of-object shape in case of legacy calls.
+            const toast = Array.isArray(detail) ? detail[0] : detail;
             const id = this.nextId++;
             this.toasts.push({
                 id,
