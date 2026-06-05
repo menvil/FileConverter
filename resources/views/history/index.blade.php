@@ -3,4 +3,8 @@
         <h1 class="text-3xl font-semibold tracking-tight text-[var(--ca-text)]">Conversion History</h1>
         <p class="text-[var(--ca-muted)]">Find and reuse your previous conversions.</p>
     </section>
+
+    <div class="mt-8">
+        <livewire:conversion-history-table />
+    </div>
 </x-layouts.app>
