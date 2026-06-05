@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Contracts\Billing\CreditLedger;
 use App\Enums\Plan;
 use App\Livewire\Billing\BillingPage;
+use App\Models\CreditTransaction;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -121,7 +122,7 @@ it('does not show upgrade button for current plan', function () {
 
 it('shows helpful empty state for credit transactions when user has none', function () {
     $user = User::factory()->create();
-    \App\Models\CreditTransaction::query()->where('user_id', $user->id)->delete();
+    CreditTransaction::query()->where('user_id', $user->id)->delete();
 
     $this->actingAs($user)
         ->get('/billing')

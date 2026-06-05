@@ -37,8 +37,8 @@ it('renders billing and settings links in user dropdown', function () {
     $this->actingAs(User::factory()->create())
         ->get('/dashboard')
         ->assertOk()
-        ->assertSeeHtml('href="' . route('billing') . '"')
-        ->assertSeeHtml('href="' . route('settings') . '"')
+        ->assertSeeHtml('href="'.route('billing').'"')
+        ->assertSeeHtml('href="'.route('settings').'"')
         ->assertSee('Billing')
         ->assertSee('Settings');
 });

@@ -14,8 +14,7 @@ it('logs credit grant with context', function () {
     app(CreditLedger::class)->grant($user, 10, 'starter_grant');
 
     Log::shouldHaveReceived('info')
-        ->withArgs(fn (string $message, array $context) =>
-            $message === 'credits.granted'
+        ->withArgs(fn (string $message, array $context) => $message === 'credits.granted'
             && $context['user_id'] === $user->id
             && $context['amount'] === 10
         );
@@ -30,8 +29,7 @@ it('logs credit spend with context', function () {
     app(CreditLedger::class)->spend($user, 2, 'conversion_completed');
 
     Log::shouldHaveReceived('info')
-        ->withArgs(fn (string $message, array $context) =>
-            $message === 'credits.spent'
+        ->withArgs(fn (string $message, array $context) => $message === 'credits.spent'
             && $context['user_id'] === $user->id
             && $context['amount'] === 2
         );
@@ -47,8 +45,7 @@ it('logs credit refund with context', function () {
     app(CreditLedger::class)->refund($user, 3, 'conversion_refund');
 
     Log::shouldHaveReceived('info')
-        ->withArgs(fn (string $message, array $context) =>
-            $message === 'credits.refunded'
+        ->withArgs(fn (string $message, array $context) => $message === 'credits.refunded'
             && $context['user_id'] === $user->id
             && $context['amount'] === 3
         );
