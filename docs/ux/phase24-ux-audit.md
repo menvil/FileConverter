@@ -119,20 +119,19 @@ Red error box "Conversion failed", "Change settings" and "Try another file" butt
 
 ### Recent Conversions (dashboard, non-empty)
 
-**Current behavior:**  
-Search input, status filter `<select>`, table with 7 columns: File Name, From, To, Size, Date, Status, Actions. Actions: Download link, "Convert again" button, Star/Starred toggle button. Expiration label shown above actions.
+**Pre-fix findings (resolved in Phase 24):**  
+- "Star"/"Starred", "Convert again", and Download actions lacked row-specific `aria-label`.  
+- Search and status filter inputs had no `<label>` elements.  
+- Table had no `overflow-x-auto` wrapper — 7 columns overflowed on mobile.
 
-**Problem:**  
-- Status badge uses color only (inline class string via `statusBadgeClasses()`). No text alternative beyond the status word itself — color + text is acceptable, but the badge is a raw `<span>` not a `<x-badge>` component, unlike the history table.  
-- "Star" / "Starred" button has no `aria-label` to clarify which row it applies to.  
-- "Convert again" button has no `aria-label` for which file/job.  
-- Download link is plain text — no `aria-label`.  
-- Table has no `<caption>` or `aria-label`.  
-- Search `<input>` has `placeholder` but no `<label>`.  
-- Status `<select>` has no `<label>`.  
-- On narrow screens, 7 columns will overflow — no responsive handling.
+**Post-fix state:**  
+- All three action buttons/links have row-specific `aria-label` (e.g. `aria-label="Download result.jpg"`) and `.ca-focus-ring`.  
+- `aria-pressed` added to Star toggle.  
+- SR-only `<label>` elements added for search (`#recent-search`) and status filter (`#recent-status`).  
+- Table container changed to `overflow-x-auto` with `min-w-[40rem]`.  
+- Status badge remains a raw `<span>` with inline classes (color + text — acceptable, `<caption>` not added).
 
-**Planned Phase 24 task:** CONV-393 (aria-labels), CONV-396 (responsive tables)
+**Resolved by:** CONV-393, CONV-396
 
 ---
 
@@ -209,16 +208,17 @@ Table with Date, Type (badge), Reason, Amount (colored), Balance after. Paginati
 
 ### User Dropdown
 
-**Current behavior:**  
-Button trigger with avatar initials, name, email (hidden on mobile), chevron. `aria-expanded`, `aria-haspopup="menu"` present. Escape closes. Click outside closes. Menu items: Dashboard (link), Billing (disabled button), Settings (disabled button), Log out (form submit).
+**Pre-fix findings (resolved in Phase 24):**  
+- Billing and Settings were disabled `<button>` placeholders with no route.  
+- Focus was not programmatically moved into the menu on open.
 
-**Problem:**  
-- Billing and Settings menu items are disabled placeholder buttons — users will see them as real nav items and be confused.  
-- No `aria-label` on the trigger button itself (the button contains visible text, so this is borderline — acceptable but the initials span has `aria-hidden`).  
-- Focus is not programmatically moved into the menu when it opens — Tab from trigger will navigate away, not into the menu items.  
-- Disabled menu buttons use `disabled` HTML attribute + `aria-disabled="true"` correctly but have no tooltip explaining when they'll be available.
+**Post-fix state:**  
+- Billing and Settings are now real `<a>` links to `route('billing')` and `route('settings')`.  
+- Trigger has `aria-expanded`, `aria-haspopup="menu"`, Escape closes, click-outside closes.  
+- `.ca-focus-ring` applied to all menu links.  
+- Focus is not trapped into the menu on open — Tab navigates naturally through the menu items (acceptable MVP behaviour).
 
-**Planned Phase 24 task:** CONV-394 (keyboard interaction), CONV-393 (focus states)
+**Resolved by:** CONV-394
 
 ---
 

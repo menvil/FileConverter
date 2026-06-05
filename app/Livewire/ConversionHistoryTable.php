@@ -50,11 +50,17 @@ class ConversionHistoryTable extends Component
 
     public function updatedDateFrom(): void
     {
+        if (trim((string) $this->dateFrom) === '') {
+            $this->dateFrom = null;
+        }
         $this->resetPage();
     }
 
     public function updatedDateTo(): void
     {
+        if (trim((string) $this->dateTo) === '') {
+            $this->dateTo = null;
+        }
         $this->resetPage();
     }
 
