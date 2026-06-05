@@ -2,14 +2,18 @@
     <h2 class="text-xl font-semibold tracking-tight text-[var(--ca-text)]">Recent Conversions</h2>
 
     <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <label class="sr-only" for="recent-search">Search conversions</label>
         <input
+            id="recent-search"
             type="search"
             wire:model.live.debounce.300ms="search"
             placeholder="Search files, formats..."
             class="w-full rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] placeholder-[var(--ca-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30 sm:max-w-xs"
         >
 
+        <label class="sr-only" for="recent-status">Filter by status</label>
         <select
+            id="recent-status"
             wire:model.live="statusFilter"
             class="rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-primary)]/30"
         >
@@ -81,7 +85,8 @@
                                         @if ($this->canDownload($job))
                                             <a
                                                 href="{{ route('conversions.download', $job) }}"
-                                                class="text-sm font-medium text-[var(--ca-primary)] hover:underline"
+                                                aria-label="Download {{ $job->resultFile?->original_name ?? 'result' }}"
+                                                class="text-sm font-medium text-[var(--ca-primary)] hover:underline ca-focus-ring rounded"
                                             >Download</a>
                                         @endif
 
@@ -89,14 +94,17 @@
                                             <button
                                                 type="button"
                                                 wire:click="convertAgain({{ $job->id }})"
-                                                class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)]"
+                                                aria-label="Convert {{ $job->sourceFile?->original_name ?? 'file' }} again"
+                                                class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)] ca-focus-ring rounded"
                                             >Convert again</button>
                                         @endif
 
                                         <button
                                             type="button"
                                             wire:click="toggleStar({{ $job->id }})"
-                                            class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)]"
+                                            aria-label="{{ $job->is_starred ? 'Unstar' : 'Star' }} {{ $job->sourceFile?->original_name ?? 'conversion' }}"
+                                            aria-pressed="{{ $job->is_starred ? 'true' : 'false' }}"
+                                            class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)] ca-focus-ring rounded"
                                         >{{ $job->is_starred ? 'Starred' : 'Star' }}</button>
                                     </div>
                                 </td>

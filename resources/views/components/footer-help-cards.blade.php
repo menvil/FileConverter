@@ -20,7 +20,7 @@
 
 <section aria-label="Help and support" class="grid gap-4 md:grid-cols-3">
     @foreach ($cards as $card)
-        <x-card variant="interactive">
+        <x-card variant="elevated">
             <h3 class="text-base font-semibold text-[var(--ca-text)]">{{ $card['title'] }}</h3>
             <p class="mt-1 text-sm text-[var(--ca-muted)]">{{ $card['description'] }}</p>
             <p class="mt-3 text-xs text-[var(--ca-muted)]">{{ $card['cta'] }}</p>
