@@ -68,4 +68,17 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return $response;
         });
+
+        // Catch-all for unexpected exceptions on API routes: never expose stack traces.
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return app(ApiErrorResponseFactory::class)->make(
+                code: 'internal_error',
+                message: 'An unexpected error occurred.',
+                status: 500,
+            );
+        });
     })->create();
