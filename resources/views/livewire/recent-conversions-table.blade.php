@@ -38,8 +38,8 @@
                 </div>
             </div>
         @else
-            <div class="overflow-hidden rounded-[var(--ca-radius-lg)] border border-[var(--ca-border)] bg-white shadow-[var(--ca-shadow-card)]">
-                <table class="w-full text-sm">
+            <div class="overflow-x-auto rounded-[var(--ca-radius-lg)] border border-[var(--ca-border)] bg-white shadow-[var(--ca-shadow-card)]">
+                <table class="w-full min-w-[40rem] text-sm">
                     <thead>
                         <tr class="border-b border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40">
                             <th class="px-4 py-3 text-left font-medium text-[var(--ca-muted)]">File Name</th>
