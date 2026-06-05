@@ -103,8 +103,9 @@ final class ApiExceptionMapper
             ),
             $e instanceof ThrottleRequestsException => new MappedApiError(
                 code: 'rate_limited',
-                message: 'Too many requests.',
+                message: 'Too many requests. Please try again later.',
                 status: 429,
+                details: ['retry_after_seconds' => (int) ($e->getHeaders()['Retry-After'] ?? 60)],
             ),
             $e instanceof HttpException && $e->getStatusCode() === 401 => new MappedApiError(
                 code: 'unauthorized',
