@@ -51,6 +51,16 @@ it('requires profile name', function () {
         ->assertHasErrors(['name' => 'required']);
 });
 
+it('rejects whitespace-only profile name', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('name', '   ')
+        ->call('saveProfile')
+        ->assertHasErrors(['name']);
+});
+
 it('displays email as read only on settings page', function () {
     $user = User::factory()->create([
         'email' => 'alex@example.com',

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Actions\Settings\UpdateConversionPreferencesAction;
+use App\Actions\Settings\UpdateProfileNameAction;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -42,19 +44,27 @@ final class AccountSettingsForm extends Component
         );
     }
 
+    /** @return array<string, string> */
+    public function imageQualityOptions(): array
+    {
+        return [
+            'medium' => 'Medium',
+            'high' => 'High',
+            'best' => 'Best',
+        ];
+    }
+
     public function saveProfile(): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'not_regex:/^\s*$/'],
         ]);
 
         $user = auth()->user();
 
-        $user->forceFill([
-            'name' => trim($validated['name']),
-        ])->save();
+        app(UpdateProfileNameAction::class)->handle($user, $validated['name']);
 
-        $this->name = $user->name;
+        $this->name = $user->fresh()->name;
         $this->profileSavedMessage = 'Profile settings saved';
         $this->preferencesSavedMessage = null;
 
@@ -69,14 +79,12 @@ final class AccountSettingsForm extends Component
         ]);
 
         $user = auth()->user();
-        $settings = $user->settings ?? [];
 
-        data_set($settings, 'conversion.image_quality', $validated['imageQuality']);
-        data_set($settings, 'conversion.remove_metadata', (bool) $validated['removeMetadata']);
-
-        $user->forceFill([
-            'settings' => $settings,
-        ])->save();
+        app(UpdateConversionPreferencesAction::class)->handle(
+            $user,
+            $validated['imageQuality'],
+            (bool) $validated['removeMetadata'],
+        );
 
         $this->preferencesSavedMessage = 'Conversion preferences saved';
         $this->profileSavedMessage = null;

@@ -66,6 +66,26 @@ it('uses system defaults when user has no conversion preferences', function () {
     expect($defaults['remove_metadata'])->toBe(config('converter.user_defaults.remove_metadata'));
 });
 
+it('falls back to system default when persisted image_quality is invalid', function () {
+    $user = User::factory()->create([
+        'settings' => [
+            'conversion' => [
+                'image_quality' => 'invalid_value',
+            ],
+        ],
+    ]);
+
+    $schema = [
+        ['key' => 'quality', 'type' => 'segmented', 'label' => 'Quality', 'default' => 'high', 'options' => []],
+        ['key' => 'remove_metadata', 'type' => 'toggle', 'label' => 'Remove metadata', 'default' => true],
+    ];
+
+    $resolver = app(UserConverterDefaultsResolver::class);
+    $defaults = $resolver->apply($user, $schema);
+
+    expect($defaults['quality'])->toBe(config('converter.user_defaults.image_quality'));
+});
+
 it('does not inject quality default into converters that lack a quality field', function () {
     $user = User::factory()->create([
         'settings' => [

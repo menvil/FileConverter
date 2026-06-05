@@ -27,6 +27,10 @@ final class UserConverterDefaultsResolver
             config('converter.user_defaults.image_quality')
         );
 
+        if (! in_array($imageQuality, config('converter.allowed_image_quality_values'), true)) {
+            $imageQuality = config('converter.user_defaults.image_quality');
+        }
+
         $removeMetadata = data_get(
             $settings,
             'conversion.remove_metadata',

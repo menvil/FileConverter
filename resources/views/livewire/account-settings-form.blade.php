@@ -64,9 +64,9 @@
                     wire:model="imageQuality"
                     class="mt-1 block w-full rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface)] px-3 py-2 text-sm text-[var(--ca-text)] focus:outline-none focus:ring-2 focus:ring-[var(--ca-focus-ring)]"
                 >
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="best">Best</option>
+                    @foreach($this->imageQualityOptions() as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('imageQuality')" class="mt-2" />
             </div>
