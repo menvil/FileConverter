@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Support\Api;
 
 use App\Exceptions\Billing\InsufficientCreditsException;
+use App\Exceptions\Conversions\ConversionFailedException;
+use App\Exceptions\Conversions\ConversionResultExpiredException;
 use App\Exceptions\Features\FeatureNotAvailableException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Exceptions\Storage\StorageLimitExceededException;
@@ -33,6 +35,18 @@ final class ApiExceptionMapper
                 code: 'feature_not_available',
                 message: $e->getMessage(),
                 status: 403,
+                details: $e->details(),
+            ),
+            $e instanceof ConversionFailedException => new MappedApiError(
+                code: 'conversion_failed',
+                message: $e->getMessage(),
+                status: 500,
+                details: $e->details(),
+            ),
+            $e instanceof ConversionResultExpiredException => new MappedApiError(
+                code: 'result_expired',
+                message: $e->getMessage(),
+                status: 410,
                 details: $e->details(),
             ),
             $e instanceof UnsupportedFormatException => new MappedApiError(
