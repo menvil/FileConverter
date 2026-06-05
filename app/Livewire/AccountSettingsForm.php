@@ -16,6 +16,8 @@ final class AccountSettingsForm extends Component
 
     public string $imageQuality = 'high';
 
+    public bool $removeMetadata = true;
+
     public function mount(): void
     {
         $user = auth()->user();
@@ -27,6 +29,12 @@ final class AccountSettingsForm extends Component
             $settings,
             'conversion.image_quality',
             config('converter.user_defaults.image_quality')
+        );
+
+        $this->removeMetadata = (bool) data_get(
+            $settings,
+            'conversion.remove_metadata',
+            config('converter.user_defaults.remove_metadata')
         );
     }
 
@@ -51,12 +59,14 @@ final class AccountSettingsForm extends Component
     {
         $validated = $this->validate([
             'imageQuality' => ['required', Rule::in(config('converter.allowed_image_quality_values'))],
+            'removeMetadata' => ['boolean'],
         ]);
 
         $user = auth()->user();
         $settings = $user->settings ?? [];
 
         data_set($settings, 'conversion.image_quality', $validated['imageQuality']);
+        data_set($settings, 'conversion.remove_metadata', (bool) $validated['removeMetadata']);
 
         $user->forceFill([
             'settings' => $settings,

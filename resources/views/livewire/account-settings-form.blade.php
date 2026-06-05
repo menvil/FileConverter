@@ -59,6 +59,18 @@
                 <x-input-error :messages="$errors->get('imageQuality')" class="mt-2" />
             </div>
 
+            <div>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        wire:model="removeMetadata"
+                        class="rounded border-[var(--ca-border)] text-[var(--ca-primary)] focus:ring-[var(--ca-focus-ring)]"
+                    />
+                    <span class="text-sm text-[var(--ca-text)]">Remove metadata by default</span>
+                </label>
+                <x-input-error :messages="$errors->get('removeMetadata')" class="mt-2" />
+            </div>
+
             <div class="flex justify-end">
                 <x-button
                     type="submit"
