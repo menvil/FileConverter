@@ -1,9 +1,11 @@
 <?php
 
 use App\Livewire\Dashboard\DashboardConverter;
+use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
 use App\ViewModels\TargetFormatCardViewModel;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 it('renders empty upload state', function () {
@@ -156,4 +158,20 @@ it('renders target selection loading state hooks on format step', function () {
         ->assertSet('step', 'format')
         ->assertSeeHtml('wire:target="selectTargetFormat"')
         ->assertSee('Loading converter settings');
+});
+
+it('does not create duplicate conversion jobs on repeated convert call', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->call('convert')
+        ->call('convert');
+
+    expect(ConversionJob::query()->where('user_id', $user->id)->count())->toBe(1);
 });
