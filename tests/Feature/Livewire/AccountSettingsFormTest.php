@@ -75,6 +75,30 @@ it('does not update email from settings form', function () {
     expect($user->fresh()->email)->toBe('alex@example.com');
 });
 
+it('allows user to save default image quality preference', function () {
+    $user = User::factory()->create([
+        'settings' => [],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('imageQuality', 'best')
+        ->call('saveConversionPreferences')
+        ->assertHasNoErrors();
+
+    expect($user->fresh()->settings['conversion']['image_quality'])->toBe('best');
+});
+
+it('rejects invalid default image quality preference', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('imageQuality', 'ultra_fake')
+        ->call('saveConversionPreferences')
+        ->assertHasErrors(['imageQuality']);
+});
+
 it('shows current user profile data in settings form', function () {
     $user = User::factory()->create([
         'name' => 'Alex Johnson',
