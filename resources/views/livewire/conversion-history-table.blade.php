@@ -105,7 +105,21 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    {{-- Actions added in CONV-361 --}}
+                                    <div class="flex items-center gap-2">
+                                        @if ($this->canDownload($job))
+                                            <a
+                                                href="{{ route('conversions.download', $job) }}"
+                                                class="text-sm font-medium text-[var(--ca-primary)] hover:underline"
+                                            >Download</a>
+                                        @endif
+
+                                        @if ($this->canConvertAgain($job))
+                                            <button
+                                                wire:click="convertAgain({{ $job->id }})"
+                                                class="text-sm font-medium text-[var(--ca-muted)] hover:text-[var(--ca-text)] hover:underline"
+                                            >Convert Again</button>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

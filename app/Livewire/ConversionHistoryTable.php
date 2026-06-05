@@ -111,6 +111,35 @@ class ConversionHistoryTable extends Component
             ->paginate(15);
     }
 
+    public function canDownload(ConversionJob $job): bool
+    {
+        return $job->isCompleted()
+            && $job->result_file_id !== null
+            && $job->resultFile !== null
+            && ! $job->resultFile->isExpired();
+    }
+
+    public function canConvertAgain(ConversionJob $job): bool
+    {
+        return $job->sourceFile !== null && ! $job->sourceFile->isExpired();
+    }
+
+    public function convertAgain(int $jobId): void
+    {
+        $job = ConversionJob::query()
+            ->where('user_id', auth()->id())
+            ->find($jobId);
+
+        if (! $job || ! $this->canConvertAgain($job)) {
+            $this->dispatch('toast', type: 'error', message: 'Original file expired. Upload it again to repeat this conversion.');
+
+            return;
+        }
+
+        $this->dispatch('conversion-repeat-requested', conversionJobId: $job->id);
+        $this->redirectRoute('dashboard');
+    }
+
     public function statusBadgeVariant(ConversionStatus $status): string
     {
         return match ($status) {
