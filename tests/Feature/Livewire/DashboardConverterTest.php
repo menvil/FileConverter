@@ -1,9 +1,12 @@
 <?php
 
+use App\Actions\Files\StoreUploadedFileAction;
+use App\Contracts\Billing\CreditLedger;
 use App\Livewire\Dashboard\DashboardConverter;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
+use App\Services\FeatureAccess\FeatureAccessService;
 use App\ViewModels\TargetFormatCardViewModel;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
@@ -185,7 +188,7 @@ it('dispatches toast after successful file upload', function () {
     Livewire::actingAs($user)
         ->test(DashboardConverter::class)
         ->set('currentFileId', $file->id)
-        ->call('storeUpload', app(\App\Actions\Files\StoreUploadedFileAction::class), app(\App\Services\FeatureAccess\FeatureAccessService::class))
+        ->call('storeUpload', app(StoreUploadedFileAction::class), app(FeatureAccessService::class))
         ->assertDispatched('toast');
 })->skip('upload requires a real Livewire file upload; covered by storeUpload integration');
 
@@ -212,9 +215,9 @@ it('dispatches toast and sets error state when conversion fails due to insuffici
     $user = User::factory()->create();
 
     // drain all credits so the next convert fails
-    app(\App\Contracts\Billing\CreditLedger::class)->spend(
+    app(CreditLedger::class)->spend(
         user: $user,
-        amount: app(\App\Contracts\Billing\CreditLedger::class)->balance($user),
+        amount: app(CreditLedger::class)->balance($user),
         reason: 'test_drain',
     );
 

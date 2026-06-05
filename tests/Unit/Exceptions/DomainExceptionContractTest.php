@@ -5,7 +5,8 @@ declare(strict_types=1);
 use App\Exceptions\DomainExceptionContract;
 
 it('exposes domain exception code and details', function () {
-    $exception = new class('Test message.') extends \DomainException implements DomainExceptionContract {
+    $exception = new class('Test message.') extends DomainException implements DomainExceptionContract
+    {
         public function code(): string
         {
             return 'test_error';
@@ -23,7 +24,8 @@ it('exposes domain exception code and details', function () {
 });
 
 it('abstract domain exception base class provides code and details', function () {
-    $exception = new class('Base message.') extends \App\Exceptions\DomainException {
+    $exception = new class('Base message.') extends App\Exceptions\DomainException
+    {
         public function code(): string
         {
             return 'base_error';

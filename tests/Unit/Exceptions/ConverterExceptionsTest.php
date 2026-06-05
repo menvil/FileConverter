@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Exceptions\DomainExceptionContract;
-use App\Support\Converters\Exceptions\UnsupportedFormatException;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
+use App\Support\Converters\Exceptions\UnsupportedFormatException;
 
 it('creates unsupported format exception with stable code and details', function () {
     $exception = UnsupportedFormatException::forFormat('heic');

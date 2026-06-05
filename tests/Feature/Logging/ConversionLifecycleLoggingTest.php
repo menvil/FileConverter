@@ -20,8 +20,7 @@ it('logs conversion job created event with context', function () {
     app(ConversionLogger::class)->jobCreated($job);
 
     Log::shouldHaveReceived('info')
-        ->withArgs(fn (string $message, array $context) =>
-            $message === 'conversion.job.created'
+        ->withArgs(fn (string $message, array $context) => $message === 'conversion.job.created'
             && isset($context['conversion_job_id'])
             && isset($context['user_id'])
             && isset($context['converter_key'])
@@ -39,8 +38,7 @@ it('logs conversion job completed event with context', function () {
     app(ConversionLogger::class)->jobCompleted($job);
 
     Log::shouldHaveReceived('info')
-        ->withArgs(fn (string $message, array $context) =>
-            $message === 'conversion.job.completed'
+        ->withArgs(fn (string $message, array $context) => $message === 'conversion.job.completed'
             && isset($context['conversion_job_id'])
             && isset($context['user_id'])
         );
@@ -59,8 +57,7 @@ it('logs conversion job failed event with error code', function () {
     app(ConversionLogger::class)->jobFailed($job);
 
     Log::shouldHaveReceived('error')
-        ->withArgs(fn (string $message, array $context) =>
-            $message === 'conversion.job.failed'
+        ->withArgs(fn (string $message, array $context) => $message === 'conversion.job.failed'
             && isset($context['conversion_job_id'])
             && isset($context['user_id'])
             && isset($context['error_code'])
