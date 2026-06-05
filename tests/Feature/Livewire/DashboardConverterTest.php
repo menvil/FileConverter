@@ -137,3 +137,10 @@ it('shows an empty state when the source format has no available targets', funct
         ->assertSee('Upload another file')
         ->assertDontSee('Convert PDF to');
 });
+
+it('renders upload loading state hooks in the upload dropzone', function () {
+    Livewire::test(DashboardConverter::class)
+        ->assertSeeHtml('wire:loading')
+        ->assertSeeHtml('wire:target="upload,storeUpload"')
+        ->assertSee('Uploading');
+});
