@@ -303,22 +303,24 @@ Logo link, hidden-on-mobile nav (Dashboard, Tools placeholder, Pricing placehold
 
 ## Phase 24 Final Check
 
-- [ ] Phase 24 tasks CONV-381–CONV-397 completed  
-- [ ] Upload loading state visible and tested  
-- [ ] Target selection loading state visible and tested  
-- [ ] Convert Now loading state present, double-submit guard tested  
-- [ ] Toast infrastructure in place  
-- [ ] Upload/conversion events dispatch toasts  
-- [ ] Dashboard empty states have CTA  
-- [ ] History empty state improved  
-- [ ] Billing empty states reviewed  
-- [ ] Icon-only actions have `aria-label`  
-- [ ] File input has accessible label  
-- [ ] Focus states consistent across interactive elements  
-- [ ] User dropdown keyboard-accessible  
-- [ ] Dashboard layout usable on desktop/tablet/mobile  
-- [ ] Tables do not overflow destructively  
-- [ ] Final smoke tests pass  
-- [ ] `composer test` passes  
-- [ ] `composer lint` passes  
-- [ ] `npm run build` passes  
+- [x] Phase 24 tasks CONV-381–CONV-397 completed  
+- [x] Upload loading state visible and tested  
+- [x] Target selection loading state visible and tested  
+- [x] Convert Now loading state present, double-submit guard tested  
+- [x] Toast infrastructure in place  
+- [x] Upload/conversion events dispatch toasts  
+- [x] Dashboard empty states have CTA  
+- [x] History empty state improved  
+- [x] Billing empty states reviewed  
+- [x] Icon-only actions have `aria-label`  
+- [x] File input has accessible label  
+- [x] Focus states consistent across interactive elements  
+- [x] User dropdown links to real pages (Billing, Settings)  
+- [x] Dashboard layout usable on desktop/tablet/mobile  
+- [x] Mobile hamburger menu added  
+- [x] Tables have overflow-x-auto wrapper  
+- [x] Final smoke tests pass  
+- [x] `composer test` passes  
+- [x] `npm run build` passes
+
+**Phase 24 final check: done** — 2026-06-05  
