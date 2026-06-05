@@ -298,7 +298,7 @@
                     class="w-full"
                 >
                     <span wire:loading.remove wire:target="convert">Convert Now</span>
-                    <span wire:loading wire:target="convert">Starting…</span>
+                    <span wire:loading wire:target="convert" aria-live="polite">Starting conversion…</span>
                 </x-button>
             </div>
         @endif
