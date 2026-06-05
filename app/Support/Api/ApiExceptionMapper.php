@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Api;
 
 use App\Exceptions\Billing\InsufficientCreditsException;
+use App\Exceptions\Features\FeatureNotAvailableException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Exceptions\Storage\StorageLimitExceededException;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
@@ -26,8 +27,20 @@ final class ApiExceptionMapper
                 code: 'insufficient_credits',
                 message: $e->getMessage(),
                 status: 402,
+                details: $e->details(),
             ),
-            $e instanceof UnsupportedFormatException,
+            $e instanceof FeatureNotAvailableException => new MappedApiError(
+                code: 'feature_not_available',
+                message: $e->getMessage(),
+                status: 403,
+                details: $e->details(),
+            ),
+            $e instanceof UnsupportedFormatException => new MappedApiError(
+                code: 'unsupported_format',
+                message: $e->getMessage(),
+                status: 422,
+                details: $e->details(),
+            ),
             $e instanceof UnsupportedFileFormatException => new MappedApiError(
                 code: 'unsupported_format',
                 message: $e->getMessage(),
@@ -37,6 +50,7 @@ final class ApiExceptionMapper
                 code: 'unsupported_conversion',
                 message: $e->getMessage(),
                 status: 422,
+                details: $e->details(),
             ),
             $e instanceof InvalidConverterOptionsException => new MappedApiError(
                 code: 'invalid_options',
@@ -48,6 +62,7 @@ final class ApiExceptionMapper
                 code: 'storage_limit_exceeded',
                 message: $e->getMessage(),
                 status: 413,
+                details: $e->details(),
             ),
             $e instanceof AuthenticationException => new MappedApiError(
                 code: 'unauthorized',
