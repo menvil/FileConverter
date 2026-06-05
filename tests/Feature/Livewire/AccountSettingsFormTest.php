@@ -127,6 +127,27 @@ it('loads existing remove metadata preference on mount', function () {
         ->assertSet('removeMetadata', false);
 });
 
+it('shows success message after saving profile settings', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('name', 'Updated Name')
+        ->call('saveProfile')
+        ->assertSee('Profile settings saved');
+});
+
+it('shows success message after saving conversion preferences', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('imageQuality', 'high')
+        ->set('removeMetadata', true)
+        ->call('saveConversionPreferences')
+        ->assertSee('Conversion preferences saved');
+});
+
 it('shows current user profile data in settings form', function () {
     $user = User::factory()->create([
         'name' => 'Alex Johnson',

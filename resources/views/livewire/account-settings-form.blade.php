@@ -2,6 +2,12 @@
     <x-card>
         <h2 class="text-xl font-semibold text-[var(--ca-text)] mb-6">Account Settings</h2>
 
+        @if($profileSavedMessage)
+            <div class="mb-4 rounded-[var(--ca-radius-md)] bg-green-50 px-4 py-3 text-sm text-green-700 border border-green-200">
+                {{ $profileSavedMessage }}
+            </div>
+        @endif
+
         <form wire:submit="saveProfile" class="flex flex-col gap-4">
             <div>
                 <x-input-label for="settings-name" value="Name" />
@@ -43,6 +49,12 @@
 
     <x-card>
         <h2 class="text-xl font-semibold text-[var(--ca-text)] mb-6">Conversion Preferences</h2>
+
+        @if($preferencesSavedMessage)
+            <div class="mb-4 rounded-[var(--ca-radius-md)] bg-green-50 px-4 py-3 text-sm text-green-700 border border-green-200">
+                {{ $preferencesSavedMessage }}
+            </div>
+        @endif
 
         <form wire:submit="saveConversionPreferences" class="flex flex-col gap-4">
             <div>

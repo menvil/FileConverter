@@ -18,6 +18,10 @@ final class AccountSettingsForm extends Component
 
     public bool $removeMetadata = true;
 
+    public ?string $profileSavedMessage = null;
+
+    public ?string $preferencesSavedMessage = null;
+
     public function mount(): void
     {
         $user = auth()->user();
@@ -51,6 +55,8 @@ final class AccountSettingsForm extends Component
         ])->save();
 
         $this->name = $user->name;
+        $this->profileSavedMessage = 'Profile settings saved';
+        $this->preferencesSavedMessage = null;
 
         $this->dispatch('settings-saved', section: 'profile');
     }
@@ -71,6 +77,9 @@ final class AccountSettingsForm extends Component
         $user->forceFill([
             'settings' => $settings,
         ])->save();
+
+        $this->preferencesSavedMessage = 'Conversion preferences saved';
+        $this->profileSavedMessage = null;
 
         $this->dispatch('settings-saved', section: 'conversion');
     }
