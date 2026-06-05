@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::view('/billing/credits/success', 'billing.credits-success')->name('billing.credits.success');
     Route::view('/billing/credits/cancel', 'billing.credits-cancel')->name('billing.credits.cancel');
 
+    Route::view('/history', 'history.index')
+        ->name('history');
+
     Route::get('/conversions/{conversion}/download', DownloadConversionResultController::class)
         ->name('conversions.download');
 
