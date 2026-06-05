@@ -76,5 +76,7 @@
             </nav>
         </div>
     </footer>
+
+    <x-toast-region />
 </body>
 </html>
