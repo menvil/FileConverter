@@ -173,6 +173,16 @@ class ConversionHistoryTable extends Component
         return $bytes.' B';
     }
 
+    public function hasActiveFilters(): bool
+    {
+        return trim($this->search) !== ''
+            || $this->status !== 'all'
+            || $this->sourceFormat !== 'all'
+            || $this->targetFormat !== 'all'
+            || $this->dateFrom !== null
+            || $this->dateTo !== null;
+    }
+
     public function render(): View
     {
         return view('livewire.conversion-history-table', [

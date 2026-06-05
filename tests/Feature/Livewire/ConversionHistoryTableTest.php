@@ -144,3 +144,22 @@ it('eager-loads sourceFile resultFile and creditCharge without N+1 queries', fun
     // N+1 would produce 3 queries per row (15+ queries for 5 rows).
     expect($queryCount)->toBeLessThan(10);
 });
+
+it('shows helpful empty state on history page when user has no conversions', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get('/history')
+        ->assertOk()
+        ->assertSee('No conversion history yet')
+        ->assertSee('Start your first conversion');
+});
+
+it('shows filter-specific empty state when filters return no results', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class)
+        ->set('status', 'failed')
+        ->assertSee('No conversions match your filters');
+});

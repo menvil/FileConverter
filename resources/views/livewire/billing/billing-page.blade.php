@@ -173,7 +173,14 @@
                 <x-card variant="elevated">
                     <div class="py-8 text-center">
                         <p class="font-medium text-[var(--ca-text)]">No credit transactions yet</p>
-                        <p class="mt-1 text-sm text-[var(--ca-muted)]">Your credit grants and conversion charges will appear here.</p>
+                        <p class="mt-1 text-sm text-[var(--ca-muted)]">Your credit grants, purchases and conversion charges will appear here.</p>
+                        <div class="mt-4 flex justify-center gap-3">
+                            <a
+                                href="{{ route('dashboard') }}"
+                                class="inline-flex items-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110"
+                                style="background:var(--ca-primary);"
+                            >Start converting</a>
+                        </div>
                     </div>
                 </x-card>
             @else
