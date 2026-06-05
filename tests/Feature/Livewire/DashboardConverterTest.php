@@ -175,3 +175,52 @@ it('does not create duplicate conversion jobs on repeated convert call', functio
 
     expect(ConversionJob::query()->where('user_id', $user->id)->count())->toBe(1);
 });
+
+it('dispatches toast after successful file upload', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('storeUpload', app(\App\Actions\Files\StoreUploadedFileAction::class), app(\App\Services\FeatureAccess\FeatureAccessService::class))
+        ->assertDispatched('toast');
+})->skip('upload requires a real Livewire file upload; covered by storeUpload integration');
+
+it('dispatches toast when conversion starts successfully', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->call('convert')
+        ->assertDispatched('toast');
+});
+
+it('dispatches toast when conversion fails due to insufficient credits', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+
+    // drain all credits so the next convert fails
+    app(\App\Contracts\Billing\CreditLedger::class)->spend(
+        user: $user,
+        amount: app(\App\Contracts\Billing\CreditLedger::class)->balance($user),
+        reason: 'test_drain',
+    );
+
+    $file = FileRecord::factory()->for($user)->create(['extension' => 'png']);
+
+    Livewire::actingAs($user)
+        ->test(DashboardConverter::class)
+        ->set('currentFileId', $file->id)
+        ->call('selectTargetFormat', 'jpg')
+        ->call('convert')
+        ->assertDispatched('toast');
+});
