@@ -39,6 +39,8 @@
                 x-on:dragleave.prevent="isDragging = false"
                 x-on:drop="isDragging = false"
                 x-bind:class="isDragging ? 'border-[var(--ca-primary)] bg-[var(--ca-primary)]/5' : 'border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40'"
+                role="region"
+                aria-label="File upload area"
                 class="flex flex-col items-center justify-center gap-4 rounded-[var(--ca-radius-md)] border-2 border-dashed px-6 py-12 text-center transition-colors">
                 <div class="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ca-surface-muted)] text-[var(--ca-muted)]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -51,11 +53,11 @@
                     <p class="text-sm text-[var(--ca-muted)]">PNG, JPG, WEBP and PDF supported in beta</p>
                 </div>
 
-                <label class="cursor-pointer">
+                <label class="cursor-pointer" aria-label="Upload file">
                     <input type="file" wire:model="upload" wire:loading.attr="disabled" wire:target="upload,storeUpload" class="sr-only">
                     <span class="inline-flex items-center justify-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110" style="background:var(--ca-primary);">
                         <span wire:loading.remove wire:target="upload,storeUpload">Choose file</span>
-                        <span wire:loading wire:target="upload,storeUpload">Uploading…</span>
+                        <span wire:loading wire:target="upload,storeUpload" aria-live="polite">Uploading…</span>
                     </span>
                 </label>
 
