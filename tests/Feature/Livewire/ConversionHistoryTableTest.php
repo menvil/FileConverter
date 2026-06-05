@@ -79,3 +79,15 @@ it('renders conversion history table columns', function () {
         ->assertSee('JPG')
         ->assertSee('Completed');
 });
+
+it('renders status badges in history table', function () {
+    $user = User::factory()->create();
+
+    ConversionJob::factory()->for($user)->completed()->create();
+    ConversionJob::factory()->for($user)->failed()->create();
+
+    Livewire::actingAs($user)
+        ->test(ConversionHistoryTable::class)
+        ->assertSee('Completed')
+        ->assertSee('Failed');
+});
