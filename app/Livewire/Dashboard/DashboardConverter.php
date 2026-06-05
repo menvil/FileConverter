@@ -20,6 +20,7 @@ use App\Support\Converters\ConverterRegistry;
 use App\Support\Converters\DTO\ConverterTarget;
 use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
 use App\Support\Converters\OptionsValidator;
+use App\Support\Converters\UserConverterDefaultsResolver;
 use App\ViewModels\TargetFormatCardViewModel;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -305,15 +306,27 @@ class DashboardConverter extends Component
 
     private function initializeOptionsFromSchema(): void
     {
-        $this->options = [];
+        $user = auth()->user();
+
+        $this->options = $user !== null
+            ? app(UserConverterDefaultsResolver::class)->apply($user, $this->optionsSchema)
+            : $this->schemaDefaults();
+    }
+
+    /** @return array<string, mixed> */
+    private function schemaDefaults(): array
+    {
+        $defaults = [];
 
         foreach ($this->optionsSchema as $field) {
             if (! isset($field['key']) || ! array_key_exists('default', $field)) {
                 continue;
             }
 
-            $this->options[$field['key']] = $field['default'];
+            $defaults[$field['key']] = $field['default'];
         }
+
+        return $defaults;
     }
 
     public function backToUploadSummary(): void
