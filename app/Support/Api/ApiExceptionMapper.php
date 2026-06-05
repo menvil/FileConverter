@@ -8,6 +8,7 @@ use App\Exceptions\Billing\InsufficientCreditsException;
 use App\Exceptions\Conversions\ConversionFailedException;
 use App\Exceptions\Conversions\ConversionResultExpiredException;
 use App\Exceptions\Features\FeatureNotAvailableException;
+use App\Exceptions\Files\FileTooLargeException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Exceptions\Storage\StorageLimitExceededException;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
@@ -71,6 +72,12 @@ final class ApiExceptionMapper
                 message: $e->getMessage(),
                 status: 422,
                 details: $e->fieldErrors(),
+            ),
+            $e instanceof FileTooLargeException => new MappedApiError(
+                code: 'file_too_large',
+                message: $e->getMessage(),
+                status: 413,
+                details: $e->details(),
             ),
             $e instanceof StorageLimitExceededException => new MappedApiError(
                 code: 'storage_limit_exceeded',
