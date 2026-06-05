@@ -21,6 +21,23 @@ final class AccountSettingsForm extends Component
         $this->email = $user->email ?? '';
     }
 
+    public function saveProfile(): void
+    {
+        $validated = $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = auth()->user();
+
+        $user->forceFill([
+            'name' => trim($validated['name']),
+        ])->save();
+
+        $this->name = $user->name;
+
+        $this->dispatch('settings-saved', section: 'profile');
+    }
+
     public function render(): View
     {
         return view('livewire.account-settings-form');
