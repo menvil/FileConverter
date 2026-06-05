@@ -41,6 +41,18 @@ class AppServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
 
+        RateLimiter::for('web-upload', function (Request $request) {
+            return Limit::perMinute(20)->by(
+                $request->user()?->id ?: $request->ip()
+            );
+        });
+
+        RateLimiter::for('web-conversion-create', function (Request $request) {
+            return Limit::perMinute(30)->by(
+                $request->user()?->id ?: $request->ip()
+            );
+        });
+
         RateLimiter::for('api-v1', function (Request $request) {
             $user = $request->user();
 
