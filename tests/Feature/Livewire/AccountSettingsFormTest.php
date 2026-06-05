@@ -14,6 +14,43 @@ it('renders account settings form component', function () {
         ->assertSee('Account Settings');
 });
 
+it('allows user to update profile name', function () {
+    $user = User::factory()->create([
+        'name' => 'Old Name',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('name', 'New Name')
+        ->call('saveProfile')
+        ->assertHasNoErrors();
+
+    expect($user->fresh()->name)->toBe('New Name');
+});
+
+it('trims profile name before saving', function () {
+    $user = User::factory()->create([
+        'name' => 'Old Name',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('name', '  New Name  ')
+        ->call('saveProfile');
+
+    expect($user->fresh()->name)->toBe('New Name');
+});
+
+it('requires profile name', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(AccountSettingsForm::class)
+        ->set('name', '')
+        ->call('saveProfile')
+        ->assertHasErrors(['name' => 'required']);
+});
+
 it('shows current user profile data in settings form', function () {
     $user = User::factory()->create([
         'name' => 'Alex Johnson',
