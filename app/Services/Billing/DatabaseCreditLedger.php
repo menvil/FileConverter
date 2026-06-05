@@ -11,6 +11,7 @@ use App\Exceptions\Billing\InvalidCreditAmountException;
 use App\Models\CreditAccount;
 use App\Models\CreditTransaction;
 use App\Models\User;
+use App\Support\Logging\BillingLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -23,12 +24,15 @@ final class DatabaseCreditLedger implements CreditLedger
 
     public function grant(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
-        return $this->addToBalance($user, $amount, CreditTransactionType::Grant, $reason, $meta, $source);
+        $transaction = $this->addToBalance($user, $amount, CreditTransactionType::Grant, $reason, $meta, $source);
+        app(BillingLogger::class)->creditsGranted($user, $amount, $reason);
+
+        return $transaction;
     }
 
     public function spend(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
-        return DB::transaction(function () use ($user, $amount, $reason, $meta, $source) {
+        $transaction = DB::transaction(function () use ($user, $amount, $reason, $meta, $source) {
             if ($amount <= 0) {
                 throw InvalidCreditAmountException::becauseAmountMustBePositive();
             }
@@ -56,11 +60,18 @@ final class DatabaseCreditLedger implements CreditLedger
                 'source_id' => $source?->getKey(),
             ]);
         });
+
+        app(BillingLogger::class)->creditsSpent($user, $amount, $reason);
+
+        return $transaction;
     }
 
     public function refund(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
-        return $this->addToBalance($user, $amount, CreditTransactionType::Refund, $reason, $meta, $source);
+        $transaction = $this->addToBalance($user, $amount, CreditTransactionType::Refund, $reason, $meta, $source);
+        app(BillingLogger::class)->creditsRefunded($user, $amount, $reason);
+
+        return $transaction;
     }
 
     private function addToBalance(User $user, int $amount, CreditTransactionType $type, string $reason, array $meta, ?Model $source): CreditTransaction
