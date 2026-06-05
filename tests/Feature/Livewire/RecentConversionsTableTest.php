@@ -35,7 +35,7 @@ it('shows empty state when user has no conversions', function () {
 
     Livewire::test(RecentConversionsTable::class)
         ->assertSee('No conversions yet')
-        ->assertSee('Upload a file to start converting');
+        ->assertSee('Upload your first');
 });
 
 it('paginates recent conversions with default 10 per page', function () {
@@ -416,4 +416,14 @@ it('does not show download for result with FileStatus::Expired even when expires
     Livewire::test(RecentConversionsTable::class)
         ->assertDontSee('Download')
         ->assertSee('Expired');
+});
+
+it('shows helpful empty state with CTA when there are no conversions', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(RecentConversionsTable::class)
+        ->assertSee('No conversions yet')
+        ->assertSee('Upload your first')
+        ->assertSee('Start your first conversion');
 });
