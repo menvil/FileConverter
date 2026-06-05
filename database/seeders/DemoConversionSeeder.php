@@ -25,6 +25,9 @@ class DemoConversionSeeder extends Seeder
             return;
         }
 
+        // Note: seeded FileRecord rows have no corresponding physical file on disk.
+        // They are safe for UI/history display but will fail if the application
+        // tries to read or stream the actual file bytes (e.g. re-processing or download).
         $sourceFile = FileRecord::factory()->for($user)->create([
             'original_name' => 'sample.png',
             'extension' => 'png',
@@ -32,8 +35,16 @@ class DemoConversionSeeder extends Seeder
             'size_bytes' => 1024,
         ]);
 
-        // Completed job
+        $resultFile = FileRecord::factory()->for($user)->create([
+            'original_name' => 'sample.jpg',
+            'extension' => 'jpg',
+            'mime_type' => 'image/jpeg',
+            'size_bytes' => 768,
+        ]);
+
+        // Completed job with a valid result_file_id so the download route works structurally.
         ConversionJob::factory()->for($user)->for($sourceFile, 'sourceFile')->create([
+            'result_file_id' => $resultFile->id,
             'source_format' => 'png',
             'target_format' => 'jpg',
             'converter_key' => 'png_to_jpg',

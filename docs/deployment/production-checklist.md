@@ -6,7 +6,7 @@ Use this checklist before deploying or after any significant configuration chang
 
 ## PHP and Extensions
 
-- [ ] PHP 8.2 or higher
+- [ ] PHP 8.3 or higher
 - [ ] `ext-pdo`, `ext-sqlite3` or MySQL/PostgreSQL driver
 - [ ] `ext-imagick` (ImageMagick — required for image conversions)
 - [ ] `ext-gd` (optional fallback)

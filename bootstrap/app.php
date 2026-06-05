@@ -10,6 +10,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -69,9 +70,15 @@ return Application::configure(basePath: dirname(__DIR__))
             return $response;
         });
 
-        // Catch-all for unexpected exceptions on API routes: never expose stack traces.
+        // Catch-all for truly unexpected exceptions on API routes — never expose stack
+        // traces. HttpExceptions (404, 405, etc.) are passed through so Laravel renders
+        // their native status codes rather than collapsing them to 500.
         $exceptions->render(function (Throwable $e, Request $request) {
             if (! $request->is('api/*')) {
+                return null;
+            }
+
+            if ($e instanceof HttpException) {
                 return null;
             }
 

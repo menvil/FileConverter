@@ -22,7 +22,7 @@ class DemoUserSeeder extends Seeder
         );
 
         // Ensure the credit account exists (UserObserver may have already created it).
-        $user->creditAccount()->firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
+        $user->creditAccount()->firstOrCreate([], ['balance' => 0]);
 
         // Only grant demo credits if the account has zero balance to keep seeder idempotent.
         if (app(CreditLedger::class)->balance($user) === 0) {

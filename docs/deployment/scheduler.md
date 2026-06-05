@@ -2,7 +2,7 @@
 
 The Laravel scheduler runs cleanup tasks automatically. Currently scheduled:
 
-- **Daily:** `conversions:cleanup-expired` — marks and deletes expired uploaded and result files based on per-plan retention policy.
+- **Hourly:** `files:cleanup-expired` — marks and deletes expired uploaded and result files based on per-plan retention policy.
 
 ---
 
@@ -24,7 +24,7 @@ php artisan schedule:list
 php artisan schedule:run
 
 # Run the cleanup command directly
-php artisan conversions:cleanup-expired
+php artisan files:cleanup-expired
 ```
 
 ---
@@ -33,7 +33,7 @@ php artisan conversions:cleanup-expired
 
 Add a single cron entry to your server:
 
-```
+```cron
 * * * * * cd /var/www/file-converter && php artisan schedule:run >> /dev/null 2>&1
 ```
 
@@ -49,8 +49,8 @@ php artisan schedule:list
 
 Expected output includes:
 
-```
-0 2 * * *  conversions:cleanup-expired
+```text
+0 * * * *  files:cleanup-expired
 ```
 
 ---

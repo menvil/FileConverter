@@ -25,7 +25,7 @@ See `docs/release/supported-conversions.md` for the full conversion matrix.
 
 ## Requirements
 
-- PHP 8.2+
+- PHP 8.3+
 - `ext-imagick` (ImageMagick)
 - Node.js 18+
 - Composer 2+
@@ -73,7 +73,7 @@ npm run dev
 
 Visit `http://localhost:8000` and log in with the demo account:
 
-```
+```text
 Email:    demo@example.com
 Password: password
 ```
@@ -128,7 +128,7 @@ See `docs/deployment/scheduler.md`.
 
 Billing requires Stripe keys in `.env`:
 
-```
+```env
 STRIPE_KEY=pk_test_...
 STRIPE_SECRET=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
@@ -148,7 +148,7 @@ See `docs/billing/stripe-webhooks.md`.
 
 API access is available on Pro and Max plans. Authenticate with a Bearer token.
 
-API docs are available at `/api/docs` after starting the server.
+API docs are available at `/docs/api` after starting the server.
 
 See `docs/release/supported-conversions.md` for supported conversion pairs.
 

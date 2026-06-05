@@ -238,41 +238,32 @@ CONV-407 (generic catch for unexpected exceptions in API)
 
 ---
 
-## Summary — Domain Exception Gaps
+## Summary — Domain Exception Gaps (Phase 25 Audit Snapshot)
 
-| Area | Current class | Problem | Target code | CONV task |
-|---|---|---|---|---|
-| File format | `UnsupportedFileFormatException` | No `DomainExceptionContract` | `unsupported_format` | CONV-400 |
-| Converter format | `UnsupportedFormatException` | No `DomainExceptionContract` | `unsupported_format` | CONV-400 |
-| Conversion pair | `UnsupportedConversionException` | No `DomainExceptionContract` | `unsupported_conversion` | CONV-400 |
-| Options | `InvalidConverterOptionsException` | No `DomainExceptionContract`, single field | `invalid_options` | CONV-401 |
-| File size | validation only | No typed exception | `file_too_large` | CONV-401 |
-| Storage limit | `StorageLimitExceededException` | No `DomainExceptionContract` | `storage_limit_exceeded` | CONV-401 |
-| Credits | `InsufficientCreditsException` | No `DomainExceptionContract`, no `details()` | `insufficient_credits` | CONV-402 |
-| Feature access | none | No typed exception | `feature_not_available` | CONV-402 |
-| Conversion failed | none | No typed exception | `conversion_failed` | CONV-403 |
-| Result expired | `abort_if(410)` | No typed exception | `result_expired` | CONV-403 |
+_Status as of Phase 25 completion (CONV-399–403): all gaps resolved._
 
-## Summary — Already Working
+| Area | Exception | Code | Status |
+|---|---|---|---|
+| File format | `UnsupportedFormatException` | `unsupported_format` | ✅ Implements `DomainExceptionContract` |
+| File format (upload) | `UnsupportedFileFormatException` | `unsupported_format` | ✅ Mapped in `ApiExceptionMapper` |
+| Conversion pair | `UnsupportedConversionException` | `unsupported_conversion` | ✅ Implements `DomainExceptionContract` |
+| Options | `InvalidConverterOptionsException` | `invalid_options` | ✅ Implements `DomainExceptionContract` |
+| File size | `FileTooLargeException` | `file_too_large` | ✅ Created in CONV-401 |
+| Storage limit | `StorageLimitExceededException` | `storage_limit_exceeded` | ✅ Implements `DomainExceptionContract` |
+| Credits | `InsufficientCreditsException` | `insufficient_credits` | ✅ Implements `DomainExceptionContract` with `details()` |
+| Feature access | `FeatureNotAvailableException` | `feature_not_available` | ✅ Created in CONV-402 |
+| Conversion failed | `ConversionFailedException` | `conversion_failed` | ✅ Created in CONV-403 |
+| Result expired | `ConversionResultExpiredException` | `result_expired` | ✅ Created in CONV-403 |
 
-| Area | Status | Notes |
-|---|---|---|
-| API exception rendering | ✅ Working | `bootstrap/app.php` + `ApiExceptionMapper` |
-| API rate limiting | ✅ Working | `api-v1` limiter in `AppServiceProvider` |
-| API error JSON shape | ✅ Stable | `{ error: { code, message, details } }` |
-| UI upload errors | ✅ Working | Inline messages in `DashboardConverter` |
-| UI credits error | ✅ Working | `hasInsufficientCredits` state |
-| UI conversion error | ✅ Working | `convertError` string |
-| API authentication | ✅ Working | `unauthorized` → 401 |
-
-## Summary — Missing Infrastructure
+## Summary — Infrastructure (Phase 25 completion)
 
 | Item | Status | CONV task |
 |---|---|---|
-| `DomainExceptionContract` interface | Missing | CONV-399 |
-| Abstract `DomainException` base | Missing | CONV-399 |
-| UI domain error mapper | Missing | CONV-404/405 |
-| Conversion lifecycle logging | Missing | CONV-408 |
-| Billing/credit lifecycle logging | Missing | CONV-409 |
-| Web rate limiting | Missing | CONV-410/411 |
-| Full MVP happy-path test | Missing | CONV-414 |
+| `DomainExceptionContract` interface | ✅ Done | CONV-399 |
+| Abstract `DomainException` base | ✅ Done | CONV-399 |
+| UI domain error mapper (`UiDomainErrorMapper`) | ✅ Done | CONV-404/405 |
+| Conversion lifecycle logging (`ConversionLogger`) | ✅ Done | CONV-408 |
+| Billing/credit lifecycle logging (`BillingLogger`) | ✅ Done | CONV-409 |
+| Web rate limiters registered | ✅ Done | CONV-410/411 |
+| API rate limiting + `rate_limited` JSON | ✅ Done | CONV-412/413 |
+| Full MVP happy-path test | ✅ Done | CONV-414 |

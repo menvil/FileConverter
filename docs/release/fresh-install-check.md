@@ -34,7 +34,7 @@ After `php artisan test`:
 | Command | Result |
 |---------|--------|
 | `php artisan migrate:fresh --seed` | ✅ Pass — migrations and seeders ran without errors |
-| `php artisan test` | ✅ Pass — 767 tests passed |
+| `php artisan test` | ✅ Pass — 767 tests, 766 passed, 1 skipped |
 | `composer lint` | ✅ Pass |
 | `npm run build` | ✅ Pass |
 

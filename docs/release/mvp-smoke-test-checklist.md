@@ -66,11 +66,11 @@ No knowledge of internal architecture required.
 |---|------|-----------------|-----------|-------|
 | 19 | Create an API key on billing page (Pro user) | API key shown once | | Requires Pro plan |
 | 20 | GET `/api/v1/converters` with Bearer token | Returns JSON list of converters | | |
-| 21 | POST `/api/v1/files/upload` with PNG file | Returns file resource with ID | | |
+| 21 | POST `/api/v1/files` with PNG file | Returns file resource with ID | | |
 | 22 | POST `/api/v1/conversions` with file_id and target_format | Returns conversion job resource | | |
 | 23 | GET `/api/v1/conversions/{id}` | Returns job status (completed) | | |
 | 24 | GET `/api/v1/conversions/{id}/download` | Downloads result file | | |
-| 25 | GET `/api/v1/credits` | Returns current balance | | |
+| 25 | GET `/api/v1/credits/balance` | Returns current balance | | |
 
 ---
 
@@ -78,7 +78,7 @@ No knowledge of internal architecture required.
 
 | # | Step | Expected Result | Pass/Fail | Notes |
 |---|------|-----------------|-----------|-------|
-| 26 | Open `/api/docs` | Redoc UI loads with MVP endpoints listed | | |
+| 26 | Open `/docs/api` | Redoc UI loads with MVP endpoints listed | | |
 
 ---
 
@@ -86,7 +86,7 @@ No knowledge of internal architecture required.
 
 | # | Step | Expected Result | Pass/Fail | Notes |
 |---|------|-----------------|-----------|-------|
-| 27 | Run `php artisan conversions:cleanup-expired` | Expired files cleaned up, no errors | | |
+| 27 | Run `php artisan files:cleanup-expired` | Expired files cleaned up, no errors | | |
 | 28 | Run `php artisan schedule:list` | Shows cleanup command scheduled | | |
 
 ---

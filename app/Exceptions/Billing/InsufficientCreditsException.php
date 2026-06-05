@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Exceptions\Billing;
 
-use App\Exceptions\DomainExceptionContract;
+use App\Exceptions\DomainException;
 
-final class InsufficientCreditsException extends \DomainException implements DomainExceptionContract
+final class InsufficientCreditsException extends DomainException
 {
     private int $required = 0;
 
@@ -21,7 +21,9 @@ final class InsufficientCreditsException extends \DomainException implements Dom
         return $e;
     }
 
-    /** @deprecated Use forCost() */
+    /**
+     * @deprecated since v0.1.0, will be removed in v0.2.0. Use forCost() instead.
+     */
     public static function make(int $required, int $available): self
     {
         return self::forCost($required, $available);
