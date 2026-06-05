@@ -17,11 +17,11 @@ final class CleanupExpiredFilesCommand extends Command
     {
         if ($this->option('sync')) {
             app(CleanupExpiredFilesJob::class)->handle();
+            $this->info('Expired files cleanup completed.');
         } else {
             CleanupExpiredFilesJob::dispatch();
+            $this->info('Expired files cleanup queued.');
         }
-
-        $this->info('Expired files cleanup completed.');
 
         return self::SUCCESS;
     }

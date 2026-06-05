@@ -80,16 +80,18 @@ it('does not mark active file records as expired', function () {
     expect($file->fresh()->status)->toBe(FileStatus::Analyzed);
 });
 
-it('does not crash when physical file is already missing', function () {
+it('does not crash when physical file is already missing and marks the record expired', function () {
     Carbon::setTestNow('2026-06-02 10:00:00');
 
     Storage::fake('local');
 
-    FileRecord::factory()->create([
+    $file = FileRecord::factory()->create([
         'stored_path' => 'uploads/already-gone.png',
         'status' => FileStatus::Analyzed,
         'expires_at' => now()->subMinute(),
     ]);
 
     expect(fn () => app(CleanupExpiredFilesJob::class)->handle())->not->toThrow(Throwable::class);
+
+    expect($file->fresh()->status)->toBe(FileStatus::Expired);
 });

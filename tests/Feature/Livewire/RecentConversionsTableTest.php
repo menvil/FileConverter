@@ -397,3 +397,23 @@ it('does not show download action for completed conversion with expired result',
         ->assertDontSee('Download')
         ->assertSee('Expired');
 });
+
+it('does not show download for result with FileStatus::Expired even when expires_at is in the future', function () {
+    $user = User::factory()->create();
+
+    $result = FileRecord::factory()->for($user)->create([
+        'status' => FileStatus::Expired,
+        'expires_at' => now()->addDay(),
+    ]);
+
+    ConversionJob::factory()->for($user)->create([
+        'status' => ConversionStatus::Completed,
+        'result_file_id' => $result->id,
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(RecentConversionsTable::class)
+        ->assertDontSee('Download')
+        ->assertSee('Expired');
+});
