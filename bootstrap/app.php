@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\Conversions\ConversionResultExpiredException;
 use App\Http\Middleware\AuthenticateApiKey;
 use App\Http\Middleware\EnsureApiAccessIsAllowed;
 use App\Support\Api\ApiErrorResponseFactory;
@@ -31,6 +32,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        // Expired conversion result renders as 410 on web routes.
+        $exceptions->render(function (ConversionResultExpiredException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return null;
+            }
+
+            abort(410);
+        });
 
         $exceptions->render(function (Throwable $e, Request $request) {
             if (! $request->is('api/*')) {
