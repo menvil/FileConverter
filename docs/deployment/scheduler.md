@@ -23,8 +23,8 @@ php artisan schedule:list
 # Run the scheduler once (executes all due commands)
 php artisan schedule:run
 
-# Run the cleanup command directly
-php artisan files:cleanup-expired
+# Run the cleanup command directly (synchronously, no queue worker needed)
+php artisan files:cleanup-expired --sync
 ```
 
 ---

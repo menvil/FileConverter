@@ -9,6 +9,7 @@ use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DemoConversionSeeder extends Seeder
 {
@@ -41,6 +42,10 @@ class DemoConversionSeeder extends Seeder
             'mime_type' => 'image/jpeg',
             'size_bytes' => 768,
         ]);
+
+        // Write a minimal stub so Storage::exists() returns true and the download
+        // controller can serve the file without a 404.
+        Storage::disk('local')->put($resultFile->stored_path, 'stub-demo-result');
 
         // Completed job with a valid result_file_id so the download route works structurally.
         ConversionJob::factory()->for($user)->for($sourceFile, 'sourceFile')->create([

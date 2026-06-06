@@ -12,12 +12,12 @@ No other conversions are supported in this release.
 
 | Source | Target | Converter Key | Credit Cost | Options | Notes |
 |--------|--------|---------------|-------------|---------|-------|
-| PNG | JPG | `png:jpg` | 1 credit | quality | Imagick |
-| PNG | WEBP | `png:webp` | 1 credit | quality | Imagick |
-| PNG | PDF | `png:pdf` | 2 credits | — | Single-page PDF via Imagick |
+| PNG | JPG | `png:jpg` | 1 credit | quality, resize, background_color, remove_metadata | Imagick |
+| PNG | WEBP | `png:webp` | 1 credit | quality, lossless, resize | Imagick |
+| PNG | PDF | `png:pdf` | 2 credits | page_size, orientation, margin | Single-page PDF via Imagick |
 | JPG | PNG | `jpg:png` | 1 credit | resize, remove_metadata | Imagick |
-| JPG | WEBP | `jpg:webp` | 1 credit | quality | Imagick |
-| JPG | PDF | `jpg:pdf` | 2 credits | — | Single-page PDF via Imagick |
+| JPG | WEBP | `jpg:webp` | 1 credit | quality, resize, remove_metadata | Imagick |
+| JPG | PDF | `jpg:pdf` | 2 credits | page_size, orientation, margin, fit_mode, compression | Single-page PDF via Imagick |
 
 ---
 
@@ -25,7 +25,7 @@ No other conversions are supported in this release.
 
 ### quality
 
-Available for PNG→JPG, PNG→WEBP, JPG→WEBP conversions.
+Available for: PNG→JPG, PNG→WEBP, JPG→WEBP.
 
 | Value | Description |
 |-------|-------------|
@@ -35,7 +35,9 @@ Available for PNG→JPG, PNG→WEBP, JPG→WEBP conversions.
 
 Default: `high`
 
-### resize (JPG→PNG only)
+### resize
+
+Available for: PNG→JPG, PNG→WEBP, JPG→PNG, JPG→WEBP.
 
 | Value | Description |
 |-------|-------------|
@@ -46,9 +48,69 @@ Default: `high`
 
 Default: `original`
 
-### remove_metadata (JPG→PNG only)
+### remove_metadata
+
+Available for: PNG→JPG, JPG→PNG, JPG→WEBP.
 
 Removes EXIF and other embedded metadata. Default: `true`.
+
+### background_color (PNG→JPG only)
+
+Hex colour used to fill transparent areas when converting PNG to JPG. Default: `#ffffff`.
+
+### lossless (PNG→WEBP only)
+
+Use lossless WEBP encoding. Default: `false`.
+
+### page_size (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `auto` | Match image dimensions |
+| `a4` | A4 (210×297 mm) |
+| `letter` | US Letter (215.9×279.4 mm) |
+
+Default: `auto`
+
+### orientation (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `auto` | Detect from image aspect ratio |
+| `portrait` | Force portrait |
+| `landscape` | Force landscape |
+
+Default: `auto`
+
+### margin (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `none` | No margin |
+| `small` | Small margin |
+| `medium` | Medium margin |
+
+Default: `small`
+
+### fit_mode (JPG→PDF only)
+
+| Value | Description |
+|-------|-------------|
+| `contain` | Fit image within page |
+| `cover` | Fill page, crop edges |
+| `stretch` | Stretch to fill page |
+
+Default: `contain`
+
+### compression (JPG→PDF only)
+
+Controls PDF image compression level.
 
 ---
 
