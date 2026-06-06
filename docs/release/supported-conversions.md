@@ -13,8 +13,8 @@ No other conversions are supported in this release.
 | Source | Target | Converter Key | Credit Cost | Options | Notes |
 |--------|--------|---------------|-------------|---------|-------|
 | PNG | JPG | `png:jpg` | 1 credit | quality, resize, background_color, remove_metadata | Imagick |
-| PNG | WEBP | `png:webp` | 1 credit | quality, lossless, resize | Imagick |
-| PNG | PDF | `png:pdf` | 2 credits | page_size, orientation, margin | Single-page PDF via Imagick |
+| PNG | WEBP | `png:webp` | 1 credit | quality, lossless, resize, remove_metadata | Imagick |
+| PNG | PDF | `png:pdf` | 2 credits | page_size, orientation, margin, fit_mode, compression | Single-page PDF via Imagick |
 | JPG | PNG | `jpg:png` | 1 credit | resize, remove_metadata | Imagick |
 | JPG | WEBP | `jpg:webp` | 1 credit | quality, resize, remove_metadata | Imagick |
 | JPG | PDF | `jpg:pdf` | 2 credits | page_size, orientation, margin, fit_mode, compression | Single-page PDF via Imagick |
@@ -50,7 +50,7 @@ Default: `original`
 
 ### remove_metadata
 
-Available for: PNG→JPG, JPG→PNG, JPG→WEBP.
+Available for: PNG→JPG, PNG→WEBP, JPG→PNG, JPG→WEBP.
 
 Removes EXIF and other embedded metadata. Default: `true`.
 
@@ -98,17 +98,21 @@ Available for: PNG→PDF, JPG→PDF.
 
 Default: `small`
 
-### fit_mode (JPG→PDF only)
+### fit_mode (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
 
 | Value | Description |
 |-------|-------------|
-| `contain` | Fit image within page |
+| `contain` | Fit image within page, preserve aspect ratio |
 | `cover` | Fill page, crop edges |
-| `stretch` | Stretch to fill page |
+| `original` | Use image at original size, no scaling |
 
 Default: `contain`
 
-### compression (JPG→PDF only)
+### compression (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
 
 Controls PDF image compression level.
 

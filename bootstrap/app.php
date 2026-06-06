@@ -83,11 +83,17 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof HttpException) {
                 $status = $e->getStatusCode();
 
-                return app(ApiErrorResponseFactory::class)->make(
+                $response = app(ApiErrorResponseFactory::class)->make(
                     code: 'http_error',
                     message: $e->getMessage() ?: (Response::$statusTexts[$status] ?? 'HTTP Error'),
                     status: $status,
                 );
+
+                foreach ($e->getHeaders() as $header => $value) {
+                    $response->header($header, $value);
+                }
+
+                return $response;
             }
 
             return app(ApiErrorResponseFactory::class)->make(
