@@ -75,7 +75,11 @@ class ProcessConversionJob implements ShouldQueue
                 'completed_at' => now(),
             ])->save();
 
-            $logger->jobCompleted($job);
+            try {
+                $logger->jobCompleted($job);
+            } catch (Throwable $logException) {
+                report($logException);
+            }
 
             // Capture credits separately — a billing failure must not undo a
             // successful conversion, so we report and move on rather than

@@ -74,7 +74,7 @@ Commit base: post-Phase-25 (CONV-398–414 complete)
 **Implemented:** yes  
 **Related tasks:** Phase 14 (credit ledger), Phase 13 (feature access)  
 **Verification:** Credits are granted on registration. Credits are spent on successful conversion. Balance shown in user dropdown. Credit history shown on billing page.  
-**Known limitations:** Credit costs are configured in `config/conversion-cost.php`. No dynamic pricing.
+**Known limitations:** Credit costs are configured in `config/conversion_costs.php`. No dynamic pricing.
 
 ---
 
@@ -109,7 +109,7 @@ Commit base: post-Phase-25 (CONV-398–414 complete)
 
 **Implemented:** yes  
 **Related tasks:** Phase 20 (OpenAPI + Redoc)  
-**Verification:** `/api/docs` shows Redoc UI. `/api/docs/openapi.json` returns OpenAPI 3.1 spec.  
+**Verification:** `/docs/api` shows Redoc UI. `/docs/api/openapi.yaml` returns OpenAPI 3.1 spec.  
 **Known limitations:** Docs are static (generated from spec file). Not auto-generated from code.
 
 ---
@@ -118,7 +118,7 @@ Commit base: post-Phase-25 (CONV-398–414 complete)
 
 **Implemented:** yes  
 **Related tasks:** Phase 13 (retention policy), Phase 16 (cleanup job)  
-**Verification:** `php artisan conversions:cleanup-expired` marks and deletes expired files. Scheduler runs it daily.  
+**Verification:** `php artisan files:cleanup-expired` marks and deletes expired files. Scheduler runs it hourly.  
 **Known limitations:** Retention period is per-plan. Cleanup is not real-time.
 
 ---

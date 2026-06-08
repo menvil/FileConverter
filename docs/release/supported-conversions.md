@@ -12,12 +12,12 @@ No other conversions are supported in this release.
 
 | Source | Target | Converter Key | Credit Cost | Options | Notes |
 |--------|--------|---------------|-------------|---------|-------|
-| PNG | JPG | `png_to_jpg` | 1 credit | quality | Imagick |
-| PNG | WEBP | `png_to_webp` | 1 credit | quality | Imagick |
-| PNG | PDF | `png_to_pdf` | 2 credits | — | Single-page PDF via Imagick |
-| JPG | PNG | `jpg_to_png` | 1 credit | quality | Imagick |
-| JPG | WEBP | `jpg_to_webp` | 1 credit | quality | Imagick |
-| JPG | PDF | `jpg_to_pdf` | 2 credits | — | Single-page PDF via Imagick |
+| PNG | JPG | `png:jpg` | 1 credit | quality, resize, background_color, remove_metadata | Imagick |
+| PNG | WEBP | `png:webp` | 1 credit | quality, lossless, resize, remove_metadata | Imagick |
+| PNG | PDF | `png:pdf` | 2 credits | page_size, orientation, margin, fit_mode, compression | Single-page PDF via Imagick |
+| JPG | PNG | `jpg:png` | 1 credit | resize, remove_metadata | Imagick |
+| JPG | WEBP | `jpg:webp` | 1 credit | quality, resize, remove_metadata | Imagick |
+| JPG | PDF | `jpg:pdf` | 2 credits | page_size, orientation, margin, fit_mode, compression | Single-page PDF via Imagick |
 
 ---
 
@@ -25,15 +25,96 @@ No other conversions are supported in this release.
 
 ### quality
 
-Available for image-to-image conversions (PNG→JPG, PNG→WEBP, JPG→PNG, JPG→WEBP).
+Available for: PNG→JPG, PNG→WEBP, JPG→WEBP.
 
 | Value | Description |
 |-------|-------------|
-| `low` | Lower file size, reduced quality |
 | `medium` | Balanced quality and size |
-| `high` | Best quality, larger file |
+| `high` | Good quality |
+| `best` | Highest quality, largest file |
 
 Default: `high`
+
+### resize
+
+Available for: PNG→JPG, PNG→WEBP, JPG→PNG, JPG→WEBP.
+
+| Value | Description |
+|-------|-------------|
+| `original` | Keep original dimensions |
+| `1920` | Resize to max 1920 px on the longest side |
+| `1280` | Resize to max 1280 px on the longest side |
+| `custom` | Custom resize (via UI) |
+
+Default: `original`
+
+### remove_metadata
+
+Available for: PNG→JPG, PNG→WEBP, JPG→PNG, JPG→WEBP.
+
+Removes EXIF and other embedded metadata. Default: `true`.
+
+### background_color (PNG→JPG only)
+
+Hex colour used to fill transparent areas when converting PNG to JPG. Default: `#ffffff`.
+
+### lossless (PNG→WEBP only)
+
+Use lossless WEBP encoding. Default: `false`.
+
+### page_size (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `auto` | Match image dimensions |
+| `a4` | A4 (210×297 mm) |
+| `letter` | US Letter (215.9×279.4 mm) |
+
+Default: `auto`
+
+### orientation (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `auto` | Detect from image aspect ratio |
+| `portrait` | Force portrait |
+| `landscape` | Force landscape |
+
+Default: `auto`
+
+### margin (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `none` | No margin |
+| `small` | Small margin |
+| `medium` | Medium margin |
+
+Default: `small`
+
+### fit_mode (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+| Value | Description |
+|-------|-------------|
+| `contain` | Fit image within page, preserve aspect ratio |
+| `cover` | Fill page, crop edges |
+| `original` | Use image at original size, no scaling |
+
+Default: `contain`
+
+### compression (PDF outputs)
+
+Available for: PNG→PDF, JPG→PDF.
+
+Controls PDF image compression level.
 
 ---
 
@@ -72,4 +153,6 @@ Credit costs are defined in `config/conversion_costs.php`.
 ## Registry
 
 Supported pairs are registered in `app/Support/Converters/ConverterRegistry.php`  
-and validated against `config/converters.php` → `mvp_capabilities`.
+and validated against `config/converters.php` → `mvp_capabilities`.  
+Converter keys are colon-separated `source:target` (e.g. `png:jpg`), distinct from
+the `source_format`/`target_format` stored on conversion job records.

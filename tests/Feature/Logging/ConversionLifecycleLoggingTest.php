@@ -21,9 +21,9 @@ it('logs conversion job created event with context', function () {
 
     Log::shouldHaveReceived('info')
         ->withArgs(fn (string $message, array $context) => $message === 'conversion.job.created'
-            && isset($context['conversion_job_id'])
-            && isset($context['user_id'])
-            && isset($context['converter_key'])
+            && $context['conversion_job_id'] === $job->id
+            && $context['user_id'] === $user->id
+            && $context['converter_key'] === 'png_to_jpg'
         );
 });
 
@@ -33,14 +33,16 @@ it('logs conversion job completed event with context', function () {
     $user = User::factory()->create();
     $job = ConversionJob::factory()->for($user)->create([
         'converter_key' => 'png_to_jpg',
+        'source_format' => 'png',
+        'target_format' => 'jpg',
     ]);
 
     app(ConversionLogger::class)->jobCompleted($job);
 
     Log::shouldHaveReceived('info')
         ->withArgs(fn (string $message, array $context) => $message === 'conversion.job.completed'
-            && isset($context['conversion_job_id'])
-            && isset($context['user_id'])
+            && $context['conversion_job_id'] === $job->id
+            && $context['user_id'] === $user->id
         );
 });
 
@@ -58,8 +60,8 @@ it('logs conversion job failed event with error code', function () {
 
     Log::shouldHaveReceived('error')
         ->withArgs(fn (string $message, array $context) => $message === 'conversion.job.failed'
-            && isset($context['conversion_job_id'])
-            && isset($context['user_id'])
-            && isset($context['error_code'])
+            && $context['conversion_job_id'] === $job->id
+            && $context['user_id'] === $user->id
+            && $context['error_code'] === 'driver_error'
         );
 });

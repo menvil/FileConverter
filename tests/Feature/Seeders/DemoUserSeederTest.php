@@ -15,9 +15,16 @@ it('seeds demo user with credits', function () {
     expect(app(CreditLedger::class)->balance($user))->toBeGreaterThan(0);
 });
 
-it('seeder is idempotent and does not create duplicate demo user', function () {
-    (new DemoUserSeeder)->run();
+it('seeder is idempotent and does not create duplicate demo user or duplicate credits', function () {
     (new DemoUserSeeder)->run();
 
+    $user = User::where('email', 'demo@example.com')->firstOrFail();
+    $balanceAfterFirst = app(CreditLedger::class)->balance($user);
+
+    (new DemoUserSeeder)->run();
+
+    $balanceAfterSecond = app(CreditLedger::class)->balance($user);
+
     expect(User::where('email', 'demo@example.com')->count())->toBe(1);
+    expect($balanceAfterSecond)->toBe($balanceAfterFirst);
 });

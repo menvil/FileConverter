@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Support\Logging\BillingLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final class DatabaseCreditLedger implements CreditLedger
 {
@@ -25,7 +26,12 @@ final class DatabaseCreditLedger implements CreditLedger
     public function grant(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
         $transaction = $this->addToBalance($user, $amount, CreditTransactionType::Grant, $reason, $meta, $source);
-        app(BillingLogger::class)->creditsGranted($user, $amount, $reason);
+
+        try {
+            app(BillingLogger::class)->creditsGranted($user, $amount, $reason);
+        } catch (Throwable $e) {
+            report($e);
+        }
 
         return $transaction;
     }
@@ -61,7 +67,11 @@ final class DatabaseCreditLedger implements CreditLedger
             ]);
         });
 
-        app(BillingLogger::class)->creditsSpent($user, $amount, $reason);
+        try {
+            app(BillingLogger::class)->creditsSpent($user, $amount, $reason);
+        } catch (Throwable $e) {
+            report($e);
+        }
 
         return $transaction;
     }
@@ -69,7 +79,12 @@ final class DatabaseCreditLedger implements CreditLedger
     public function refund(User $user, int $amount, string $reason, array $meta = [], ?Model $source = null): CreditTransaction
     {
         $transaction = $this->addToBalance($user, $amount, CreditTransactionType::Refund, $reason, $meta, $source);
-        app(BillingLogger::class)->creditsRefunded($user, $amount, $reason);
+
+        try {
+            app(BillingLogger::class)->creditsRefunded($user, $amount, $reason);
+        } catch (Throwable $e) {
+            report($e);
+        }
 
         return $transaction;
     }

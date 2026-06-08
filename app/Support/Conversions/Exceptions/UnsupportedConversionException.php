@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Support\Conversions\Exceptions;
 
-use App\Exceptions\DomainExceptionContract;
+use App\Exceptions\DomainException;
 use Throwable;
 
-final class UnsupportedConversionException extends \DomainException implements DomainExceptionContract
+final class UnsupportedConversionException extends DomainException
 {
     private string $sourceFormat = '';
 
