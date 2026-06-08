@@ -25,6 +25,6 @@ enum FileFormat: string
             }
         }
 
-        throw UnsupportedFormatException::forInput($input);
+        throw UnsupportedFormatException::forFormat($input);
     }
 }

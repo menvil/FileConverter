@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Support\Api;
 
 use App\Exceptions\Billing\InsufficientCreditsException;
+use App\Exceptions\Conversions\ConversionFailedException;
+use App\Exceptions\Conversions\ConversionResultExpiredException;
+use App\Exceptions\Features\FeatureNotAvailableException;
+use App\Exceptions\Files\FileTooLargeException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
 use App\Exceptions\Storage\StorageLimitExceededException;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
@@ -26,8 +30,32 @@ final class ApiExceptionMapper
                 code: 'insufficient_credits',
                 message: $e->getMessage(),
                 status: 402,
+                details: $e->details(),
             ),
-            $e instanceof UnsupportedFormatException,
+            $e instanceof FeatureNotAvailableException => new MappedApiError(
+                code: 'feature_not_available',
+                message: $e->getMessage(),
+                status: 403,
+                details: $e->details(),
+            ),
+            $e instanceof ConversionFailedException => new MappedApiError(
+                code: 'conversion_failed',
+                message: $e->getMessage(),
+                status: 500,
+                details: $e->details(),
+            ),
+            $e instanceof ConversionResultExpiredException => new MappedApiError(
+                code: 'result_expired',
+                message: $e->getMessage(),
+                status: 410,
+                details: $e->details(),
+            ),
+            $e instanceof UnsupportedFormatException => new MappedApiError(
+                code: 'unsupported_format',
+                message: $e->getMessage(),
+                status: 422,
+                details: $e->details(),
+            ),
             $e instanceof UnsupportedFileFormatException => new MappedApiError(
                 code: 'unsupported_format',
                 message: $e->getMessage(),
@@ -37,6 +65,7 @@ final class ApiExceptionMapper
                 code: 'unsupported_conversion',
                 message: $e->getMessage(),
                 status: 422,
+                details: $e->details(),
             ),
             $e instanceof InvalidConverterOptionsException => new MappedApiError(
                 code: 'invalid_options',
@@ -44,10 +73,17 @@ final class ApiExceptionMapper
                 status: 422,
                 details: $e->fieldErrors(),
             ),
+            $e instanceof FileTooLargeException => new MappedApiError(
+                code: 'file_too_large',
+                message: $e->getMessage(),
+                status: 413,
+                details: $e->details(),
+            ),
             $e instanceof StorageLimitExceededException => new MappedApiError(
                 code: 'storage_limit_exceeded',
                 message: $e->getMessage(),
                 status: 413,
+                details: $e->details(),
             ),
             $e instanceof AuthenticationException => new MappedApiError(
                 code: 'unauthorized',
@@ -67,8 +103,9 @@ final class ApiExceptionMapper
             ),
             $e instanceof ThrottleRequestsException => new MappedApiError(
                 code: 'rate_limited',
-                message: 'Too many requests.',
+                message: 'Too many requests. Please try again later.',
                 status: 429,
+                details: ['retry_after_seconds' => (int) ($e->getHeaders()['Retry-After'] ?? 60)],
             ),
             $e instanceof HttpException && $e->getStatusCode() === 401 => new MappedApiError(
                 code: 'unauthorized',

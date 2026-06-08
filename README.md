@@ -1,58 +1,174 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# File Converter
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based MVP application for converting image files between formats via a web UI and REST API.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## MVP Scope
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+File Converter v0.1.0 supports:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- User registration, login, and credit-based billing
+- Upload PNG or JPG files via the dashboard
+- Convert to JPG, PNG, WEBP, or PDF
+- Download converted results
+- View conversion history
+- Subscription plans (Free, Pro, Max) via Stripe/Cashier
+- Credit packs purchasable via Stripe
+- REST API for programmatic access (Pro/Max plans)
 
-## Learning Laravel
+**Not included in MVP:** video/audio, office documents, OCR, batch conversion, WebSockets.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+See `docs/release/supported-conversions.md` for the full conversion matrix.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Requirements
 
-## Agentic Development
+- PHP 8.3+
+- `ext-imagick` (ImageMagick)
+- Node.js 18+
+- Composer 2+
+- SQLite (default) or MySQL/PostgreSQL
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## Installation
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone and install dependencies
+git clone <repo-url> file-converter
+cd file-converter
+composer install
+npm install
 
-php artisan boost:install
+# 2. Configure environment
+cp .env.example .env
+php artisan key:generate
+
+# 3. Run migrations and seed demo data
+php artisan migrate --seed
+
+# 4. Build frontend assets
+npm run build
+
+# 5. Create storage symlink
+php artisan storage:link
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Running Locally
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Start the dev server
+php artisan serve
 
-## Code of Conduct
+# In a separate terminal — process queued conversion jobs
+php artisan queue:work
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Frontend hot-reload (optional)
+npm run dev
+```
 
-## Security Vulnerabilities
+Visit `http://localhost:8000` and log in with the demo account:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```text
+Email:    demo@example.com
+Password: password
+```
+
+---
+
+## Running Tests
+
+```bash
+composer test
+```
+
+---
+
+## Linting
+
+```bash
+composer lint
+
+# Auto-fix
+composer format
+```
+
+---
+
+## Queue Worker
+
+Conversion jobs run asynchronously. A queue worker must be running:
+
+```bash
+php artisan queue:work
+```
+
+For production, use Supervisor. See `docs/deployment/queue-worker.md`.
+
+---
+
+## Scheduler
+
+File cleanup runs daily via the Laravel scheduler:
+
+```bash
+# Add to crontab
+* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1
+```
+
+See `docs/deployment/scheduler.md`.
+
+---
+
+## Billing / Stripe
+
+Billing requires Stripe keys in `.env`:
+
+```env
+STRIPE_KEY=pk_test_...
+STRIPE_SECRET=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+For local testing with webhooks:
+
+```bash
+stripe listen --forward-to http://localhost:8000/stripe/webhook
+```
+
+See `docs/billing/stripe-webhooks.md`.
+
+---
+
+## API
+
+API access is available on Pro and Max plans. Authenticate with a Bearer token.
+
+API docs are available at `/docs/api` after starting the server.
+
+See `docs/release/supported-conversions.md` for supported conversion pairs.
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| `docs/release/mvp-scope-audit.md` | Full MVP feature checklist |
+| `docs/release/supported-conversions.md` | Supported conversion matrix |
+| `docs/deployment/production-checklist.md` | Production deployment checklist |
+| `docs/deployment/queue-worker.md` | Queue worker setup |
+| `docs/deployment/scheduler.md` | Scheduler / cron setup |
+| `docs/deployment/storage-and-permissions.md` | Storage and file permissions |
+| `docs/billing/stripe-webhooks.md` | Stripe webhook setup |
+| `docs/development/local-development.md` | Local development guide |
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT

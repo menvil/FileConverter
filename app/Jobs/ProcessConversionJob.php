@@ -12,6 +12,7 @@ use App\Models\ConversionCreditCharge;
 use App\Models\ConversionJob;
 use App\Support\Conversions\ConverterDriverRegistry;
 use App\Support\Conversions\DTO\ConversionContext;
+use App\Support\Logging\ConversionLogger;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,7 +37,9 @@ class ProcessConversionJob implements ShouldQueue
         ConverterDriverRegistry $drivers,
         RecordConversionResultFileAction $recorder,
         CreditLedger $creditLedger,
+        ?ConversionLogger $logger = null,
     ): void {
+        $logger ??= app(ConversionLogger::class);
         $job = ConversionJob::find($this->conversionJobId);
 
         if ($job === null || $job->status !== ConversionStatus::Queued) {
@@ -48,6 +51,8 @@ class ProcessConversionJob implements ShouldQueue
             'progress' => 10,
             'started_at' => now(),
         ])->save();
+
+        $logger->jobStarted($job);
 
         try {
             $driver = $drivers->findOrFail($job->converter_key);
@@ -70,6 +75,12 @@ class ProcessConversionJob implements ShouldQueue
                 'completed_at' => now(),
             ])->save();
 
+            try {
+                $logger->jobCompleted($job);
+            } catch (Throwable $logException) {
+                report($logException);
+            }
+
             // Capture credits separately — a billing failure must not undo a
             // successful conversion, so we report and move on rather than
             // letting the exception propagate to the failure catch block below.
@@ -85,6 +96,8 @@ class ProcessConversionJob implements ShouldQueue
                 'error_message' => $exception->getMessage(),
                 'completed_at' => now(),
             ])->save();
+
+            $logger->jobFailed($job);
 
             $this->markChargeFailed($job);
 

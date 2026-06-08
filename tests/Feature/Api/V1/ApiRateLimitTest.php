@@ -25,3 +25,17 @@ it('returns 429 when api rate limit is exceeded on a throttled endpoint', functi
     // Second request exceeds the limit.
     $this->withToken($token)->getJson('/api/v1/converters')->assertStatus(429);
 });
+
+it('returns stable json rate_limited error when api limit is exceeded', function () {
+    $user = User::factory()->create(['plan' => Plan::Pro]);
+    $token = app(ApiKeyGenerator::class)->create($user, 'Pro key')->plainToken;
+
+    RateLimiter::for('api-v1', fn () => Limit::perMinute(1)->by($user->id));
+
+    $this->withToken($token)->getJson('/api/v1/converters')->assertOk();
+
+    $this->withToken($token)->getJson('/api/v1/converters')
+        ->assertStatus(429)
+        ->assertJsonPath('error.code', 'rate_limited')
+        ->assertJsonStructure(['error' => ['code', 'message', 'details']]);
+});
