@@ -150,51 +150,77 @@
 
 {{-- ═══════════ HERO ═══════════ --}}
 <section class="hero-bg overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
+            {{-- ── Left: Headline + Upload form ── --}}
             <div>
                 {{-- Badge --}}
-                <div style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid #c4b5fd;border-radius:999px;padding:8px 16px;margin-bottom:28px;background:rgba(237,233,254,0.5);">
-                    <svg style="width:16px;height:16px;color:#7c3aed;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <div style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid #c4b5fd;border-radius:999px;padding:7px 16px;margin-bottom:22px;background:rgba(237,233,254,0.5);">
+                    <svg style="width:15px;height:15px;color:#7c3aed;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
                     </svg>
-                    <span style="font-size:14px;font-weight:600;color:#5b21b6;letter-spacing:-0.1px;">Instant Image Conversion</span>
+                    <span style="font-size:13px;font-weight:600;color:#5b21b6;">Instant Image Conversion</span>
                 </div>
 
-                {{-- Headline --}}
-                <h1 style="font-size:clamp(56px,6vw,80px);font-weight:900;line-height:1.04;letter-spacing:-2px;margin-bottom:24px;">
+                {{-- Headline: very large, airy --}}
+                <h1 style="font-size:clamp(64px,7.5vw,96px);font-weight:900;line-height:1.0;letter-spacing:-3px;margin-bottom:20px;">
                     <span style="color:#7c3aed;display:block;">Any Image.</span>
                     <span style="color:#111827;display:block;">Any Format.</span>
                     <span style="background:linear-gradient(90deg,#ec4899 0%,#f97316 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;">Makes It Fast.</span>
                 </h1>
 
                 {{-- Subtitle --}}
-                <p style="font-size:18px;line-height:1.65;color:#6b7280;margin-bottom:36px;max-width:420px;">
+                <p style="font-size:17px;line-height:1.6;color:#6b7280;margin-bottom:28px;max-width:440px;">
                     Convert, compress and transform images in seconds. Fast, secure, and incredibly simple.
                 </p>
 
-                {{-- CTAs --}}
-                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px;">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(90deg,#ec4899,#f97316);padding:14px 28px;border-radius:12px;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-                            Start Converting
-                            <svg style="width:16px;height:16px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                        </a>
-                    @else
-                        <a href="{{ route('register') }}" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(90deg,#ec4899,#f97316);padding:14px 28px;border-radius:12px;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-                            Get Started Free
-                            <svg style="width:16px;height:16px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                        </a>
-                        <a href="{{ route('login') }}" style="display:inline-flex;align-items:center;font-size:16px;font-weight:600;color:#374151;background:#fff;padding:14px 28px;border-radius:12px;border:1.5px solid #e5e7eb;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='#e5e7eb'">
-                            Sign in
-                        </a>
-                    @endauth
-                </div>
+                {{-- ── Upload dropzone (same style as dashboard) ── --}}
+                @auth
+                    {{-- Logged-in: embed the real Livewire converter --}}
+                    @livewire('dashboard.dashboard-converter')
+                @else
+                    {{-- Guest: visual dropzone that redirects to register --}}
+                    <div
+                        id="hero-dropzone"
+                        onclick="window.location='{{ route('register') }}'"
+                        x-data="{ dragging: false }"
+                        @dragover.prevent="dragging = true"
+                        @dragleave.prevent="dragging = false"
+                        @drop.prevent="dragging = false; window.location='{{ route('register') }}'"
+                        :class="dragging ? 'border-[#7c3aed] bg-violet-50' : 'border-[#e2e8f0]'"
+                        style="border:2px dashed #e2e8f0;border-radius:12px;padding:40px 24px;background:#f8fafc;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:20px;"
+                        onmouseover="this.style.borderColor='#7c3aed';this.style.background='#f5f3ff'"
+                        onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"
+                    >
+                        {{-- Upload icon --}}
+                        <div style="width:56px;height:56px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                            <svg style="width:26px;height:26px;color:#64748b" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 7.5m0 0L7.5 12M12 7.5V18"/>
+                            </svg>
+                        </div>
+
+                        <p style="font-size:15px;font-weight:600;color:#111827;margin-bottom:6px;">Drop your file here</p>
+                        <p style="font-size:13px;color:#64748b;margin-bottom:16px;">PNG, JPG, WEBP and PDF supported</p>
+
+                        <span style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#7c3aed;color:#fff;font-size:14px;font-weight:600;padding:9px 22px;border-radius:8px;pointer-events:none;">
+                            <svg style="width:14px;height:14px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 7.5m0 0L7.5 12M12 7.5V18"/></svg>
+                            Choose file
+                        </span>
+
+                        <p style="font-size:11px;color:#94a3b8;margin-top:14px;">Your files stay private. We delete them after conversion.</p>
+                    </div>
+                    <p style="font-size:13px;color:#9ca3af;text-align:center;">
+                        Already have an account? <a href="{{ route('login') }}" style="color:#7c3aed;font-weight:600;text-decoration:none;">Sign in</a>
+                    </p>
+                @endauth
+            </div>
+
+            {{-- ── Right: Social proof + format badges ── --}}
+            <div style="padding-top:20px;">
 
                 {{-- Social proof --}}
-                <div style="display:flex;align-items:center;gap:16px;">
-                    {{-- Overlapping avatars --}}
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:36px;">
                     <div style="display:flex;">
                         @foreach([
                             ['initials'=>'AS','bg'=>'#0d9488'],
@@ -203,93 +229,50 @@
                             ['initials'=>'PS','bg'=>'#0891b2'],
                             ['initials'=>'DC','bg'=>'#7c3aed'],
                         ] as $i => $av)
-                        <div style="width:38px;height:38px;border-radius:50%;background:{{ $av['bg'] }};border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;{{ $i > 0 ? 'margin-left:-10px;' : '' }}z-index:{{ 10 - $i }}">
+                        <div style="width:40px;height:40px;border-radius:50%;background:{{ $av['bg'] }};border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;{{ $i > 0 ? 'margin-left:-10px;' : '' }}position:relative;z-index:{{ 10 - $i }};">
                             {{ $av['initials'] }}
                         </div>
                         @endforeach
                     </div>
-                    {{-- Stars + text --}}
                     <div>
                         <div style="display:flex;align-items:center;gap:3px;margin-bottom:3px;">
                             @for($i = 0; $i < 5; $i++)
                             <svg style="width:16px;height:16px;fill:#f59e0b" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                             @endfor
-                            <span style="font-size:16px;font-weight:700;color:#111827;margin-left:4px;">4.9</span>
+                            <span style="font-size:16px;font-weight:700;color:#111827;margin-left:5px;">4.9</span>
                         </div>
                         <span style="font-size:13px;color:#9ca3af;font-weight:500;">Trusted by 1k+ users worldwide</span>
                     </div>
                 </div>
 
-            </div>
-
-            {{-- Visual --}}
-            <div class="relative flex items-center justify-center">
-                <div class="relative w-full max-w-md mx-auto">
-                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mx-6">
-                        <div class="flex items-center justify-center mb-4">
-                            <div class="w-14 h-14 btn-primary rounded-2xl flex items-center justify-center shadow-lg">
-                                <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/>
-                                </svg>
+                {{-- Floating format conversion cards --}}
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    @foreach([
+                        ['from'=>'PNG','to'=>'JPG', 'from_bg'=>'#ef4444','to_bg'=>'#eab308','time'=>'0.3s'],
+                        ['from'=>'JPG','to'=>'WEBP','from_bg'=>'#eab308','to_bg'=>'#22c55e','time'=>'0.4s'],
+                        ['from'=>'PNG','to'=>'PDF', 'from_bg'=>'#ef4444','to_bg'=>'#2563eb','time'=>'0.5s'],
+                    ] as $c)
+                    <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #f1f5f9;border-radius:12px;padding:12px 16px;box-shadow:0 1px 8px rgba(0,0,0,0.06);">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:34px;height:34px;border-radius:8px;background:{{ $c['from_bg'] }};display:flex;align-items:center;justify-content:center;">
+                                <span style="font-size:9px;font-weight:900;color:#fff">{{ $c['from'] }}</span>
                             </div>
+                            <svg style="width:16px;height:16px;color:#9ca3af" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            <div style="width:34px;height:34px;border-radius:8px;background:{{ $c['to_bg'] }};display:flex;align-items:center;justify-content:center;">
+                                <span style="font-size:9px;font-weight:900;color:#fff">{{ $c['to'] }}</span>
+                            </div>
+                            <span style="font-size:13px;font-weight:600;color:#374151;">{{ $c['from'] }} → {{ $c['to'] }}</span>
                         </div>
-                        <p class="text-center text-sm font-semibold text-gray-700 mb-1">Drag & Drop Here</p>
-                        <p class="text-center text-xs text-gray-400 mb-5">or click to browse your files</p>
-
-                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
-                            @foreach([
-                                ['label' => 'PNG',  'bg' => '#ef4444'],
-                                ['label' => 'JPG',  'bg' => '#eab308'],
-                                ['label' => 'WEBP', 'bg' => '#22c55e'],
-                                ['label' => 'PDF',  'bg' => '#2563eb'],
-                            ] as $fmt)
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-                                <div class="rounded-xl shadow-sm format-icon flex items-center justify-center" style="width:40px;height:40px;background:{{ $fmt['bg'] }}">
-                                    <span style="font-size:9px;font-weight:900;color:#fff">{{ $fmt['label'] }}</span>
-                                </div>
-                                <span class="text-gray-400 font-medium" style="font-size:10px">{{ $fmt['label'] }}</span>
-                            </div>
-                            @endforeach
-                        </div>
-
-                        <div>
-                            <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full w-3/4 btn-primary rounded-full"></div>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-gray-400 mt-1.5">
-                                <span>Converting…</span>
-                                <span>75%</span>
-                            </div>
-                        </div>
+                        <span style="font-size:12px;color:#10b981;font-weight:600;">✓ {{ $c['time'] }}</span>
                     </div>
+                    @endforeach
 
-                    <div class="absolute -top-3 left-0 bg-white rounded-xl shadow-lg border border-gray-100 px-3 py-2 flex items-center gap-2">
-                        <div class="w-7 h-7 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <span class="text-[8px] font-black text-white">PNG</span>
-                        </div>
+                    {{-- Security note --}}
+                    <div style="display:flex;align-items:center;gap:10px;background:rgba(240,253,244,0.8);border:1px solid #bbf7d0;border-radius:12px;padding:12px 16px;">
+                        <svg style="width:18px;height:18px;color:#16a34a;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
                         <div>
-                            <p class="text-[10px] font-semibold text-gray-700">PNG → JPG</p>
-                            <p class="text-[9px] text-green-500 font-medium">✓ Done in 0.3s</p>
-                        </div>
-                    </div>
-
-                    <div class="absolute -bottom-3 right-0 bg-white rounded-xl shadow-lg border border-gray-100 px-3 py-2 flex items-center gap-2">
-                        <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <span class="text-[8px] font-black text-white">PDF</span>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold text-gray-700">JPG → PDF</p>
-                            <p class="text-[9px] text-green-500 font-medium">✓ Done in 0.5s</p>
-                        </div>
-                    </div>
-
-                    <div class="absolute top-1/3 -right-4 bg-white rounded-xl shadow-lg border border-gray-100 px-3 py-2 flex items-center gap-2">
-                        <div class="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <span class="text-[8px] font-black text-white">WEBP</span>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold text-gray-700">PNG → WEBP</p>
-                            <p class="text-[9px] text-blue-500 font-medium">API ready</p>
+                            <p style="font-size:13px;font-weight:600;color:#15803d;">Files are private & secure</p>
+                            <p style="font-size:12px;color:#16a34a;">Automatically deleted after conversion</p>
                         </div>
                     </div>
                 </div>
