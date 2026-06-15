@@ -9,6 +9,59 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
     <style>
+        /* ── Header ── */
+        .nav-logo-circle {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 55%, #a855f7 100%);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .nav-logo-c {
+            font-size: 16px; font-weight: 900; color: #fff; line-height: 1;
+            font-style: italic; letter-spacing: -0.5px;
+        }
+        .nav-brand {
+            font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.3px;
+        }
+        .nav-brand-gradient {
+            background: linear-gradient(90deg, #ec4899 0%, #a855f7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-link {
+            font-size: 14px; font-weight: 500; color: #374151;
+            display: flex; align-items: center; gap: 4px;
+            transition: color .15s; white-space: nowrap;
+        }
+        .nav-link:hover { color: #111827; }
+        .nav-chevron {
+            width: 14px; height: 14px; color: #9ca3af;
+        }
+        .nav-badge-new {
+            font-size: 10px; font-weight: 700; color: #fff;
+            background: linear-gradient(90deg, #ec4899 0%, #f97316 100%);
+            border-radius: 20px; padding: 1px 7px; line-height: 18px;
+            display: inline-block;
+        }
+        .nav-lang {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 14px; font-weight: 500; color: #374151;
+            border: 1px solid #e5e7eb; border-radius: 8px;
+            padding: 6px 10px; cursor: pointer; transition: border-color .15s;
+        }
+        .nav-lang:hover { border-color: #d1d5db; }
+        .nav-signin {
+            font-size: 14px; font-weight: 500; color: #374151;
+            transition: color .15s; white-space: nowrap;
+        }
+        .nav-signin:hover { color: #111827; }
+        .nav-btn-signup {
+            font-size: 14px; font-weight: 600; color: #fff;
+            background: linear-gradient(90deg, #ec4899 0%, #f97316 100%);
+            border-radius: 10px; padding: 8px 18px;
+            white-space: nowrap; transition: opacity .15s;
+        }
+        .nav-btn-signup:hover { opacity: 0.9; }
+        /* ── Rest ── */
         .hero-bg {
             background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(139,92,246,0.12) 0%, transparent 60%),
                         radial-gradient(ellipse 50% 50% at 85% 20%, rgba(251,146,60,0.10) 0%, transparent 50%),
@@ -35,36 +88,62 @@
 <body class="bg-white text-gray-900 antialiased font-sans">
 
 {{-- ═══════════ NAVIGATION ═══════════ --}}
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-            <a href="/" class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl btn-primary flex items-center justify-center shadow-sm flex-shrink-0">
-                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/>
-                    </svg>
-                </div>
-                <span class="text-lg font-bold text-gray-900">File<span class="bg-gradient-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent">Converter</span></span>
+<header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid #f3f4f6;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;">
+
+        {{-- Logo --}}
+        <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+            <div class="nav-logo-circle">
+                <span class="nav-logo-c">C</span>
+            </div>
+            <span class="nav-brand">File<span class="nav-brand-gradient">Converter</span></span>
+        </a>
+
+        {{-- Nav links --}}
+        <nav style="display:flex;align-items:center;gap:28px;">
+            <a href="{{ route('dashboard') }}" class="nav-link">
+                Convert
+                <svg class="nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
             </a>
 
-            <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-gray-600">
-                <a href="{{ route('dashboard') }}" class="hover:text-gray-900 transition-colors">Convert</a>
-                <a href="{{ route('docs.api') }}" class="hover:text-gray-900 transition-colors">API</a>
-                <a href="{{ route('billing') }}" class="hover:text-gray-900 transition-colors">Pricing</a>
-            </nav>
+            <a href="{{ route('docs.api') }}" class="nav-link" style="gap:7px;">
+                API
+                <span class="nav-badge-new">New</span>
+            </a>
 
-            <div class="flex items-center gap-3">
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">
-                        Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">Sign in</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="text-sm font-semibold text-white btn-primary px-5 py-2 rounded-lg shadow-sm hover:shadow-md transition-all">Sign up free</a>
-                    @endif
-                @endauth
+            <a href="{{ route('billing') }}" class="nav-link">
+                Pricing
+            </a>
+
+            <a href="{{ route('history') }}" class="nav-link">
+                History
+            </a>
+
+            <a href="{{ route('settings') }}" class="nav-link">
+                Settings
+                <svg class="nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+            </a>
+        </nav>
+
+        {{-- Right controls --}}
+        <div style="display:flex;align-items:center;gap:10px;">
+            {{-- Language --}}
+            <div class="nav-lang">
+                <svg style="width:15px;height:15px;color:#9ca3af;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+                <span style="font-size:14px;font-weight:500;color:#374151;">EN</span>
+                <svg style="width:13px;height:13px;color:#9ca3af" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
             </div>
+
+            @auth
+                <a href="{{ url('/dashboard') }}" class="nav-btn-signup" style="text-decoration:none;">
+                    Dashboard
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="nav-signin" style="text-decoration:none;padding:0 4px;">Sign in</a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="nav-btn-signup" style="text-decoration:none;">Sign up free</a>
+                @endif
+            @endauth
         </div>
     </div>
 </header>
