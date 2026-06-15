@@ -154,56 +154,72 @@
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             <div>
-                <div class="inline-flex items-center gap-2 pill-tag rounded-full px-4 py-1.5 text-xs font-semibold text-violet-700 mb-6">
-                    <span class="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse"></span>
-                    PNG · JPG · WEBP · PDF — Now Live
+                {{-- Badge --}}
+                <div style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid #c4b5fd;border-radius:999px;padding:8px 16px;margin-bottom:28px;background:rgba(237,233,254,0.5);">
+                    <svg style="width:16px;height:16px;color:#7c3aed;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+                    </svg>
+                    <span style="font-size:14px;font-weight:600;color:#5b21b6;letter-spacing:-0.1px;">Instant Image Conversion</span>
                 </div>
 
-                <h1 class="text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] mb-6">
-                    Any Image.<br>
-                    Any Format.<br>
-                    <span class="bg-gradient-to-r from-violet-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent">Instantly.</span>
+                {{-- Headline --}}
+                <h1 style="font-size:clamp(56px,6vw,80px);font-weight:900;line-height:1.04;letter-spacing:-2px;margin-bottom:24px;">
+                    <span style="color:#7c3aed;display:block;">Any Image.</span>
+                    <span style="color:#111827;display:block;">Any Format.</span>
+                    <span style="background:linear-gradient(90deg,#ec4899 0%,#f97316 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;">Makes It Fast.</span>
                 </h1>
 
-                <p class="text-lg text-gray-500 leading-relaxed mb-8 max-w-md">
-                    Convert, compress and transform images in seconds. Fast, secure and incredibly simple — no software to install.
+                {{-- Subtitle --}}
+                <p style="font-size:18px;line-height:1.65;color:#6b7280;margin-bottom:36px;max-width:420px;">
+                    Convert, compress and transform images in seconds. Fast, secure, and incredibly simple.
                 </p>
 
-                <div class="flex flex-wrap gap-3 mb-8">
+                {{-- CTAs --}}
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px;">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center gap-2 text-base font-semibold text-white btn-primary px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        <a href="{{ url('/dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(90deg,#ec4899,#f97316);padding:14px 28px;border-radius:12px;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
                             Start Converting
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            <svg style="width:16px;height:16px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                         </a>
                     @else
-                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 text-base font-semibold text-white btn-primary px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        <a href="{{ route('register') }}" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(90deg,#ec4899,#f97316);padding:14px 28px;border-radius:12px;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
                             Get Started Free
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            <svg style="width:16px;height:16px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                         </a>
-                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 text-base font-semibold text-gray-700 bg-white px-7 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all">
+                        <a href="{{ route('login') }}" style="display:inline-flex;align-items:center;font-size:16px;font-weight:600;color:#374151;background:#fff;padding:14px 28px;border-radius:12px;border:1.5px solid #e5e7eb;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='#e5e7eb'">
                             Sign in
                         </a>
                     @endauth
                 </div>
 
-                <div class="flex flex-wrap items-center gap-6 text-sm text-gray-400">
-                    <div class="flex items-center gap-1.5">
-                        <div class="flex -space-x-1.5">
-                            <div class="w-7 h-7 rounded-full border-2 border-white" style="background:#7c3aed"></div>
-                            <div class="w-7 h-7 rounded-full border-2 border-white" style="background:#3b82f6"></div>
-                            <div class="w-7 h-7 rounded-full border-2 border-white" style="background:#06b6d4"></div>
-                            <div class="w-7 h-7 rounded-full border-2 border-white" style="background:#10b981"></div>
+                {{-- Social proof --}}
+                <div style="display:flex;align-items:center;gap:16px;">
+                    {{-- Overlapping avatars --}}
+                    <div style="display:flex;">
+                        @foreach([
+                            ['initials'=>'AS','bg'=>'#0d9488'],
+                            ['initials'=>'MD','bg'=>'#3b82f6'],
+                            ['initials'=>'LW','bg'=>'#16a34a'],
+                            ['initials'=>'PS','bg'=>'#0891b2'],
+                            ['initials'=>'DC','bg'=>'#7c3aed'],
+                        ] as $i => $av)
+                        <div style="width:38px;height:38px;border-radius:50%;background:{{ $av['bg'] }};border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;{{ $i > 0 ? 'margin-left:-10px;' : '' }}z-index:{{ 10 - $i }}">
+                            {{ $av['initials'] }}
                         </div>
-                        <span class="font-medium text-gray-600">1k+ users</span>
+                        @endforeach
                     </div>
-                    <div class="flex items-center gap-1">
-                        @for($i = 0; $i < 5; $i++)
-                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        @endfor
-                        <span class="font-medium text-gray-600 ml-1">4.9</span>
-                        <span class="text-gray-400 ml-0.5">rating</span>
+                    {{-- Stars + text --}}
+                    <div>
+                        <div style="display:flex;align-items:center;gap:3px;margin-bottom:3px;">
+                            @for($i = 0; $i < 5; $i++)
+                            <svg style="width:16px;height:16px;fill:#f59e0b" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            @endfor
+                            <span style="font-size:16px;font-weight:700;color:#111827;margin-left:4px;">4.9</span>
+                        </div>
+                        <span style="font-size:13px;color:#9ca3af;font-weight:500;">Trusted by 1k+ users worldwide</span>
                     </div>
                 </div>
+
             </div>
 
             {{-- Visual --}}
