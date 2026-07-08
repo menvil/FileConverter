@@ -28,22 +28,25 @@ final class StoreUploadedFileAction
         private readonly StorageUsageService $storageUsage,
     ) {}
 
-    public function handle(User $user, UploadedFile $file): FileRecord
+    public function handle(?User $user, UploadedFile $file, ?string $guestToken = null): FileRecord
     {
-        $limits = $this->featureAccess->limits($user);
-        $limitBytes = $limits->storageMb * 1024 * 1024;
-        $usedBytes = $this->storageUsage->usedBytes($user);
-        $newFileBytes = $file->getSize();
+        if ($user !== null) {
+            $limits = $this->featureAccess->limits($user);
+            $limitBytes = $limits->storageMb * 1024 * 1024;
+            $usedBytes = $this->storageUsage->usedBytes($user);
+            $newFileBytes = $file->getSize();
 
-        if ($usedBytes + $newFileBytes > $limitBytes) {
-            throw StorageLimitExceededException::make($limits->storageMb, $usedBytes, $newFileBytes);
+            if ($usedBytes + $newFileBytes > $limitBytes) {
+                throw StorageLimitExceededException::make($limits->storageMb, $usedBytes, $newFileBytes);
+            }
         }
 
         $format = $this->formatDetector->detect($file);
         $metadata = $this->metadataExtractor->extract($file, $format);
 
         $disk = Storage::disk('local');
-        $path = $file->store("uploads/{$user->id}", 'local');
+        $storageDir = $user !== null ? "uploads/{$user->id}" : 'uploads/guests';
+        $path = $file->store($storageDir, 'local');
 
         if (! is_string($path) || $path === '') {
             throw FileStorageException::cannotStore($file->getClientOriginalName());
@@ -61,7 +64,8 @@ final class StoreUploadedFileAction
             }
 
             return $this->recordCreator->create([
-                'user_id' => $user->id,
+                'user_id' => $user?->id,
+                'guest_token' => $guestToken,
                 'original_name' => $file->getClientOriginalName(),
                 'stored_path' => $path,
                 'mime_type' => $file->getMimeType(),

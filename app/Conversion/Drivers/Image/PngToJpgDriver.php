@@ -35,7 +35,7 @@ final class PngToJpgDriver implements ConverterDriver
         $manager = new ImageManager(new Driver);
         $image = $manager->decodePath(Storage::disk('local')->path($storedPath));
 
-        $background = $context->options['background'] ?? '#ffffff';
+        $background = $context->options['background_color'] ?? '#ffffff';
         $quality = $this->resolveQuality($context->options['quality'] ?? 'high');
 
         $image->fillTransparentAreas($background);

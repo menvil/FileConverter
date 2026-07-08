@@ -21,7 +21,7 @@ it('provides valid default options for jpg to png', function () {
         []
     );
 
-    expect($options)->toHaveKey('resize');
-    expect($options)->toHaveKey('remove_metadata');
+    expect($options)->not->toHaveKey('resize');
+    expect($options)->not->toHaveKey('remove_metadata');
     expect($options)->not->toHaveKey('transparency');
 });

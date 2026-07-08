@@ -4,6 +4,7 @@ use App\Http\Controllers\Billing\CashierWebhookController;
 use App\Http\Controllers\Billing\CreditPackCheckoutController;
 use App\Http\Controllers\Billing\StartSubscriptionCheckoutController;
 use App\Http\Controllers\DownloadConversionResultController;
+use App\Http\Controllers\GuestDownloadConversionController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Billing\BillingPage;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,9 @@ Route::post('/stripe/webhook', [CashierWebhookController::class, 'handleWebhook'
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/guest/conversions/{conversionId}/download', GuestDownloadConversionController::class)
+    ->name('guest.conversions.download');
 
 Route::view('/dashboard', 'dashboard')
     ->middleware('auth')

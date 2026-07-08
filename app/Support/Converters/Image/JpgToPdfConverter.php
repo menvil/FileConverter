@@ -83,17 +83,6 @@ final class JpgToPdfConverter implements Converter
                     ['value' => 'original', 'label' => 'Original'],
                 ],
             ],
-            [
-                'key' => 'compression',
-                'type' => 'segmented',
-                'label' => 'Compression',
-                'default' => 'balanced',
-                'options' => [
-                    ['value' => 'none', 'label' => 'None'],
-                    ['value' => 'balanced', 'label' => 'Balanced'],
-                    ['value' => 'small', 'label' => 'Small'],
-                ],
-            ],
         ];
     }
 

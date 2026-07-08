@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'user_id',
+    'guest_token',
     'source_file_id',
     'result_file_id',
     'source_format',

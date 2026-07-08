@@ -15,6 +15,7 @@
             ])"
             class="mb-6"
         />
+
         @if ($step === 'upload' && $this->currentFile)
             @php($file = $this->currentFile)
             <div class="flex flex-col gap-4">
@@ -59,7 +60,7 @@
 
                 <div class="flex flex-col gap-1">
                     <p class="text-base font-semibold text-[var(--ca-text)]">Drop your file here</p>
-                    <p class="text-sm text-[var(--ca-muted)]">PNG, JPG, WEBP and PDF supported in beta</p>
+                    <p class="text-sm text-[var(--ca-muted)]">PNG, JPG, WEBP and PDF supported · up to 10 MB</p>
                 </div>
 
                 <label class="cursor-pointer">
@@ -80,6 +81,11 @@
                     <p class="text-sm text-[var(--ca-danger)]">{{ $uploadError }}</p>
                 @endif
             </div>
+
+            <p class="mt-4 text-center text-sm text-[var(--ca-muted)]">
+                <a href="{{ route('register') }}" class="font-semibold" style="color:var(--ca-primary);">Sign up free</a>
+                for larger files, history & more
+            </p>
         @endif
 
         @if ($step === 'format' && $this->currentFile)
@@ -178,19 +184,6 @@
 
                 @include('livewire.dashboard.dashboard-converter.partials.dynamic-options-form')
 
-                <div
-                    data-testid="estimated-cost"
-                    class="flex items-center justify-between gap-4 rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-[var(--ca-surface-muted)]/40 px-4 py-3">
-                    <span class="text-sm font-semibold text-[var(--ca-text)]">Estimated cost</span>
-                    @if ($estimatedCreditCost !== null)
-                        <p class="text-sm font-semibold text-[var(--ca-text)]">
-                            {{ $estimatedCreditCost }} {{ $estimatedCreditCost === 1 ? 'credit' : 'credits' }}
-                        </p>
-                    @else
-                        <p class="text-sm text-[var(--ca-muted)]">Credit cost will be calculated before conversion.</p>
-                    @endif
-                </div>
-
                 <div class="flex justify-end">
                     <x-button variant="primary" size="sm" wire:click="continueFromSettings">Continue</x-button>
                 </div>
@@ -238,7 +231,7 @@
 
                     <div class="flex flex-col gap-2">
                         <a
-                            href="{{ route('conversions.download', $job) }}"
+                            href="{{ route('guest.conversions.download', $job->id) }}"
                             class="inline-flex w-full items-center justify-center gap-2 rounded-[var(--ca-radius-md)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-110"
                             style="background:var(--ca-primary);"
                         >Download</a>
@@ -251,6 +244,11 @@
                             Convert another file
                         </x-button>
                     </div>
+
+                    <p class="text-center text-xs text-[var(--ca-muted)]">
+                        <a href="{{ route('register') }}" class="font-semibold" style="color:var(--ca-primary);">Sign up free</a>
+                        to save your conversion history
+                    </p>
                 @endif
             </div>
         @endif
@@ -283,13 +281,7 @@
 
                 @if ($convertError)
                     <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-4 py-3">
-                        <p class="text-sm font-semibold text-red-700">Not enough credits</p>
-                        <p class="mt-1 text-sm text-red-600">{{ $convertError }}</p>
-                        @if ($hasInsufficientCredits)
-                            <div class="mt-3">
-                                <x-billing.buy-credits-cta variant="compact" />
-                            </div>
-                        @endif
+                        <p class="text-sm text-red-600">{{ $convertError }}</p>
                     </div>
                 @endif
 

@@ -51,28 +51,10 @@ final class PngToJpgConverter implements Converter
                 ],
             ],
             [
-                'key' => 'resize',
-                'type' => 'select',
-                'label' => 'Resize',
-                'default' => 'original',
-                'options' => [
-                    ['value' => 'original', 'label' => 'Original'],
-                    ['value' => '1920', 'label' => '1920 px'],
-                    ['value' => '1280', 'label' => '1280 px'],
-                    ['value' => 'custom', 'label' => 'Custom'],
-                ],
-            ],
-            [
                 'key' => 'background_color',
                 'type' => 'color',
                 'label' => 'Background color',
                 'default' => '#ffffff',
-            ],
-            [
-                'key' => 'remove_metadata',
-                'type' => 'toggle',
-                'label' => 'Remove metadata',
-                'default' => true,
             ],
         ];
     }

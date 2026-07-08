@@ -15,7 +15,7 @@
                 wire:click="$set('options.{{ $key }}', @js($value))"
                 aria-pressed="{{ $active ? 'true' : 'false' }}"
                 @class([
-                    'rounded-[calc(var(--ca-radius-md)-2px)] px-3 py-1.5 text-sm font-medium transition ca-focus-ring',
+                    'cursor-pointer rounded-[calc(var(--ca-radius-md)-2px)] px-3 py-1.5 text-sm font-medium transition ca-focus-ring',
                     'bg-white text-[var(--ca-text)] shadow-sm' => $active,
                     'text-[var(--ca-muted)] hover:text-[var(--ca-text)]' => ! $active,
                 ])>

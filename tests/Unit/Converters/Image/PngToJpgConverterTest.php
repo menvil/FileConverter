@@ -22,9 +22,8 @@ it('provides valid default options for png to jpg', function () {
     );
 
     expect($options)->toHaveKey('quality');
-    expect($options)->toHaveKey('resize');
     expect($options)->toHaveKey('background_color');
-    expect($options)->toHaveKey('remove_metadata');
+    expect($options)->not->toHaveKey('resize');
+    expect($options)->not->toHaveKey('remove_metadata');
     expect($options['background_color'])->toBe('#ffffff');
-    expect($options['remove_metadata'])->toBeTrue();
 });

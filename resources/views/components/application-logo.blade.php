@@ -1,7 +1,8 @@
-<div {{ $attributes->merge(['class' => 'flex items-center gap-2 font-semibold tracking-tight text-[var(--ca-text)]']) }}>
-    <span aria-hidden="true" class="ca-gradient-primary inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white">CA</span>
-    <span class="flex flex-col leading-tight">
-        <span class="text-base font-semibold">ConvertAI</span>
-        <span class="text-xs font-medium text-[var(--ca-muted)]">File Converter</span>
-    </span>
-</div>
+@props([
+    'size' => 'text-2xl',
+])
+
+<span
+    {{ $attributes->merge(['class' => $size.' font-black tracking-tight text-gray-900']) }}
+    style="font-family:'Geist',ui-sans-serif,system-ui,sans-serif;letter-spacing:-1px;"
+>File<span class="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">Converter</span></span>

@@ -24,5 +24,5 @@ it('provides valid default options for jpg to pdf', function () {
     expect($options)->toHaveKey('orientation');
     expect($options)->toHaveKey('margin');
     expect($options)->toHaveKey('fit_mode');
-    expect($options)->toHaveKey('compression');
+    expect($options)->not->toHaveKey('compression');
 });

@@ -66,7 +66,7 @@ class ProcessConversionJob implements ShouldQueue
 
             $result = $driver->convert($context);
 
-            $resultFile = $recorder->handle($job->user, $result);
+            $resultFile = $recorder->handle($job->user, $result, $job->guest_token);
 
             $job->forceFill([
                 'result_file_id' => $resultFile->id,
@@ -107,6 +107,10 @@ class ProcessConversionJob implements ShouldQueue
 
     private function captureCredits(ConversionJob $job, CreditLedger $creditLedger): void
     {
+        if ($job->user === null) {
+            return;
+        }
+
         $charge = $job->creditCharge;
 
         if ($charge === null) {
