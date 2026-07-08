@@ -67,7 +67,9 @@
             color: #1a1a2e; letter-spacing: -0.16px;
             background: #fbfbff;
         }
-        .px-container { max-width: 1200px; margin: 0 auto; padding: 30px 16px 40px; }
+        .px-container { max-width: 1320px; margin: 0 auto; padding: 30px 16px 40px; }
+        @media (min-width: 640px)  { .px-container { padding: 30px 24px 40px; } }
+        @media (min-width: 1024px) { .px-container { padding: 30px 32px 40px; } }
         .px-h2 {
             font-size: 22px; font-weight: 700; letter-spacing: -0.44px;
             color: #1a1a2e; text-align: center; margin: 16px 0 22px;
@@ -140,7 +142,7 @@
 
 {{-- ═══════════ NAVIGATION ═══════════ --}}
 <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid #f3f4f6;">
-    <div style="max-width:1280px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;">
+    <div style="max-width:1320px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;">
 
         {{-- Logo --}}
         <a href="/" style="display:flex;align-items:center;text-decoration:none;">
@@ -459,7 +461,7 @@
 
 {{-- ═══════════ FOOTER ═══════════ --}}
 <footer class="bg-white border-t border-gray-100 py-14">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
             <div class="col-span-2">
                 <a href="/" class="flex items-center gap-2.5 mb-4">

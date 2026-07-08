@@ -19,6 +19,8 @@ use Throwable;
 
 final class StoreUploadedFileAction
 {
+    private const GUEST_STORAGE_LIMIT_MB = 100;
+
     public function __construct(
         private readonly FileFormatDetector $formatDetector,
         private readonly ImageMetadataExtractor $metadataExtractor,
@@ -38,6 +40,14 @@ final class StoreUploadedFileAction
 
             if ($usedBytes + $newFileBytes > $limitBytes) {
                 throw StorageLimitExceededException::make($limits->storageMb, $usedBytes, $newFileBytes);
+            }
+        } elseif ($guestToken !== null) {
+            $limitBytes = self::GUEST_STORAGE_LIMIT_MB * 1024 * 1024;
+            $usedBytes = $this->storageUsage->usedBytesForGuest($guestToken);
+            $newFileBytes = $file->getSize();
+
+            if ($usedBytes + $newFileBytes > $limitBytes) {
+                throw StorageLimitExceededException::make(self::GUEST_STORAGE_LIMIT_MB, $usedBytes, $newFileBytes);
             }
         }
 

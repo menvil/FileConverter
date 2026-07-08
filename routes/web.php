@@ -17,6 +17,7 @@ Route::get('/', function () {
 });
 
 Route::get('/guest/conversions/{conversionId}/download', GuestDownloadConversionController::class)
+    ->middleware('throttle:30,1')
     ->name('guest.conversions.download');
 
 Route::view('/dashboard', 'dashboard')

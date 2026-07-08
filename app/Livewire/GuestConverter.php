@@ -10,6 +10,7 @@ use App\Actions\Files\StoreUploadedFileAction;
 use App\Enums\ConversionStatus;
 use App\Exceptions\Files\FileStorageException;
 use App\Exceptions\Files\UnsupportedFileFormatException;
+use App\Exceptions\Storage\StorageLimitExceededException;
 use App\Models\ConversionJob;
 use App\Models\FileRecord;
 use App\Support\Conversions\Exceptions\UnsupportedConversionException;
@@ -19,6 +20,7 @@ use App\Support\Converters\Exceptions\InvalidConverterOptionsException;
 use App\Support\Converters\OptionsValidator;
 use App\ViewModels\TargetFormatCardViewModel;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Throwable;
@@ -58,6 +60,7 @@ class GuestConverter extends Component
 
     public ?int $estimatedCreditCost = null;
 
+    #[Locked]
     public string $guestToken = '';
 
     public function mount(): void
@@ -96,6 +99,11 @@ class GuestConverter extends Component
             );
         } catch (UnsupportedFileFormatException) {
             $this->uploadError = 'This file type is not supported in beta. Upload PNG, JPG, WEBP or PDF.';
+            $this->step = 'upload';
+
+            return;
+        } catch (StorageLimitExceededException) {
+            $this->uploadError = 'Guest storage limit reached. Sign up free to convert more files.';
             $this->step = 'upload';
 
             return;

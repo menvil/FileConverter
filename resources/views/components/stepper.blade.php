@@ -27,6 +27,7 @@
             <button
                 type="button"
                 wire:click="{{ $handler }}"
+                aria-label="Go back to {{ $label }} step"
                 @class([
                     'inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold transition',
                     'border bg-white text-[var(--ca-text)] hover:bg-[var(--ca-surface-muted)] cursor-pointer',

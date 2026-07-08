@@ -192,9 +192,9 @@
 
         @if ($step === 'failed')
             <div class="flex flex-col gap-4">
-                <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-6 py-8 text-center">
-                    <p class="text-base font-semibold text-red-700">Conversion failed</p>
-                    <p class="mt-1 text-sm text-red-600">We could not convert this file. Try another file or change settings.</p>
+                <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-danger)]/30 bg-[var(--ca-danger)]/5 px-6 py-8 text-center">
+                    <p class="text-base font-semibold text-[var(--ca-danger)]">Conversion failed</p>
+                    <p class="mt-1 text-sm text-[var(--ca-danger)]">We could not convert this file. Try another file or change settings.</p>
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -280,8 +280,8 @@
                 </div>
 
                 @if ($convertError)
-                    <div class="rounded-[var(--ca-radius-md)] border border-red-200 bg-red-50 px-4 py-3">
-                        <p class="text-sm text-red-600">{{ $convertError }}</p>
+                    <div class="rounded-[var(--ca-radius-md)] border border-[var(--ca-danger)]/30 bg-[var(--ca-danger)]/5 px-4 py-3">
+                        <p class="text-sm text-[var(--ca-danger)]">{{ $convertError }}</p>
                     </div>
                 @endif
 
