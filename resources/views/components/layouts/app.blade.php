@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? config('app.name') }}</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=geist:800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen antialiased" style="background:var(--ca-bg);color:var(--ca-text);">
@@ -13,7 +15,9 @@
         style="border-color:var(--ca-border);"
     >
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
-            <a href="{{ url('/') }}" class="text-lg font-semibold tracking-tight">ConvertAI</a>
+            <a href="{{ url('/') }}" class="inline-flex items-center">
+                <x-application-logo size="text-xl" />
+            </a>
 
             <nav class="hidden gap-6 text-sm text-[var(--ca-muted)] md:flex">
                 <a href="{{ url('/dashboard') }}" class="hover:text-[var(--ca-text)]">Dashboard</a>
@@ -103,7 +107,7 @@
 
     <footer class="border-t bg-white" style="border-color:var(--ca-border);">
         <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-[var(--ca-muted)] md:flex-row">
-            <span>&copy; {{ date('Y') }} ConvertAI</span>
+            <span>&copy; {{ date('Y') }} FileConverter</span>
             <nav class="flex gap-5">
                 <a href="#" class="hover:text-[var(--ca-text)]">Privacy Policy</a>
                 <a href="#" class="hover:text-[var(--ca-text)]">Terms of Service</a>

@@ -22,8 +22,7 @@ it('provides valid default options for png to webp', function () {
     );
 
     expect($options)->toHaveKey('quality');
-    expect($options)->toHaveKey('lossless');
-    expect($options)->toHaveKey('resize');
-    expect($options)->toHaveKey('remove_metadata');
-    expect($options['lossless'])->toBeFalse();
+    expect($options)->not->toHaveKey('lossless');
+    expect($options)->not->toHaveKey('resize');
+    expect($options)->not->toHaveKey('remove_metadata');
 });

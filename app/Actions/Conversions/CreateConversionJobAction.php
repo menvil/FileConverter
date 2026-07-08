@@ -33,10 +33,11 @@ final class CreateConversionJobAction
      * @param  array<string, mixed>  $options
      */
     public function handle(
-        User $user,
+        ?User $user,
         FileRecord $sourceFile,
         string $targetFormat,
         array $options = [],
+        ?string $guestToken = null,
     ): ConversionJob {
         try {
             $sourceFormat = FileFormat::normalize($sourceFile->extension);
@@ -57,23 +58,27 @@ final class CreateConversionJobAction
 
         $normalizedOptions = $converter->validateOptions($options);
 
-        $cost = $this->estimateCost->handle($sourceFile, $converter, $normalizedOptions);
+        if ($user !== null) {
+            $cost = $this->estimateCost->handle($sourceFile, $converter, $normalizedOptions);
+            $balance = $this->creditLedger->balance($user);
 
-        $balance = $this->creditLedger->balance($user);
-
-        if ($balance < $cost->amount) {
-            throw InsufficientCreditsException::forCost(
-                required: $cost->amount,
-                available: $balance,
-            );
+            if ($balance < $cost->amount) {
+                throw InsufficientCreditsException::forCost(
+                    required: $cost->amount,
+                    available: $balance,
+                );
+            }
+        } else {
+            $cost = null;
         }
 
         // Wrap job + charge creation in a transaction so a failed charge insert
         // cannot leave an orphan queued job. Dispatch happens after commit so
         // the worker never picks up a job whose charge record does not exist.
-        $job = DB::transaction(function () use ($user, $sourceFile, $sourceFormat, $normalizedTarget, $normalizedOptions, $cost) {
+        $job = DB::transaction(function () use ($user, $guestToken, $sourceFile, $sourceFormat, $normalizedTarget, $normalizedOptions, $cost) {
             $job = ConversionJob::create([
-                'user_id' => $user->id,
+                'user_id' => $user?->id,
+                'guest_token' => $guestToken,
                 'source_file_id' => $sourceFile->id,
                 'source_format' => $sourceFormat,
                 'target_format' => $normalizedTarget,
@@ -86,15 +91,17 @@ final class CreateConversionJobAction
                 'progress' => 0,
             ]);
 
-            ConversionCreditCharge::create([
-                'user_id' => $user->id,
-                'conversion_job_id' => $job->id,
-                'estimated_amount' => $cost->amount,
-                'captured_amount' => 0,
-                'refunded_amount' => 0,
-                'status' => ConversionCreditChargeStatus::Estimated,
-                'breakdown_json' => $cost->breakdown,
-            ]);
+            if ($user !== null && $cost !== null) {
+                ConversionCreditCharge::create([
+                    'user_id' => $user->id,
+                    'conversion_job_id' => $job->id,
+                    'estimated_amount' => $cost->amount,
+                    'captured_amount' => 0,
+                    'refunded_amount' => 0,
+                    'status' => ConversionCreditChargeStatus::Estimated,
+                    'breakdown_json' => $cost->breakdown,
+                ]);
+            }
 
             return $job;
         });

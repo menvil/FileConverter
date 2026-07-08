@@ -50,30 +50,6 @@ final class PngToWebpConverter implements Converter
                     ['value' => 'best', 'label' => 'Best'],
                 ],
             ],
-            [
-                'key' => 'lossless',
-                'type' => 'toggle',
-                'label' => 'Lossless',
-                'default' => false,
-            ],
-            [
-                'key' => 'resize',
-                'type' => 'select',
-                'label' => 'Resize',
-                'default' => 'original',
-                'options' => [
-                    ['value' => 'original', 'label' => 'Original'],
-                    ['value' => '1920', 'label' => '1920 px'],
-                    ['value' => '1280', 'label' => '1280 px'],
-                    ['value' => 'custom', 'label' => 'Custom'],
-                ],
-            ],
-            [
-                'key' => 'remove_metadata',
-                'type' => 'toggle',
-                'label' => 'Remove metadata',
-                'default' => true,
-            ],
         ];
     }
 

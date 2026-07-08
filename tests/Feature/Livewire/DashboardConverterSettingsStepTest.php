@@ -111,9 +111,9 @@ it('renders the png to jpg settings form', function () {
         ->assertSet('step', 'settings')
         ->assertSee('Settings for PNG to JPG')
         ->assertSee('Quality')
-        ->assertSee('Resize')
         ->assertSee('Background color')
-        ->assertSee('Remove metadata')
+        ->assertDontSee('Resize')
+        ->assertDontSee('Remove metadata')
         ->assertDontSee('Conversion settings will be added in Phase 8');
 });
 
@@ -134,7 +134,7 @@ it('renders the png to pdf settings form distinct from png to jpg', function () 
         ->assertSee('Orientation')
         ->assertSee('Margin')
         ->assertSee('Fit mode')
-        ->assertSee('Compression')
+        ->assertDontSee('Compression')
         ->assertDontSee('Background color');
 });
 
@@ -147,9 +147,8 @@ it('initializes default options from the converter schema', function () {
         ->set('currentFileId', $file->id)
         ->call('selectTargetFormat', 'jpg')
         ->assertSet('options.quality', 'high')
-        ->assertSet('options.resize', 'original')
-        ->assertSet('options.background_color', '#ffffff')
-        ->assertSet('options.remove_metadata', true);
+        ->assertSet('options.background_color', '#ffffff');
+
 });
 
 it('resets options to defaults when switching to a different target format', function () {

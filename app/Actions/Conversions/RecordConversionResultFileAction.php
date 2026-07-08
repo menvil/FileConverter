@@ -18,7 +18,7 @@ final class RecordConversionResultFileAction
         private readonly FileExpirationPolicy $expirationPolicy,
     ) {}
 
-    public function handle(User $user, ConversionResult $result): FileRecord
+    public function handle(?User $user, ConversionResult $result, ?string $guestToken = null): FileRecord
     {
         $contents = Storage::disk('local')->get($result->path);
 
@@ -27,7 +27,8 @@ final class RecordConversionResultFileAction
         }
 
         return FileRecord::create([
-            'user_id' => $user->id,
+            'user_id' => $user?->id,
+            'guest_token' => $guestToken,
             'original_name' => $result->originalName,
             'stored_path' => $result->path,
             'mime_type' => $result->mimeType,

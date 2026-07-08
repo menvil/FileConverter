@@ -13,18 +13,22 @@ final class FileExpirationPolicy
         private readonly FeatureAccessService $featureAccess,
     ) {}
 
-    public function forUploadedFile(User $user): CarbonInterface
+    public function forUploadedFile(?User $user): CarbonInterface
     {
         return $this->calculateExpiration($user);
     }
 
-    public function forResultFile(User $user): CarbonInterface
+    public function forResultFile(?User $user): CarbonInterface
     {
         return $this->calculateExpiration($user);
     }
 
-    private function calculateExpiration(User $user): CarbonInterface
+    private function calculateExpiration(?User $user): CarbonInterface
     {
+        if ($user === null) {
+            return Date::now()->addHours(2);
+        }
+
         $days = $this->featureAccess->limits($user)->retentionDays;
 
         return Date::now()->addDays($days);

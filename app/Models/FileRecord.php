@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'user_id',
+    'guest_token',
     'original_name',
     'stored_path',
     'mime_type',

@@ -10,7 +10,7 @@
     <select
         id="option-{{ $key }}"
         wire:model.live="options.{{ $key }}"
-        class="w-full rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] ca-focus-ring">
+        class="w-full cursor-pointer rounded-[var(--ca-radius-md)] border border-[var(--ca-border)] bg-white px-3 py-2 text-sm text-[var(--ca-text)] ca-focus-ring">
         @if (! empty($field['placeholder']))
             <option value="">{{ $field['placeholder'] }}</option>
         @endif

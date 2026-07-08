@@ -22,4 +22,12 @@ final class StorageUsageService
     {
         return round($this->usedBytes($user) / 1024 / 1024, 2);
     }
+
+    public function usedBytesForGuest(string $guestToken): int
+    {
+        return (int) FileRecord::query()
+            ->where('guest_token', $guestToken)
+            ->whereNotIn('status', [FileStatus::Expired->value, FileStatus::Deleted->value])
+            ->sum('size_bytes');
+    }
 }
